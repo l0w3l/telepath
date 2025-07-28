@@ -8,6 +8,7 @@ use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
+use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Vjik\TelegramBot\Api\TelegramBotApi;
@@ -24,6 +25,7 @@ class TelepathServiceProvider extends PackageServiceProvider
         $package
             ->name('telepath')
             ->hasConfigFile()
+            ->hasRoute('telegram')
             ->hasCommands([
                 RunCommand::class,
                 SetCommand::class,
@@ -33,9 +35,13 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     /**
      * Register services.
+     *
+     * @throws InvalidPackage
      */
     public function register(): void
     {
+        parent::register();
+
         $this->app->bind(TelegramBotApi::class, function () {
             return new TelegramBotApi(
                 token: config('telepath.token'),
