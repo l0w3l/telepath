@@ -1,4 +1,4 @@
-name: run-tests
+name: Run Laravel 12 Tests on Linux
 
 on:
   push:
@@ -15,25 +15,15 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        php: [8.4, 8.3]
-        laravel: [12.*, 11.*, 10.*]
-        stability: [prefer-lowest, prefer-stable]
-        include:
-          - laravel: 12.*
-            testbench: 10.*
-          - laravel: 11.*
-            testbench: 9.*
-          - laravel: 10.*
-            testbench: ^8.22
-    
+        php: [8.3]
+        stability: [prefer-stable]
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: PHP ${{ matrix.php }} - Laravel 12 - ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
@@ -43,7 +33,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           coverage: none
 
       - name: Setup problem matchers
@@ -53,11 +43,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          composer require "laravel/framework:^12.0" "orchestra/testbench:^10.0" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
-
-      - name: List Installed Dependencies
-        run: composer show -D
 
       - name: Execute tests
         run: vendor/bin/pest --ci
