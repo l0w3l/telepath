@@ -1,5 +1,6 @@
 <?php
 
-arch('it will not use debugging functions')
-    ->expect(['dd', 'dump', 'ray'])
-    ->each->not->toBeUsed();
+arch()
+    ->expect('App')
+    ->toUseStrictTypes()
+    ->not->toUse(['die', 'dd', 'dump']);

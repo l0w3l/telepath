@@ -1,24 +1,25 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "lowel/telepath",
+    "description": "Telegram bot sdk for laravel inspired by vjik/telegram-bot-api",
     "keywords": [
-        ":vendor_name",
+        "lowel",
         "laravel",
-        ":package_slug"
+        "telepath"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/l0w3l/telepath",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Andrey Bulavskiy",
+            "email": "10vvvvvv31@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.3",
+        "illuminate/contracts": "^10.0||^11.0||^12.0",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0||^12.0"
+        "vjik/telegram-bot-api": "^0.9.1"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -35,14 +36,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "Lowel\\Telepath\\": "src/",
+            "Lowel\\Telepath\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "Lowel\\Telepath\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -57,16 +57,17 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
             "phpstan/extension-installer": true
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Lowel\\Telepath\\Skeleton\\SkeletonServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "Skeleton": "Lowel\\Telepath\\Skeleton\\Facades\\Skeleton"
             }
         }
     },
