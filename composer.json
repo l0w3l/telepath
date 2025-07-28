@@ -63,10 +63,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Lowel\\Telepath\\Telepath\\TelepathServiceProvider"
+                "Lowel\\Telepath\\TelepathServiceProvider"
             ],
             "aliases": {
-                "Telepath": "Lowel\\Telepath\\Telepath\\Facades\\Telepath"
+                "Telepath": "Lowel\\Telepath\\Facades\\Telepath"
             }
         }
     },
