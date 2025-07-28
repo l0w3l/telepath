@@ -23,8 +23,7 @@ class TelepathServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('telepath')
-            ->hasConfigFile('telepath')
-            ->hasRoute('telegram')
+            ->hasConfigFile()
             ->hasCommands([
                 RunCommand::class,
                 SetCommand::class,
