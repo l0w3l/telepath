@@ -85,9 +85,9 @@ class TelepathServiceProvider extends PackageServiceProvider
                 ->start();
         });
 
-        if (file_exists(config('telegram.routes'))) {
+        if (file_exists(config('telepath.routes'))) {
             (function () {
-                require_once config('telegram.routes');
+                require_once config('telepath.routes');
             })();
         }
     }
