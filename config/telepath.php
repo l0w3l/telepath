@@ -12,12 +12,12 @@ return [
     */
 
     'token' => env('TELEPATH_TOKEN'),
-    'base_uri' => env('TELEPATH_BASE_URL', 'https://api.TELEPATH.org'),
+    'base_uri' => env('TELEPATH_BASE_URL', 'https://api.telegram.org'),
 
     /*
      * Routes path
      */
-    'routes' => base_path(env('TELEPATH_ROUTES', 'routes/TELEPATH.php')),
+    'routes' => base_path(env('TELEPATH_ROUTES', 'routes/telegram.php')),
 
     'profile' => 'default',
 
