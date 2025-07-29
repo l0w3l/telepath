@@ -64,6 +64,8 @@ class TelepathServiceProvider extends PackageServiceProvider
         $this->app->singleton(TelegramHandlerCollectionInterface::class, function ($app) {
             return $app->make(TelegramRouterInterface::class);
         });
+
+        $this->loadRoutes();
     }
 
     /**
@@ -72,8 +74,6 @@ class TelepathServiceProvider extends PackageServiceProvider
     public function boot(): void
     {
         parent::boot();
-
-        $this->loadRoutes();
     }
 
     private function loadRoutes(): void
