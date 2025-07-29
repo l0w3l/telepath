@@ -14,7 +14,7 @@ class RunCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lowel:telegram:run';
+    protected $signature = 'telepath:run';
 
     /**
      * The console command description.

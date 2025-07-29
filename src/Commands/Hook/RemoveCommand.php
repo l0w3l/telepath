@@ -13,7 +13,7 @@ class RemoveCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lowel:telegram:hook:remove {--d|drop : drop pending updates}';
+    protected $signature = 'telepath:hook:remove {--d|drop : drop pending updates}';
 
     /**
      * The console command description.

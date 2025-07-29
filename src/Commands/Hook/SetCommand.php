@@ -13,7 +13,7 @@ class SetCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lowel:telegram:hook:set {hook} {--a|allow=* : List of allowed updates} {--d|drop : drop pending updates} {--m|max-connections=1 : Maximum number of connections}';
+    protected $signature = 'telepath:hook:set {hook=default} {--a|allow=* : List of allowed updates} {--d|drop : drop pending updates} {--m|max-connections=1 : Maximum number of connections}';
 
     /**
      * The console command description.
@@ -30,9 +30,9 @@ class SetCommand extends Command
         $telegramBotApi = app(TelegramBotApi::class);
 
         $telegramBotApi->setWebhook(
-            url: $this->argument('hook'),
+            url: $this->argument('hook') === 'default' ? config('app.url').'/api/webhook' : $this->argument('hook'),
             maxConnections: $this->hasOption('max-connections') ? (int) $this->option('max-connections') : null,
-            allowUpdates: $this->hasOption('allow') ? UpdateTypeEnum::toArray(explode(',', ((string) $this->option('allow')))) : UpdateTypeEnum::toArray(),
+            allowUpdates: empty($this->option('allow')) ? UpdateTypeEnum::toArray() : UpdateTypeEnum::toArray($this->option('allow')),
             dropPendingUpdates: $this->hasOption('drop') ? (bool) $this->option('drop') : null,
         );
 
