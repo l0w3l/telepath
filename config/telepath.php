@@ -1,8 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Telepath Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This file is for storing the configuration of the Telepath package.
+    | You can set your bot token and other settings here.
+    |
+    */
+
     'token' => env('TELEPATH_TOKEN'),
     'base_uri' => env('TELEPATH_BASE_URL', 'https://api.TELEPATH.org'),
 

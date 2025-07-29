@@ -1,19 +1,13 @@
-# Telegram bot sdk for laravel inspired by vjik/telegram-bot-api
+# Telepath: Telegram bot SDK for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/l0w3l/telepath)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/l0w3l/telepath/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/l0w3l/telepath/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/l0w3l/telepath/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/l0w3l/telepath/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/l0w3l/telepath.svg?style=flat-square)](https://packagist.org/packages/l0w3l/telepath)
+[![Total Downloads](https://img.shields.io/packagist/dt/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/l0w3l/telepath)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Telegram bot SDK for Laravel inspired by [vjik/telegram-bot-api](https://github.com/vjik/telegram-bot-api). 
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/telepath.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/telepath)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+SDK supports routes and long pooling \ webhook handling
 
 ## Installation
 
@@ -21,13 +15,6 @@ You can install the package via composer:
 
 ```bash
 composer require lowel/telepath
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="telepath-migrations"
-php artisan migrate
 ```
 
 You can publish the config file with:
@@ -40,44 +27,71 @@ This is the contents of the published config file:
 
 ```php
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Telepath Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This file is for storing the configuration of the Telepath package.
+    | You can set your bot token and other settings here.
+    |
+    */
+
+    'token' => env('TELEPATH_TOKEN'),
+    'base_uri' => env('TELEPATH_BASE_URL', 'https://api.TELEPATH.org'),
+
+    /*
+     * Routes path
+     */
+    'routes' => base_path(env('TELEPATH_ROUTES', 'routes/TELEPATH.php')),
+
+    'profile' => 'default',
+
+    'profiles' => [
+        'default' => [
+            'offset' => (int) env('TELEPATH_OFFSET', 0),
+            'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
+            'allowed_updates' => explode(',', env('TELEPATH_ALLOWED_UPDATES', '*')),
+        ],
+    ],
 ];
 ```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="telepath-views"
-```
-
 ## Usage
 
 ```php
-$telepath = new Lowel\Telepath();
-echo $telepath->echoPhrase('Hello, Lowel!');
+use Lowel\Telepath\Facades\Telepath;
+use Vjik\TelegramBot\Api\TelegramBotApi;
+use Vjik\TelegramBot\Api\Type\Update\Update;
+
+Telepath::middleware(function (TelegramBotApi $telegramBotApi, Update $update, callable $callback) {
+    logger()->info('Middleware in');
+    $callback();
+    logger()->info('Middleware out');    
+})->group(function () {
+    Telepath::on('/start', function (TelegramBotApi $telegramBotApi, Update $update) {
+        $telegramBotApi->sendMessage($update->getMessage()->getChat()->getId(), 'Hello, world!');
+    });
+
+    Telepath::on('/echo', function (TelegramBotApi $telegramBotApi, Update $update) {
+        $message = $update->getMessage();
+        if ($message) {
+            $telegramBotApi->sendMessage($message->getChat()->getId(), $message->getText());
+        }
+    });
+});
 ```
 
-## Testing
+Start up:
 
 ```bash
-composer test
+php artisan telepath:run
 ```
 
-## Changelog
+Or using webhook:
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Andrey Bulavskiy](https://github.com/l0w3l)
-- [All Contributors](../../contributors)
+```php
+php artisan telepath:hook:set https://your-domain.com/api/webhook
+```
 
 ## License
 
