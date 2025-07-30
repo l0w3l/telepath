@@ -6,12 +6,12 @@ namespace Lowel\Telepath\Core\Router;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\App;
-use Lowel\Telepath\Commands\Exceptions\Router\SubPathNotFoundException;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandler;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Exceptions\Router\SubPathNotFoundException;
 use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
 use RuntimeException;
 use Vjik\TelegramBot\Api\TelegramBotApi;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Lowel\Telepath\Commands\Exceptions\Router;
+namespace Lowel\Telepath\Exceptions\Router;
 
 use Exception;
 
