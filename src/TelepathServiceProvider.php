@@ -5,6 +5,8 @@ namespace Lowel\Telepath;
 use Illuminate\Support\Facades\Route;
 use Lowel\Telepath\Commands\Hook\RemoveCommand;
 use Lowel\Telepath\Commands\Hook\SetCommand;
+use Lowel\Telepath\Commands\MakeHandlerCommand;
+use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
@@ -31,6 +33,8 @@ class TelepathServiceProvider extends PackageServiceProvider
                 RunCommand::class,
                 SetCommand::class,
                 RemoveCommand::class,
+                MakeHandlerCommand::class,
+                MakeMiddlewareCommand::class,
             ]);
     }
 

@@ -19,9 +19,6 @@
         <testsuite name="Lowel Test Suite">
             <directory>tests</directory>
         </testsuite>
-        <testsuite name="Telepath Test Suite">
-            <directory>tests/Telepath</directory>
-        </testsuite>
     </testsuites>
     <logging>
         <junit outputFile="build/report.junit.xml"/>
