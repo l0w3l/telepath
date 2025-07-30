@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router;
 
-use Lowel\Telepath\Commands\Exceptions\Router\SubPathNotFoundException;
+use Lowel\Telepath\Exceptions\Router\SubPathNotFoundException;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
 
