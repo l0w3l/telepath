@@ -158,8 +158,6 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
 
     public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): void
     {
-        $handler = $this->bindMiddlewares($handler);
-
         if (is_string($handler)) {
             $telegramHandler = App::make($handler);
 
@@ -170,7 +168,9 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
             $telegramHandler = new TelegramHandler($handler, $pattern);
         }
 
-        $this->setHandler($telegramHandler, $type);
+        $wrappedHandler = $this->bindMiddlewares($telegramHandler);
+
+        $this->setHandler($wrappedHandler, $type);
     }
 
     /**
@@ -269,18 +269,24 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
         }
     }
 
-    private function bindMiddlewares(callable $callable): callable
+    private function bindMiddlewares(TelegramHandlerInterface $telegramHandler): callable
     {
         foreach (array_reverse($this->middlewareStack) as $middleware) {
-            $callable = fn (TelegramBotApi $telegramBotApi, Update $update) => $middleware($telegramBotApi, $update, fn () => $callable($telegramBotApi, $update));
+            $telegramHandler = new TelegramHandler(
+                fn (TelegramBotApi $telegramBotApi, Update $update) => $middleware($telegramBotApi, $update, fn () => $telegramHandler($telegramBotApi, $update)),
+                method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : null
+            );
         }
 
         foreach (array_reverse($this->groupMiddlewareStack) as $middleware) {
-            $callable = fn (TelegramBotApi $telegramBotApi, Update $update) => $middleware($telegramBotApi, $update, fn () => $callable($telegramBotApi, $update));
+            $telegramHandler = new TelegramHandler(
+                fn (TelegramBotApi $telegramBotApi, Update $update) => $middleware($telegramBotApi, $update, fn () => $telegramHandler($telegramBotApi, $update)),
+                method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : null
+            );
         }
 
         $this->middlewareStack = [];
 
-        return $callable;
+        return $telegramHandler;
     }
 }
