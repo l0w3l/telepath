@@ -9,5 +9,5 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 
 interface TelegramMiddlewareInterface
 {
-    public function __invoke(TelegramBotApi $telegram, Update $update, callable $callback): mixed;
+    public function __invoke(TelegramBotApi $telegram, Update $update, callable $callback): void;
 }
