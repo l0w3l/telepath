@@ -5,6 +5,8 @@ namespace Lowel\Telepath;
 use Illuminate\Support\Facades\Route;
 use Lowel\Telepath\Commands\Hook\RemoveCommand;
 use Lowel\Telepath\Commands\Hook\SetCommand;
+use Lowel\Telepath\Commands\MakeHandlerCommand;
+use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
@@ -31,6 +33,8 @@ class TelepathServiceProvider extends PackageServiceProvider
                 RunCommand::class,
                 SetCommand::class,
                 RemoveCommand::class,
+                MakeHandlerCommand::class,
+                MakeMiddlewareCommand::class,
             ]);
     }
 
@@ -78,11 +82,9 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     private function loadRoutes(): void
     {
-        Route::middleware('api')->get('/webhook', function () {
-            $telegramAppFactory = app(TelegramAppFactoryInterface::class);
-
-            $telegramAppFactory->webhook()
-                ->start();
+        Route::middleware('api')->get('/api/webhook', function () {
+            app(TelegramAppFactoryInterface::class)
+                ->webhook()->start();
         });
 
         if (file_exists(config('telepath.routes'))) {

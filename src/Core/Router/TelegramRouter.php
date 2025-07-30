@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Commands\Exceptions\Router\SubPathNotFoundException;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandler;
@@ -13,7 +14,6 @@ use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
 use RuntimeException;
-use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -41,128 +41,178 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
      */
     protected array $fallbacks = [];
 
-    public function onMessage(callable $handler, ?string $pattern = null): void
+    public function onMessage(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::MESSAGE);
+        $this->on($handler, UpdateTypeEnum::MESSAGE, $pattern);
     }
 
-    public function onMessageEdit(callable $handler, ?string $pattern = null): void
+    public function onMessageEdit(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::EDITED_MESSAGE);
+        $this->on($handler, UpdateTypeEnum::EDITED_MESSAGE, $pattern);
     }
 
-    public function onChannelPost(callable $handler, ?string $pattern = null): void
+    public function onChannelPost(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::EDITED_CHANNEL_POST);
+        $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
     }
 
-    public function onMessageReaction(callable $handler): void
+    public function onMessageReaction(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::MESSAGE_REACTION);
+        $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION);
     }
 
-    public function onMessageReactionCount(callable $handler): void
+    public function onMessageReactionCount(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::MESSAGE_REACTION_COUNT);
+        $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION_COUNT);
     }
 
-    public function onChannelPostEdit(callable $handler, ?string $pattern = null): void
+    public function onChannelPostEdit(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::CHANNEL_POST);
+        $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
     }
 
-    public function onBusinessConnection(callable $handler): void
+    public function onBusinessConnection(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::BUSINESS_CONNECTION);
+        $this->on($handler, UpdateTypeEnum::BUSINESS_CONNECTION);
     }
 
-    public function onBusinessMessage(callable $handler, ?string $pattern = null): void
+    public function onBusinessMessage(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::BUSINESS_MESSAGE);
+        $this->on($handler, UpdateTypeEnum::BUSINESS_MESSAGE, $pattern);
     }
 
-    public function onBusinessMessageEdit(callable $handler, ?string $pattern = null): void
+    public function onBusinessMessageEdit(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::EDIT_BUSINESS_MESSAGE);
+        $this->on($handler, UpdateTypeEnum::EDIT_BUSINESS_MESSAGE, $pattern);
     }
 
-    public function onBusinessMessagesDelete(callable $handler): void
+    public function onBusinessMessagesDelete(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::DELETE_BUSINESS_MESSAGES);
+        $this->on($handler, UpdateTypeEnum::DELETE_BUSINESS_MESSAGES);
     }
 
-    public function onInlineQueryChosenResult(callable $handler, ?string $pattern = null): void
+    public function onInlineQueryChosenResult(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::CHOSEN_INLINE_RESULT);
+        $this->on($handler, UpdateTypeEnum::CHOSEN_INLINE_RESULT, $pattern);
     }
 
-    public function onShippingQuery(callable $handler): void
+    public function onShippingQuery(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::SHIPPING_QUERY);
+        $this->on($handler, UpdateTypeEnum::SHIPPING_QUERY);
     }
 
-    public function onPreCheckoutQuery(callable $handler): void
+    public function onPreCheckoutQuery(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::PRE_CHECKOUT_QUERY);
+        $this->on($handler, UpdateTypeEnum::PRE_CHECKOUT_QUERY);
     }
 
-    public function onPurchasedPaidMedia(callable $handler): void
+    public function onPurchasedPaidMedia(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::PURCHASED_PAID_MEDIA);
+        $this->on($handler, UpdateTypeEnum::PURCHASED_PAID_MEDIA);
     }
 
-    public function onPoll(callable $handler): void
+    public function onPoll(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::POLL);
+        $this->on($handler, UpdateTypeEnum::POLL);
     }
 
-    public function onPollAnswer(callable $handler): void
+    public function onPollAnswer(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::POLL_ANSWER);
+        $this->on($handler, UpdateTypeEnum::POLL_ANSWER);
     }
 
-    public function onChatJoinRequest(callable $handler): void
+    public function onChatJoinRequest(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::CHAT_JOIN_REQUEST);
+        $this->on($handler, UpdateTypeEnum::CHAT_JOIN_REQUEST);
     }
 
-    public function onChatMemberUpdate(callable $handler): void
+    public function onChatMemberUpdate(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::CHAT_MEMBER);
+        $this->on($handler, UpdateTypeEnum::CHAT_MEMBER);
     }
 
-    public function onChatBoost(callable $handler): void
+    public function onChatBoost(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::CHAT_BOOST);
+        $this->on($handler, UpdateTypeEnum::CHAT_BOOST);
     }
 
-    public function onChatBoostRemove(callable $handler): void
+    public function onChatBoostRemove(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::REMOVED_CHAT_BOOST);
+        $this->on($handler, UpdateTypeEnum::REMOVED_CHAT_BOOST);
     }
 
-    public function onMyChatMemberUpdate(callable $handler): void
+    public function onMyChatMemberUpdate(string|callable $handler): void
     {
-        $this->on(null, $handler, UpdateTypeEnum::MY_CHAT_MEMBER);
+        $this->on($handler, UpdateTypeEnum::MY_CHAT_MEMBER);
     }
 
-    public function onCallbackQuery(callable $handler, ?string $pattern = null): void
+    public function onCallbackQuery(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::CALLBACK_QUERY);
+        $this->on($handler, UpdateTypeEnum::CALLBACK_QUERY, $pattern);
     }
 
-    public function onInlineQuery(callable $handler, ?string $pattern = null): void
+    public function onInlineQuery(string|callable $handler, ?string $pattern = null): void
     {
-        $this->on($pattern, $handler, UpdateTypeEnum::INLINE_QUERY);
+        $this->on($handler, UpdateTypeEnum::INLINE_QUERY, $pattern);
     }
 
-    public function on(?string $pattern, callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE): void
+    public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): void
     {
         $handler = $this->bindMiddlewares($handler);
 
-        $telegramHandler = new TelegramHandler($handler, $pattern);
+        if (is_string($handler)) {
+            $telegramHandler = App::make($handler);
+
+            if (! is_object($telegramHandler) || ! ($telegramHandler instanceof TelegramHandlerInterface)) {
+                throw new RuntimeException("Handler {$handler} should implement TelegramHandlerInterface");
+            }
+        } else {
+            $telegramHandler = new TelegramHandler($handler, $pattern);
+        }
 
         $this->setHandler($telegramHandler, $type);
+    }
+
+    /**
+     * @param  callable|class-string<TelegramMiddlewareInterface>|array<class-string<TelegramMiddlewareInterface>|callable>  $handler
+     * @return $this
+     *
+     * @throws BindingResolutionException
+     */
+    public function middleware(callable|string|array $handler): self
+    {
+        if (is_array($handler)) {
+            foreach ($handler as $handlerPart) {
+                $this->middleware($handlerPart);
+            }
+        } elseif (is_string($handler)) {
+            $class = App::make($handler);
+
+            if (! is_object($class) || ! ($class instanceof TelegramMiddlewareInterface)) {
+                throw new RuntimeException("Middleware {$handler} should implement TelegramMiddlewareInterface");
+            }
+
+            $this->middlewareStack[] = $class;
+        } else {
+            $this->middlewareStack[] = $handler;
+        }
+
+        return $this;
+    }
+
+    public function fallback(string|callable $handler): void
+    {
+        if (is_string($handler)) {
+            $telegramHandler = App::make($handler);
+
+            if (! is_object($telegramHandler) || ! ($telegramHandler instanceof TelegramHandlerInterface)) {
+                throw new RuntimeException("Handler {$handler} should implement TelegramHandlerInterface");
+            }
+        } else {
+            $telegramHandler = new TelegramHandler($handler);
+        }
+
+        $this->fallbacks[] = $telegramHandler;
     }
 
     public function group(callable $callback): void
@@ -176,40 +226,6 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
 
         $this->groupMiddlewareStack = $oldGroupMiddlewareStack;
         $this->groupStack--;
-    }
-
-    public function fallback(callable $handler): void
-    {
-        $this->fallbacks[] = new TelegramHandler($handler);
-    }
-
-    /**
-     * @param  callable|class-string<TelegramMiddlewareInterface>|array<class-string<TelegramMiddlewareInterface>|callable>  $handler
-     * @return $this
-     */
-    public function middleware(callable|string|array $handler): self
-    {
-        if (is_string($handler)) {
-            try {
-                $class = App::make($handler);
-
-                if (is_callable($class)) {
-                    $this->middlewareStack[] = $class;
-                } else {
-                    throw new RuntimeException("Class {$handler} should implement __invoke method or TelegramMiddlewareInterface");
-                }
-            } catch (Throwable $e) {
-                throw new RuntimeException("Middleware was not bind by reason: {$e->getMessage()}", previous: $e);
-            }
-        } elseif (is_array($handler)) {
-            foreach ($handler as $handlerPart) {
-                $this->middleware($handlerPart);
-            }
-        } if (is_callable($handler)) {
-            $this->middlewareStack[] = $handler;
-        }
-
-        return $this;
     }
 
     public function getFallbacks(): array

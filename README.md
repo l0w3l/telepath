@@ -68,16 +68,16 @@ Telepath::middleware(function (TelegramBotApi $telegramBotApi, Update $update, c
     $callback();
     logger()->info('Middleware out');    
 })->group(function () {
-    Telepath::on('/start', function (TelegramBotApi $telegramBotApi, Update $update) {
+    Telepath::on(function (TelegramBotApi $telegramBotApi, Update $update) {
         $telegramBotApi->sendMessage($update->getMessage()->getChat()->getId(), 'Hello, world!');
-    });
+    }, pattern: '/start');
 
-    Telepath::on('/echo', function (TelegramBotApi $telegramBotApi, Update $update) {
+    Telepath::on(function (TelegramBotApi $telegramBotApi, Update $update) {
         $message = $update->getMessage();
         if ($message) {
             $telegramBotApi->sendMessage($message->getChat()->getId(), $message->getText());
         }
-    });
+    }, pattern: '/echo');
 });
 ```
 

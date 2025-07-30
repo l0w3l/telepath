@@ -17,7 +17,7 @@ class RoutePath implements RoutePathInterface
     private array $subPaths = [];
 
     /**
-     * @var TelegramHandlerInterface[]
+     * @var array<callable|TelegramHandlerInterface>
      */
     private array $handlers = [];
 
@@ -26,7 +26,7 @@ class RoutePath implements RoutePathInterface
         $matches = [];
 
         foreach ($this->handlers as $handler) {
-            if ($handler->pattern() === null) {
+            if (! method_exists($handler, 'pattern') || $handler->pattern() === null) {
                 $matches[] = $handler;
             } else {
                 $matchResult = Str::match($handler->pattern(), $text);
