@@ -2,6 +2,14 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.2.1 Hotfix on critical routing error - 2025-07-30
+
+### What's Changed
+
+* refactor: update version in composer by @l0w3l in https://github.com/l0w3l/telepath/pull/8
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.2.0...0.2.1
+
 ## 0.2.0 Huge refactoring + new artisan comands - 2025-07-30
 
 ### What's Changed
