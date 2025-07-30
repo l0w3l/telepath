@@ -1,9 +1,9 @@
 # Telepath: Telegram bot SDK for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/l0w3l/telepath)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/lowel/telepath)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/l0w3l/telepath/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/l0w3l/telepath/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/l0w3l/telepath/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/l0w3l/telepath/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/l0w3l/telepath)
+[![Total Downloads](https://img.shields.io/packagist/dt/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/lowel/telepath)
 
 Telegram bot SDK for Laravel inspired by [vjik/telegram-bot-api](https://github.com/vjik/telegram-bot-api). 
 
