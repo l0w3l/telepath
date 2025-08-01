@@ -22,10 +22,9 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
  *
  * @mixin Builder
  */
-class TelepathStoredUpdates extends Model
+class TelepathStoredUpdate extends Model
 {
     protected $fillable = [
-        'id',
         'instance',
     ];
 

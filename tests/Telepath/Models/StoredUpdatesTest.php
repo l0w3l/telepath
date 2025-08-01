@@ -1,6 +1,6 @@
 <?php
 
-use Lowel\Telepath\Models\TelepathStoredUpdates;
+use Lowel\Telepath\Models\TelepathStoredUpdate;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
 beforeEach(function (): void {
@@ -32,13 +32,13 @@ test('test update cast attribute', function (): void {
     $update = Update::fromJson($updateRawJson);
 
     // Update instance
-    $storedUpdate = new TelepathStoredUpdates([
+    $storedUpdate = new TelepathStoredUpdate([
         'instance' => $update,
     ]);
-    $storedUpdateArray = new TelepathStoredUpdates([
+    $storedUpdateArray = new TelepathStoredUpdate([
         'instance' => $updateArray,
     ]);
-    $storedUpdateRawJson = new TelepathStoredUpdates([
+    $storedUpdateRawJson = new TelepathStoredUpdate([
         'instance' => $updateRawJson,
     ]);
 
