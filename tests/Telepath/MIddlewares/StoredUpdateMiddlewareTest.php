@@ -8,6 +8,9 @@ use Lowel\Telepath\TelegramAppFactoryInterface;
 use Mockery\MockInterface;
 
 beforeEach(function () {
+    $this->artisan('vendor:publish', [
+        '--tag' => 'telepath-migrations',
+    ]);
     $this->artisan('migrate:fresh');
 
     Telepath::middleware(StoredUpdatesMiddleware::class)
