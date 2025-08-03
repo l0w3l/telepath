@@ -7,7 +7,7 @@ beforeEach(function (): void {
 });
 
 test('test', function (): void {
-    expect(app_path('Telegram/Middlewares/TestMiddleware.php'))->not()->toBeFalse();
+    expect(app_path('Telegram/Middlewares/TestMiddleware.php'))->not->toBeFile();
 
     $this->artisan('telepath:make:middleware', [
         'name' => 'Test',
@@ -17,7 +17,7 @@ test('test', function (): void {
 });
 
 test('test deep', function (): void {
-    expect(app_path('Telegram/Middlewares/Test/TestMiddleware.php'))->not()->toBeFalse();
+    expect(app_path('Telegram/Middlewares/Test/TestMiddleware.php'))->not->toBeFile();
 
     $this->artisan('telepath:make:middleware', [
         'name' => 'Test/Test',

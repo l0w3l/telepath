@@ -28,6 +28,9 @@ class TelepathServiceProvider extends PackageServiceProvider
         $package
             ->name('telepath')
             ->hasConfigFile()
+            ->hasMigrations([
+                'create_telepath_stored_updates_table',
+            ])
             ->hasRoute('telegram')
             ->hasCommands([
                 RunCommand::class,

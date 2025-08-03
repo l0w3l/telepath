@@ -30,7 +30,7 @@ class RemoveCommand extends Command
         $telegramBotApi = app(TelegramBotApi::class);
 
         try {
-            $telegramBotApi->deleteWebhook($this->option('drop') ?? true);
+            $telegramBotApi->deleteWebhook($this->option('drop'));
             $this->info('Telegram hook removed successfully.');
         } catch (Exception $e) {
             $this->error('Failed to remove Telegram hook: '.$e->getMessage());
