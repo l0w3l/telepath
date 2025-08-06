@@ -1,0 +1,172 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Lowel\Telepath\Core\Router\Context;
+
+use Closure;
+use Illuminate\Support\Facades\App;
+use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
+use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
+use Lowel\Telepath\Enums\UpdateTypeEnum;
+use RuntimeException;
+
+final class RouteContextParams
+{
+    public function __construct(
+        private null|TelegramHandlerInterface|Closure $handler = null,
+        private ?UpdateTypeEnum $updateTypeEnum = null,
+        private array $middlewares = [],
+        private ?string $name = null,
+        private ?string $pattern = null,
+    ) {}
+
+    public function clone(): self
+    {
+        return new self(
+            $this->handler,
+            $this->updateTypeEnum,
+            $this->middlewares,
+            $this->name,
+            $this->pattern
+        );
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->handler === null;
+    }
+
+    public function setHandler(TelegramHandlerInterface|Closure $handler): self
+    {
+        $this->handler = $handler;
+
+        return $this;
+    }
+
+    public function getHandler(): TelegramHandlerInterface|Closure|null
+    {
+        return $this->handler;
+    }
+
+    public function setUpdateTypeEnum(?UpdateTypeEnum $updateTypeEnum): self
+    {
+        if ($updateTypeEnum !== null) {
+            $this->updateTypeEnum = $updateTypeEnum;
+        }
+
+        return $this;
+    }
+
+    public function getUpdateTypeEnum(): ?UpdateTypeEnum
+    {
+        return $this->updateTypeEnum;
+    }
+
+    public function hasUpdateTypeEnum(): bool
+    {
+        return $this->updateTypeEnum !== null;
+    }
+
+    public function pushMiddleware(callable|array|string $handler): self
+    {
+        if (is_array($handler)) {
+            foreach ($handler as $handlerPart) {
+                $this->pushMiddleware($handlerPart);
+            }
+        } elseif (is_string($handler)) {
+            $class = App::make($handler);
+
+            if (! is_object($class) || ! ($class instanceof TelegramMiddlewareInterface)) {
+                throw new RuntimeException("Middleware {$handler} should implement TelegramMiddlewareInterface");
+            }
+
+            $this->middlewares[] = $class;
+        } else {
+            $this->middlewares[] = $handler;
+        }
+
+        return $this;
+    }
+
+    public function unshiftMiddleware(callable|array|string $middleware): self
+    {
+        $oldMiddlewares = $this->getMiddlewares();
+
+        $this->resetMiddlewares();
+
+        $middlewaresToAdd = is_array($middleware) ? $middleware : [$middleware];
+        $this->pushMiddleware([...$middlewaresToAdd, ...$oldMiddlewares]);
+
+        return $this;
+    }
+
+    public function getMiddlewaresReverse(): array
+    {
+        return array_reverse($this->getMiddlewares());
+    }
+
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    public function resetMiddlewares(): self
+    {
+        $this->middlewares = [];
+
+        return $this;
+    }
+
+    public function setName(?string $name): self
+    {
+        if ($name !== null) {
+            if ($this->name !== null) {
+                $this->name = $name.$this->name;
+
+            } else {
+                $this->name = $name;
+            }
+        }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setPattern(?string $pattern): self
+    {
+        if ($pattern !== null) {
+            if ($this->pattern !== null) {
+                $this->pattern = $pattern.$this->pattern;
+
+            } else {
+                $this->pattern = $pattern;
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPattern(): ?string
+    {
+        return $this->pattern;
+    }
+
+    public function hasPattern(): bool
+    {
+        return $this->pattern !== null;
+    }
+
+    public function reset(): self
+    {
+        $this->middlewares = [];
+        $this->name = null;
+        $this->pattern = null;
+
+        return $this;
+    }
+}
