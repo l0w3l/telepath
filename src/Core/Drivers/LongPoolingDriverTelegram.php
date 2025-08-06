@@ -6,7 +6,7 @@ namespace Lowel\Telepath\Core\Drivers;
 
 use Lowel\Telepath\Commands\Exceptions\TelegramAppException;
 use Lowel\Telepath\Core\Drivers\Traits\UpdateHandlerTrait;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Vjik\TelegramBot\Api\FailResult;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 
@@ -29,7 +29,7 @@ final class LongPoolingDriverTelegram implements TelegramAppDriverInterface
         private readonly array $allowedUpdates = [],
     ) {}
 
-    public function proceed(TelegramBotApi $telegramBotApi, TelegramHandlerCollectionInterface $handlersCollection): void
+    public function proceed(TelegramBotApi $telegramBotApi, TelegramRouterResolverInterface $routerResolver): void
     {
         $updates = $telegramBotApi->getUpdates($this->lastUpdateId, $this->limit, $this->timeout, $this->allowedUpdates);
 
@@ -38,7 +38,7 @@ final class LongPoolingDriverTelegram implements TelegramAppDriverInterface
         }
 
         foreach ($updates as $update) {
-            $this->processUpdate($update, $telegramBotApi, $handlersCollection);
+            $this->processUpdate($update, $telegramBotApi, $routerResolver);
 
             $this->lastUpdateId = $update->updateId + 1;
         }

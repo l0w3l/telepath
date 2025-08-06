@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Core\Drivers\LongPoolingDriverTelegram;
 use Lowel\Telepath\Core\Drivers\WebhookDriverTelegram;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -18,7 +18,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
 {
     public function __construct(
         private TelegramBotApi $telegramBotApi,
-        private TelegramHandlerCollectionInterface $handlersCollection,
+        private TelegramRouterResolverInterface $handlersCollection,
     ) {}
 
     public function longPooling(): TelegramAppInterface
@@ -32,7 +32,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
                 allowedUpdates: UpdateTypeEnum::toArray($profile['allowed_updates']),
             ),
             telegramBotApi: $this->telegramBotApi,
-            handlersCollection: $this->handlersCollection,
+            routerResolver: $this->handlersCollection,
         );
     }
 
@@ -43,7 +43,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
         return new TelegramApp(
             driver: new WebhookDriverTelegram($request),
             telegramBotApi: $this->telegramBotApi,
-            handlersCollection: $this->handlersCollection,
+            routerResolver: $this->handlersCollection,
         );
     }
 }

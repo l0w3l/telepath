@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Drivers\Traits;
 
 use Illuminate\Support\Facades\Log;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
@@ -13,29 +13,34 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 
 trait UpdateHandlerTrait
 {
-    protected function processUpdate(Update $update, TelegramBotApi $telegramBotApi, TelegramHandlerCollectionInterface $handlersCollection): void
+    protected function processUpdate(Update $update, TelegramBotApi $telegramBotApi, TelegramRouterResolverInterface $routerResolver): void
     {
         try {
             $types = UpdateTypeEnum::resolve($update);
 
-            $handlers = [];
+            $executors = [];
+
             foreach ($types as $type) {
                 $text = $this->extractText($update, $type);
 
-                $handlers = array_merge($handlers, $handlersCollection->getHandlersBy($type, $text));
+                foreach ($routerResolver->getHandlers() as $executor) {
+                    if ($executor->match($type, $text)) {
+                        $executors[] = $executor;
+                    }
+                }
             }
 
-            if (empty($handlers)) {
+            if (empty($executors)) {
                 throw new TelegramHandlerNotFoundException('Update type not found');
             }
         } catch (TelegramHandlerNotFoundException $e) {
             Log::debug('Telegram Handler not found for update', $update->getRaw(true) ?? [print_r($update, true)]);
 
-            $handlers = $handlersCollection->getFallbacks();
+            $executors = $routerResolver->getFallbacks();
         }
 
-        foreach ($handlers as $handler) {
-            $handler($telegramBotApi, $update);
+        foreach ($executors as $handler) {
+            $handler->proceed($telegramBotApi, $update);
         }
     }
 
