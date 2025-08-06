@@ -81,7 +81,7 @@ final class RouteContextParams
                 throw new RuntimeException("Middleware {$handler} should implement TelegramMiddlewareInterface");
             }
 
-            $this->middlewares[] = $handler;
+            $this->middlewares[] = $class;
         } else {
             $this->middlewares[] = $handler;
         }

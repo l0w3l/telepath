@@ -161,8 +161,12 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
         $context = new RouteContext(
             $this->state->clone()
                 ->setHandler($telegramHandler)
-                ->setUpdateTypeEnum($type)
-                ->setPattern($pattern)
+                /** @phpstan-ignore-next-line  */
+                ->pushMiddleware(method_exists($telegramHandler, 'middlewares') ? $telegramHandler->middlewares() : [])
+                /** @phpstan-ignore-next-line  */
+                ->setUpdateTypeEnum(method_exists($telegramHandler, 'type') ? $telegramHandler->type() : $type)
+                /** @phpstan-ignore-next-line  */
+                ->setPattern(method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : $pattern)
         );
 
         $this->mainGroupContext->appendRouteContext($context);

@@ -8,7 +8,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
-use ReflectionParameter;
 
 trait InvokeAbleTrait
 {
