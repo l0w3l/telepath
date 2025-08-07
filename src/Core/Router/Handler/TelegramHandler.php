@@ -39,8 +39,8 @@ final readonly class TelegramHandler implements TelegramHandlerInterface
         return $this->pattern;
     }
 
-    public function __invoke(TelegramBotApi $telegram, Update $update): void
+    public function __invoke(TelegramBotApi $api, Update $update): void
     {
-        call_user_func($this->callable, $telegram, $update);
+        call_user_func($this->callable, $api, $update);
     }
 }

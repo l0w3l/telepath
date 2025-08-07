@@ -4,159 +4,149 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\App;
+use Lowel\Telepath\Core\Router\Context\GroupContext;
+use Lowel\Telepath\Core\Router\Context\GroupContextInterface;
+use Lowel\Telepath\Core\Router\Context\RouteContext;
+use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
+use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandler;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Lowel\Telepath\Exceptions\Router\SubPathNotFoundException;
-use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
 use RuntimeException;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
-class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRouterInterface
+class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverInterface
 {
-    /**
-     * @var array<value-of<UpdateTypeEnum>, RoutePathInterface>
-     */
-    protected array $handlers = [];
+    protected GroupContextInterface $mainGroupContext;
 
-    protected int $groupStack = 0;
+    protected GroupContextInterface $fallbackGroupContext;
 
-    /**
-     * @var TelegramMiddlewareInterface[]
-     */
-    protected array $middlewareStack = [];
+    protected RouteContextParams $state;
 
-    /**
-     * @var TelegramMiddlewareInterface[]
-     */
-    protected array $groupMiddlewareStack = [];
-
-    /**
-     * @var array<callable(TelegramBotApi, Update): mixed>
-     */
-    protected array $fallbacks = [];
-
-    public function onMessage(string|callable $handler, ?string $pattern = null): void
+    public function __construct()
     {
-        $this->on($handler, UpdateTypeEnum::MESSAGE, $pattern);
+        $this->mainGroupContext = new GroupContext;
+        $this->fallbackGroupContext = new GroupContext;
+        $this->state = new RouteContextParams;
     }
 
-    public function onMessageEdit(string|callable $handler, ?string $pattern = null): void
+    public function onMessage(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::EDITED_MESSAGE, $pattern);
+        return $this->on($handler, UpdateTypeEnum::MESSAGE, $pattern);
     }
 
-    public function onChannelPost(string|callable $handler, ?string $pattern = null): void
+    public function onMessageEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
+        return $this->on($handler, UpdateTypeEnum::EDITED_MESSAGE, $pattern);
     }
 
-    public function onMessageReaction(string|callable $handler): void
+    public function onChannelPost(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION);
+        return $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
     }
 
-    public function onMessageReactionCount(string|callable $handler): void
+    public function onMessageReaction(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION_COUNT);
+        return $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION);
     }
 
-    public function onChannelPostEdit(string|callable $handler, ?string $pattern = null): void
+    public function onMessageReactionCount(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
+        return $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION_COUNT);
     }
 
-    public function onBusinessConnection(string|callable $handler): void
+    public function onChannelPostEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::BUSINESS_CONNECTION);
+        return $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
     }
 
-    public function onBusinessMessage(string|callable $handler, ?string $pattern = null): void
+    public function onBusinessConnection(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::BUSINESS_MESSAGE, $pattern);
+        return $this->on($handler, UpdateTypeEnum::BUSINESS_CONNECTION);
     }
 
-    public function onBusinessMessageEdit(string|callable $handler, ?string $pattern = null): void
+    public function onBusinessMessage(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::EDIT_BUSINESS_MESSAGE, $pattern);
+        return $this->on($handler, UpdateTypeEnum::BUSINESS_MESSAGE, $pattern);
     }
 
-    public function onBusinessMessagesDelete(string|callable $handler): void
+    public function onBusinessMessageEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::DELETE_BUSINESS_MESSAGES);
+        return $this->on($handler, UpdateTypeEnum::EDIT_BUSINESS_MESSAGE, $pattern);
     }
 
-    public function onInlineQueryChosenResult(string|callable $handler, ?string $pattern = null): void
+    public function onBusinessMessagesDelete(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::CHOSEN_INLINE_RESULT, $pattern);
+        return $this->on($handler, UpdateTypeEnum::DELETE_BUSINESS_MESSAGES);
     }
 
-    public function onShippingQuery(string|callable $handler): void
+    public function onInlineQueryChosenResult(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::SHIPPING_QUERY);
+        return $this->on($handler, UpdateTypeEnum::CHOSEN_INLINE_RESULT, $pattern);
     }
 
-    public function onPreCheckoutQuery(string|callable $handler): void
+    public function onShippingQuery(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::PRE_CHECKOUT_QUERY);
+        return $this->on($handler, UpdateTypeEnum::SHIPPING_QUERY);
     }
 
-    public function onPurchasedPaidMedia(string|callable $handler): void
+    public function onPreCheckoutQuery(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::PURCHASED_PAID_MEDIA);
+        return $this->on($handler, UpdateTypeEnum::PRE_CHECKOUT_QUERY);
     }
 
-    public function onPoll(string|callable $handler): void
+    public function onPurchasedPaidMedia(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::POLL);
+        return $this->on($handler, UpdateTypeEnum::PURCHASED_PAID_MEDIA);
     }
 
-    public function onPollAnswer(string|callable $handler): void
+    public function onPoll(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::POLL_ANSWER);
+        return $this->on($handler, UpdateTypeEnum::POLL);
     }
 
-    public function onChatJoinRequest(string|callable $handler): void
+    public function onPollAnswer(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::CHAT_JOIN_REQUEST);
+        return $this->on($handler, UpdateTypeEnum::POLL_ANSWER);
     }
 
-    public function onChatMemberUpdate(string|callable $handler): void
+    public function onChatJoinRequest(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::CHAT_MEMBER);
+        return $this->on($handler, UpdateTypeEnum::CHAT_JOIN_REQUEST);
     }
 
-    public function onChatBoost(string|callable $handler): void
+    public function onChatMemberUpdate(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::CHAT_BOOST);
+        return $this->on($handler, UpdateTypeEnum::CHAT_MEMBER);
     }
 
-    public function onChatBoostRemove(string|callable $handler): void
+    public function onChatBoost(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::REMOVED_CHAT_BOOST);
+        return $this->on($handler, UpdateTypeEnum::CHAT_BOOST);
     }
 
-    public function onMyChatMemberUpdate(string|callable $handler): void
+    public function onChatBoostRemove(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::MY_CHAT_MEMBER);
+        return $this->on($handler, UpdateTypeEnum::REMOVED_CHAT_BOOST);
     }
 
-    public function onCallbackQuery(string|callable $handler, ?string $pattern = null): void
+    public function onMyChatMemberUpdate(string|callable $handler): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::CALLBACK_QUERY, $pattern);
+        return $this->on($handler, UpdateTypeEnum::MY_CHAT_MEMBER);
     }
 
-    public function onInlineQuery(string|callable $handler, ?string $pattern = null): void
+    public function onCallbackQuery(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        $this->on($handler, UpdateTypeEnum::INLINE_QUERY, $pattern);
+        return $this->on($handler, UpdateTypeEnum::CALLBACK_QUERY, $pattern);
     }
 
-    public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): void
+    public function onInlineQuery(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    {
+        return $this->on($handler, UpdateTypeEnum::INLINE_QUERY, $pattern);
+    }
+
+    public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): RouteContextInterface
     {
         if (is_string($handler)) {
             $telegramHandler = App::make($handler);
@@ -168,36 +158,20 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
             $telegramHandler = new TelegramHandler($handler, $pattern);
         }
 
-        $wrappedHandler = $this->bindMiddlewares($telegramHandler);
+        $context = new RouteContext(
+            $this->state->clone()
+                ->setHandler($telegramHandler)
+                /** @phpstan-ignore-next-line  */
+                ->pushMiddleware(method_exists($telegramHandler, 'middlewares') ? $telegramHandler->middlewares() : [])
+                /** @phpstan-ignore-next-line  */
+                ->setUpdateTypeEnum(method_exists($telegramHandler, 'type') ? $telegramHandler->type() : $type)
+                /** @phpstan-ignore-next-line  */
+                ->setPattern(method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : $pattern)
+        );
 
-        $this->setHandler($wrappedHandler, $type);
-    }
+        $this->mainGroupContext->appendRouteContext($context);
 
-    /**
-     * @param  callable|class-string<TelegramMiddlewareInterface>|array<class-string<TelegramMiddlewareInterface>|callable>  $handler
-     * @return $this
-     *
-     * @throws BindingResolutionException
-     */
-    public function middleware(callable|string|array $handler): self
-    {
-        if (is_array($handler)) {
-            foreach ($handler as $handlerPart) {
-                $this->middleware($handlerPart);
-            }
-        } elseif (is_string($handler)) {
-            $class = App::make($handler);
-
-            if (! is_object($class) || ! ($class instanceof TelegramMiddlewareInterface)) {
-                throw new RuntimeException("Middleware {$handler} should implement TelegramMiddlewareInterface");
-            }
-
-            $this->middlewareStack[] = $class;
-        } else {
-            $this->middlewareStack[] = $handler;
-        }
-
-        return $this;
+        return $context;
     }
 
     public function fallback(string|callable $handler): void
@@ -212,81 +186,84 @@ class TelegramRouter implements TelegramHandlerCollectionInterface, TelegramRout
             $telegramHandler = new TelegramHandler($handler);
         }
 
-        $this->fallbacks[] = $telegramHandler;
+        $this->fallbackGroupContext->appendRouteContext(
+            new RouteContext(
+                $this->state->clone()
+                    ->setHandler($telegramHandler)
+                    ->setUpdateTypeEnum(null)
+                    ->setPattern(null)
+            )
+        );
     }
 
-    public function group(callable $callback): void
+    public function group(callable $callback): RouteContextInterface
     {
-        $this->groupStack++;
-        $oldGroupMiddlewareStack = $this->groupMiddlewareStack;
-        $this->groupMiddlewareStack = array_merge($this->groupMiddlewareStack, $this->middlewareStack);
-        $this->middlewareStack = [];
+        $childGroupContext = $this->mainGroupContext->wrap($this->state->clone());
+
+        $this->state->reset();
+
+        $this->mainGroupContext = $childGroupContext;
 
         $callback();
 
-        $this->groupMiddlewareStack = $oldGroupMiddlewareStack;
-        $this->groupStack--;
+        $this->mainGroupContext = $this->mainGroupContext->unwrap();
+
+        $this->mainGroupContext->appendRouteContext($childGroupContext);
+
+        return $childGroupContext;
+    }
+
+    public function type(UpdateTypeEnum $updateTypeEnum): TelegramRouterInterface
+    {
+        $this->state->setUpdateTypeEnum($updateTypeEnum);
+
+        return $this;
+    }
+
+    /**
+     * @param  callable|class-string<TelegramMiddlewareInterface>|array<class-string<TelegramMiddlewareInterface>|callable>  $handler
+     * @return $this
+     */
+    public function middleware(callable|string|array $handler): TelegramRouterInterface
+    {
+        $this->state->pushMiddleware($handler);
+
+        return $this;
+    }
+
+    public function name(string $name): TelegramRouterInterface
+    {
+        $this->state->setName($name);
+
+        return $this;
+    }
+
+    public function pattern(string $pattern): TelegramRouterInterface
+    {
+        $this->state->setPattern($pattern);
+
+        return $this;
+    }
+
+    public function getParams(): RouteContextParams
+    {
+        return $this->state;
+    }
+
+    public function resetState(): self
+    {
+        $this->state->reset();
+
+        return $this;
+    }
+
+    public function getHandlers(): array
+    {
+        return $this->mainGroupContext->collect();
     }
 
     public function getFallbacks(): array
     {
-        return $this->fallbacks;
-    }
-
-    public function getHandlersBy(UpdateTypeEnum $typeEnum, ?string $data = null): array
-    {
-        $routePath = $this->handlers[$typeEnum->value] ?? null;
-
-        if ($routePath === null) {
-            throw new TelegramHandlerNotFoundException("No handlers found for update type: {$typeEnum->value}");
-        }
-
-        return $routePath->matchAll($data);
-    }
-
-    protected function setHandler(TelegramHandlerInterface $handler, UpdateTypeEnum $updateTypeEnum): void
-    {
-        $this->handlers[$updateTypeEnum->value] ??= new RoutePath;
-
-        $this->setHandlerRecursive($handler, $this->handlers[$updateTypeEnum->value], $this->groupStack);
-    }
-
-    private function setHandlerRecursive(TelegramHandlerInterface $handler, RoutePathInterface $routePath, int $depth): void
-    {
-        if ($depth !== 0) {
-
-            try {
-                $lastSubPath = $routePath->lastSubPath();
-            } catch (SubPathNotFoundException $e) {
-                $lastSubPath = new RoutePath;
-
-                $routePath->appendRouePath($lastSubPath);
-            }
-
-            $this->setHandlerRecursive($handler, $lastSubPath, $depth - 1);
-        } else {
-            $routePath->appendHandler($handler);
-        }
-    }
-
-    private function bindMiddlewares(TelegramHandlerInterface $telegramHandler): callable
-    {
-        foreach (array_reverse($this->middlewareStack) as $middleware) {
-            $telegramHandler = new TelegramHandler(
-                fn (TelegramBotApi $telegramBotApi, Update $update) => $middleware($telegramBotApi, $update, fn () => $telegramHandler($telegramBotApi, $update)),
-                method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : null
-            );
-        }
-
-        foreach (array_reverse($this->groupMiddlewareStack) as $middleware) {
-            $telegramHandler = new TelegramHandler(
-                fn (TelegramBotApi $telegramBotApi, Update $update) => $middleware($telegramBotApi, $update, fn () => $telegramHandler($telegramBotApi, $update)),
-                method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : null
-            );
-        }
-
-        $this->middlewareStack = [];
-
-        return $telegramHandler;
+        return $this->fallbackGroupContext->collect();
     }
 }
