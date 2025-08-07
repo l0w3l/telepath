@@ -26,6 +26,8 @@ return [
             'offset' => (int) env('TELEPATH_OFFSET', 0),
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
             'allowed_updates' => explode(',', env('TELEPATH_ALLOWED_UPDATES', '*')),
+            'admins' => explode(',', env('TELEPATH_ADMINS', '')),
+            'banned' => explode(',', env('TELEPATH_BANNED', '')),
         ],
     ],
 ];
