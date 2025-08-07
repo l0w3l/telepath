@@ -11,9 +11,13 @@ use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
+/**
+ * Middleware that stores updates in the telepath_stored_updates table.
+ * It allows the next middleware or handler to be called after storing the update.
+ */
 class StoredUpdatesMiddleware implements TelegramMiddlewareInterface
 {
-    public function __invoke(TelegramBotApi $telegram, Update $update, callable $callback): void
+    public function __invoke(TelegramBotApi $api, Update $update, callable $next): void
     {
         try {
             (new TelepathStoredUpdate([
@@ -27,6 +31,6 @@ class StoredUpdatesMiddleware implements TelegramMiddlewareInterface
             );
         }
 
-        $callback();
+        $next();
     }
 }
