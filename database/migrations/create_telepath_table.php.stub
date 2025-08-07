@@ -8,17 +8,12 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('telepath_stored_updates', function (Blueprint $table) {
+        Schema::create('telepath_table', function (Blueprint $table) {
             $table->id();
 
-            $table->json('instance');
+            // add fields
 
             $table->timestamps();
         });
-    }
-
-    public function down()
-    {
-        Schema::dropIfExists('telepath_stored_updates');
     }
 };
