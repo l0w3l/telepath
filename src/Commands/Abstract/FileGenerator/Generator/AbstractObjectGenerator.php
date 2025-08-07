@@ -51,7 +51,7 @@ abstract class AbstractObjectGenerator implements ObjectGeneratorInterface
         }
 
         try {
-            // implements    $telegramAppFactory->webhook()->start();
+            // implements
 
             $file .= ' implements '.implode(', ', $this->parts[ObjectPartsEnum::IMPLEMENTS->name]);
         } catch (Exception $exception) {
