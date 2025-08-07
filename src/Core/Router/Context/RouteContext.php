@@ -12,8 +12,6 @@ use Lowel\Telepath\Enums\UpdateTypeEnum;
  */
 final readonly class RouteContext implements RouteContextInterface
 {
-    use InvokeAbleTrait;
-
     public function __construct(
         private RouteContextParams $params,
     ) {}
@@ -44,7 +42,7 @@ final readonly class RouteContext implements RouteContextInterface
         return $this;
     }
 
-    public function type(UpdateTypeEnum $updateTypeEnum)
+    public function type(UpdateTypeEnum $updateTypeEnum): RouteContextInterface
     {
         $this->params->setUpdateTypeEnum($updateTypeEnum);
 
