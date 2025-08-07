@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Context;
 
-use Lowel\Telepath\Core\Router\Context\Executor\RouteRouteExecutor;
+use Lowel\Telepath\Core\Router\Context\Executor\RouteExecutor;
 use Lowel\Telepath\Core\Router\Context\Executor\Traits\InvokeAbleTrait;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 
@@ -85,7 +85,7 @@ class GroupContext implements GroupContextInterface
             } else {
                 $contextParams = $context->getParams();
 
-                $executors[] = new RouteRouteExecutor($contextParams);
+                $executors[] = new RouteExecutor($contextParams);
             }
         }
 

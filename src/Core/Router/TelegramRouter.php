@@ -10,7 +10,6 @@ use Lowel\Telepath\Core\Router\Context\GroupContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteContext;
 use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandler;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -149,24 +148,19 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
     public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): RouteContextInterface
     {
         if (is_string($handler)) {
-            $telegramHandler = App::make($handler);
+            $handler = App::make($handler);
 
-            if (! is_object($telegramHandler) || ! ($telegramHandler instanceof TelegramHandlerInterface)) {
+            if (! is_object($handler) || ! ($handler instanceof TelegramHandlerInterface)) {
                 throw new RuntimeException("Handler {$handler} should implement TelegramHandlerInterface");
             }
-        } else {
-            $telegramHandler = new TelegramHandler($handler, $pattern);
         }
 
         $context = new RouteContext(
             $this->state->clone()
-                ->setHandler($telegramHandler)
-                /** @phpstan-ignore-next-line  */
-                ->pushMiddleware(method_exists($telegramHandler, 'middlewares') ? $telegramHandler->middlewares() : [])
-                /** @phpstan-ignore-next-line  */
-                ->setUpdateTypeEnum(method_exists($telegramHandler, 'type') ? $telegramHandler->type() : $type)
-                /** @phpstan-ignore-next-line  */
-                ->setPattern(method_exists($telegramHandler, 'pattern') ? $telegramHandler->pattern() : $pattern)
+                ->setHandler($handler)
+                ->pushMiddleware(method_exists($handler, 'middlewares') ? $handler->middlewares() : [])
+                ->setUpdateTypeEnum(method_exists($handler, 'type') ? $handler->type() : $type)
+                ->setPattern(method_exists($handler, 'pattern') ? $handler->pattern() : $pattern)
         );
 
         $this->mainGroupContext->appendRouteContext($context);
@@ -177,19 +171,17 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
     public function fallback(string|callable $handler): void
     {
         if (is_string($handler)) {
-            $telegramHandler = App::make($handler);
+            $handler = App::make($handler);
 
-            if (! is_object($telegramHandler) || ! ($telegramHandler instanceof TelegramHandlerInterface)) {
+            if (! is_object($handler) || ! ($handler instanceof TelegramHandlerInterface)) {
                 throw new RuntimeException("Handler {$handler} should implement TelegramHandlerInterface");
             }
-        } else {
-            $telegramHandler = new TelegramHandler($handler);
         }
 
         $this->fallbackGroupContext->appendRouteContext(
             new RouteContext(
                 $this->state->clone()
-                    ->setHandler($telegramHandler)
+                    ->setHandler($handler)
                     ->setUpdateTypeEnum(null)
                     ->setPattern(null)
             )

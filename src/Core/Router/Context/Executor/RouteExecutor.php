@@ -13,7 +13,7 @@ use ReflectionException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
-final readonly class RouteRouteExecutor implements RouteExecutorInterface
+final readonly class RouteExecutor implements RouteExecutorInterface
 {
     use InvokeAbleTrait;
 
@@ -51,6 +51,7 @@ final readonly class RouteRouteExecutor implements RouteExecutorInterface
                     'update' => $update,
                     'callable' => $callable,
                     'callback' => $callable,
+                    'next' => $callable,
                 ]
             );
         }
