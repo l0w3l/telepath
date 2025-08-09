@@ -74,41 +74,9 @@ final readonly class ConversationStorage
 
     private function resolveKey(): string
     {
-        // Try to extract chat and user IDs from various update types
-        $chatId = null;
-        $userId = null;
+        $message = $this->update->message ?? throw new \RuntimeException('Unable to resolve chat or user ID from update.');
 
-        if (isset($this->update->message)) {
-            $chatId = $this->update->message->chat->id ?? null;
-            $userId = $this->update->message->from->id ?? null;
-        } elseif (isset($this->update->edited_message)) {
-            $chatId = $this->update->edited_message->chat->id ?? null;
-            $userId = $this->update->edited_message->from->id ?? null;
-        } elseif (isset($this->update->callback_query)) {
-            $chatId = $this->update->callback_query->message->chat->id ?? null;
-            $userId = $this->update->callback_query->from->id ?? null;
-        } elseif (isset($this->update->channel_post)) {
-            $chatId = $this->update->channel_post->chat->id ?? null;
-            $userId = $this->update->channel_post->from->id ?? null;
-        } elseif (isset($this->update->edited_channel_post)) {
-            $chatId = $this->update->edited_channel_post->chat->id ?? null;
-            $userId = $this->update->edited_channel_post->from->id ?? null;
-        } elseif (isset($this->update->my_chat_member)) {
-            $chatId = $this->update->my_chat_member->chat->id ?? null;
-            $userId = $this->update->my_chat_member->from->id ?? null;
-        } elseif (isset($this->update->chat_member)) {
-            $chatId = $this->update->chat_member->chat->id ?? null;
-            $userId = $this->update->chat_member->from->id ?? null;
-        } elseif (isset($this->update->chat_join_request)) {
-            $chatId = $this->update->chat_join_request->chat->id ?? null;
-            $userId = $this->update->chat_join_request->from->id ?? null;
-        }
-
-        if ($chatId === null || $userId === null) {
-            throw new \RuntimeException('Unable to resolve chat or user ID from update.');
-        }
-
-        return "telepath.promises.{$chatId}.{$userId}";
+        return "telepath.promises.{$message->chat->id}.{$message->from->id}";
     }
 
     public function hasActiveConversation(): bool
@@ -132,6 +100,20 @@ final readonly class ConversationStorage
         $this->initialize($conversation);
 
         return $promise;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function pushPromise(TelegramPromiseInterface $promise): self
+    {
+        $conversation = $this->get();
+
+        array_unshift($conversation, $promise);
+
+        $this->initialize($conversation);
+
+        return $this;
     }
 
     /**

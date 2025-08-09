@@ -34,11 +34,15 @@ trait UpdateHandlerTrait
         try {
             try {
                 $shared = $promise->resolve($telegramBotApi, $update, $shared);
+
+                $conversationStorage->storeShared($shared, $promise);
             } catch (Throwable $error) {
-                $shared = $promise->reject($telegramBotApi, $update, $error, $shared);
+                $promise->reject($telegramBotApi, $update, $error, $shared);
+
+                // reset state
+                $conversationStorage->pushPromise($promise);
             }
 
-            $conversationStorage->storeShared($shared, $promise);
         } catch (Throwable $error) {
             Log::error($error->getMessage(), $error->getTrace());
 
