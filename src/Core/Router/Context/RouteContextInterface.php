@@ -8,7 +8,7 @@ use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 
 /**
- * @template T of RouteContextInterface|TelegramRouterInterface
+ * @template T of RouteContextInterface|TelegramRouterInterface|RouteFutureContextInterface
  *
  * @phpstan-import-type MiddlewareHandler from TelegramRouterInterface
  */

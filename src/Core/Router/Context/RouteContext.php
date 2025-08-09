@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Context;
 
-use Lowel\Telepath\Core\Router\Context\Executor\Traits\InvokeAbleTrait;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 
 /**
  * @implements RouteContextInterface<RouteContextInterface>
  */
-final readonly class RouteContext implements RouteContextInterface
+readonly class RouteContext implements RouteContextInterface
 {
     public function __construct(
-        private RouteContextParams $params,
+        protected RouteContextParams $params,
     ) {}
 
     public function getParams(): RouteContextParams

@@ -13,6 +13,11 @@ return [
 
     'token' => env('TELEPATH_TOKEN'),
     'base_uri' => env('TELEPATH_BASE_URL', 'https://api.telegram.org'),
+    'conversation' => [
+        'storage' => env('TELEPATH_CONVERSATION_STORAGE', 'file'),
+        'enabled' => (bool) env('TELEPATH_CONVERSATION', true),
+        'ttl' => (int) env('TELEPATH_CONVERSATION_TIMEOUT', 60),
+    ],
 
     /*
      * Routes path

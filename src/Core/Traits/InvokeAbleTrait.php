@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Core\Router\Context\Executor\Traits;
+namespace Lowel\Telepath\Core\Traits;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use ReflectionException;
@@ -26,13 +26,15 @@ trait InvokeAbleTrait
             $name = $parameter->getName();
             $type = $parameter->getType();
 
+            $value = null;
+
             if (array_key_exists($name, $args)) {
-                $instances[] = $args[$name];
+                $value = $args[$name];
             } elseif ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
-                $instances[] = $app->make($type->getName(), $args);
-            } else {
-                $instances[] = null;
+                $value = $app->make($type->getName(), $args);
             }
+
+            $instances[] = $value;
         }
 
         return $reflectionMethod->invokeArgs($class, $instances);
