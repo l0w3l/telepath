@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Context\Executor;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Str;
-use Lowel\Telepath\Core\Router\Context\Executor\Traits\InvokeAbleTrait;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
+use Lowel\Telepath\Core\Router\Conversation\ConversationStorageFactory;
+use Lowel\Telepath\Core\Traits\InvokeAbleTrait;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use ReflectionException;
+use Psr\SimpleCache\InvalidArgumentException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -18,7 +18,7 @@ final readonly class RouteExecutor implements RouteExecutorInterface
     use InvokeAbleTrait;
 
     public function __construct(
-        public RouteContextParams $params
+        public RouteContextParams $params,
     ) {}
 
     public function affect(RouteContextParams $params): self
@@ -33,30 +33,15 @@ final readonly class RouteExecutor implements RouteExecutorInterface
     }
 
     /**
-     * @throws BindingResolutionException
-     * @throws ReflectionException
+     * @throws InvalidArgumentException
      */
-    public function proceed(TelegramBotApi $telegramBotApi, Update $update): void
+    public function proceed(TelegramBotApi $api, Update $update): void
     {
-        $callable = fn () => $this->invokeStaticClassWithArgs($this->params->getHandler(), [
-            'telegramBotApi' => $telegramBotApi,
-            'update' => $update,
-        ]);
+        $proceedResult = $this->resolve($api, $update);
 
-        foreach ($this->params->getMiddlewaresReverse() as $middleware) {
-            $callable = fn () => $this->invokeStaticClassWithArgs(
-                $middleware,
-                [
-                    'telegramBotApi' => $telegramBotApi,
-                    'update' => $update,
-                    'callable' => $callable,
-                    'callback' => $callable,
-                    'next' => $callable,
-                ]
-            );
+        if ($update->message && $this->params->hasConversation()) {
+            $this->initializeConversation($update, $proceedResult);
         }
-
-        $callable();
     }
 
     public function match(UpdateTypeEnum $updateTypeEnum, ?string $text = null): bool
@@ -74,5 +59,42 @@ final readonly class RouteExecutor implements RouteExecutorInterface
                 return true;
             }
         }
+    }
+
+    protected function resolve(TelegramBotApi $api, Update $update)
+    {
+        $callable = fn () => $this->invokeStaticClassWithArgs($this->params->getHandler(), [
+            'telegramBotApi' => $api,
+            'update' => $update,
+        ]);
+
+        foreach ($this->params->getMiddlewaresReverse() as $middleware) {
+            $callable = fn () => $this->invokeStaticClassWithArgs(
+                $middleware,
+                [
+                    'api' => $api,
+                    'update' => $update,
+                    'callable' => $callable,
+                    'callback' => $callable,
+                    'next' => $callable,
+                ]
+            );
+        }
+
+        return $callable();
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    private function initializeConversation(Update $update, mixed $proceedResult): void
+    {
+        $conversation = $this->params->getConversation();
+        $conversationStorageFactory = new ConversationStorageFactory;
+
+        $conversationStorageFactory->create($update)
+            ->initialize($conversation)
+            ->storeShared($proceedResult, $conversation[0]);
+
     }
 }

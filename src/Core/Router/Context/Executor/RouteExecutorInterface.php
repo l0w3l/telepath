@@ -18,7 +18,7 @@ interface RouteExecutorInterface
 {
     public function affect(RouteContextParams $params): self;
 
-    public function proceed(TelegramBotApi $telegramBotApi, Update $update): void;
+    public function proceed(TelegramBotApi $api, Update $update): void;
 
     public function match(UpdateTypeEnum $updateTypeEnum, ?string $text = null): bool;
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Drivers\Traits;
 
 use Illuminate\Support\Facades\Log;
+use Lowel\Telepath\Core\Router\Conversation\ConversationStorage;
+use Lowel\Telepath\Core\Router\Conversation\ConversationStorageFactory;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
+use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -15,25 +17,55 @@ trait UpdateHandlerTrait
 {
     protected function processUpdate(Update $update, TelegramBotApi $telegramBotApi, TelegramRouterResolverInterface $routerResolver): void
     {
+        $conversationStorage = (new ConversationStorageFactory)->create($update);
+
+        if ($update->message && $conversationStorage->hasActiveConversation()) {
+            $this->resolveConversation($conversationStorage, $telegramBotApi, $update);
+        } else {
+            $this->resolveUpdate($update, $routerResolver, $telegramBotApi);
+        }
+    }
+
+    public function resolveConversation(ConversationStorage $conversationStorage, TelegramBotApi $telegramBotApi, Update $update): void
+    {
+        $promise = $conversationStorage->popPromise();
+        $shared = $conversationStorage->getShared();
+
         try {
-            $types = UpdateTypeEnum::resolve($update);
+            try {
+                $shared = $promise->resolve($telegramBotApi, $update, $shared);
 
-            $executors = [];
+                $conversationStorage->storeShared($shared, $promise);
+            } catch (Throwable $error) {
+                $promise->reject($telegramBotApi, $update, $error, $shared);
 
-            foreach ($types as $type) {
-                $text = $this->extractText($update, $type);
+                // reset state
+                $conversationStorage->pushPromise($promise);
+            }
 
-                foreach ($routerResolver->getHandlers() as $executor) {
-                    if ($executor->match($type, $text)) {
-                        $executors[] = $executor;
-                    }
+        } catch (Throwable $error) {
+            Log::error($error->getMessage(), $error->getTrace());
+
+            $conversationStorage->delete();
+        }
+    }
+
+    public function resolveUpdate(Update $update, TelegramRouterResolverInterface $routerResolver, TelegramBotApi $telegramBotApi): void
+    {
+        $types = UpdateTypeEnum::resolve($update);
+        $executors = [];
+
+        foreach ($types as $type) {
+            $text = $this->extractText($update, $type);
+
+            foreach ($routerResolver->getHandlers() as $executor) {
+                if ($executor->match($type, $text)) {
+                    $executors[] = $executor;
                 }
             }
+        }
 
-            if (empty($executors)) {
-                throw new TelegramHandlerNotFoundException('Update type not found');
-            }
-        } catch (TelegramHandlerNotFoundException $e) {
+        if (empty($executors)) {
             Log::debug('Telegram Handler not found for update', $update->getRaw(true) ?? [print_r($update, true)]);
 
             $executors = $routerResolver->getFallbacks();

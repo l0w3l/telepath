@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router;
 
 use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
+use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -27,7 +28,7 @@ interface TelegramRouterInterface extends RouteContextInterface
      *
      * @link https://core.telegram.org/bots/api#message
      */
-    public function onMessage(string|callable $handler, ?string $pattern = null): RouteContextInterface;
+    public function onMessage(string|callable $handler, ?string $pattern = null): RouteFutureContextInterface;
 
     /**
      * Registers a handler for the 'edited_message' update type.

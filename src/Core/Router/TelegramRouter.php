@@ -10,6 +10,8 @@ use Lowel\Telepath\Core\Router\Context\GroupContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteContext;
 use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
+use Lowel\Telepath\Core\Router\Context\RouteFutureContext;
+use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -30,9 +32,11 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
         $this->state = new RouteContextParams;
     }
 
-    public function onMessage(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onMessage(string|callable $handler, ?string $pattern = null): RouteFutureContextInterface
     {
-        return $this->on($handler, UpdateTypeEnum::MESSAGE, $pattern);
+        return RouteFutureContext::from(
+            $this->on($handler, UpdateTypeEnum::MESSAGE, $pattern)
+        );
     }
 
     public function onMessageEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface

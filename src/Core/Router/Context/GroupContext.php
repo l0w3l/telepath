@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Context;
 
 use Lowel\Telepath\Core\Router\Context\Executor\RouteExecutor;
-use Lowel\Telepath\Core\Router\Context\Executor\Traits\InvokeAbleTrait;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 
 /**
  * GroupContext is a context for grouping multiple route contexts together.
  */
-class GroupContext implements GroupContextInterface
+final class GroupContext implements GroupContextInterface
 {
-    use InvokeAbleTrait;
-
     /**
      * @var array<RouteContextInterface|GroupContextInterface>
      */
