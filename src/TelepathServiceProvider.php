@@ -8,6 +8,9 @@ use Lowel\Telepath\Commands\Hook\SetCommand;
 use Lowel\Telepath\Commands\MakeHandlerCommand;
 use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContext;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInitializerInterface;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
@@ -74,6 +77,14 @@ class TelepathServiceProvider extends PackageServiceProvider
                 $app->make(TelegramBotApi::class),
                 $app->make(TelegramRouterResolverInterface::class)
             );
+        });
+
+        $this->app->singleton(GlobalAppContextInitializerInterface::class, function ($app) {
+            return $app->make(GlobalAppContext::class);
+        });
+
+        $this->app->bind(GlobalAppContextInterface::class, function ($app) {
+            return $app->make(GlobalAppContextInitializerInterface::class);
         });
 
         $this->loadRoutes();
