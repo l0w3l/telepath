@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Core\Drivers\Traits;
+namespace Lowel\Telepath\Core\Traits;
 
 use Illuminate\Support\Facades\Log;
 use Lowel\Telepath\Core\Router\Conversation\ConversationStorage;
@@ -15,29 +15,33 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 
 trait UpdateHandlerTrait
 {
-    protected function processUpdate(Update $update, TelegramBotApi $telegramBotApi, TelegramRouterResolverInterface $routerResolver): void
+    public readonly TelegramBotApi $telegramBotApi;
+
+    public readonly TelegramRouterResolverInterface $routerResolver;
+
+    protected function handleUpdate(Update $update): void
     {
         $conversationStorage = (new ConversationStorageFactory)->create($update);
 
         if ($update->message && $conversationStorage->hasActiveConversation()) {
-            $this->resolveConversation($conversationStorage, $telegramBotApi, $update);
+            $this->resolveConversation($conversationStorage, $update);
         } else {
-            $this->resolveUpdate($update, $routerResolver, $telegramBotApi);
+            $this->resolveUpdate($update);
         }
     }
 
-    public function resolveConversation(ConversationStorage $conversationStorage, TelegramBotApi $telegramBotApi, Update $update): void
+    private function resolveConversation(ConversationStorage $conversationStorage, Update $update): void
     {
         $promise = $conversationStorage->popPromise();
         $shared = $conversationStorage->getShared();
 
         try {
             try {
-                $shared = $promise->resolve($telegramBotApi, $update, $shared);
+                $shared = $promise->resolve($this->telegramBotApi, $update, $shared);
 
                 $conversationStorage->storeShared($shared, $promise);
             } catch (Throwable $error) {
-                $promise->reject($telegramBotApi, $update, $error, $shared);
+                $promise->reject($this->telegramBotApi, $update, $error, $shared);
 
                 // reset state
                 $conversationStorage->pushPromise($promise);
@@ -50,7 +54,7 @@ trait UpdateHandlerTrait
         }
     }
 
-    public function resolveUpdate(Update $update, TelegramRouterResolverInterface $routerResolver, TelegramBotApi $telegramBotApi): void
+    private function resolveUpdate(Update $update): void
     {
         $types = UpdateTypeEnum::resolve($update);
         $executors = [];
@@ -58,7 +62,7 @@ trait UpdateHandlerTrait
         foreach ($types as $type) {
             $text = $this->extractText($update, $type);
 
-            foreach ($routerResolver->getHandlers() as $executor) {
+            foreach ($this->routerResolver->getHandlers() as $executor) {
                 if ($executor->match($type, $text)) {
                     $executors[] = $executor;
                 }
@@ -68,15 +72,15 @@ trait UpdateHandlerTrait
         if (empty($executors)) {
             Log::debug('Telegram Handler not found for update', $update->getRaw(true) ?? [print_r($update, true)]);
 
-            $executors = $routerResolver->getFallbacks();
+            $executors = $this->routerResolver->getFallbacks();
         }
 
         foreach ($executors as $handler) {
-            $handler->proceed($telegramBotApi, $update);
+            $handler->proceed($this->telegramBotApi, $update);
         }
     }
 
-    protected function extractText(Update $update, UpdateTypeEnum $type): ?string
+    private function extractText(Update $update, UpdateTypeEnum $type): ?string
     {
         return match ($type) {
             UpdateTypeEnum::MESSAGE => $update->message->text,
