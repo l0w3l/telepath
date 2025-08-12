@@ -30,8 +30,8 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
         config()->set('telepath', require __DIR__.'/../config/telepath.php');
 
-         foreach (File::allFiles(__DIR__ . '/../database/migrations') as $migration) {
+        foreach (File::allFiles(__DIR__.'/../database/migrations') as $migration) {
             (include $migration->getRealPath())->up();
-         }
+        }
     }
 }

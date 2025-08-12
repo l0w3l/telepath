@@ -7,7 +7,6 @@ use Lowel\Telepath\Models\TelepathStoredUpdate;
 use Lowel\Telepath\TelegramAppFactoryInterface;
 use Mockery\MockInterface;
 
-
 beforeEach(function () {
 
     $this->artisan('migrate:fresh')->run();
