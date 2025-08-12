@@ -8,9 +8,12 @@ use Lowel\Telepath\Commands\Hook\SetCommand;
 use Lowel\Telepath\Commands\MakeHandlerCommand;
 use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContext;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInitializerInterface;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -28,6 +31,9 @@ class TelepathServiceProvider extends PackageServiceProvider
         $package
             ->name('telepath')
             ->hasConfigFile()
+            ->hasMigrations([
+                'create_telepath_stored_updates_table',
+            ])
             ->hasRoute('telegram')
             ->hasCommands([
                 RunCommand::class,
@@ -54,19 +60,31 @@ class TelepathServiceProvider extends PackageServiceProvider
                 logger: logger());
         });
 
+        $this->app->singleton(TelegramRouterInterface::class, function ($app) {
+            return $app->make(TelegramRouter::class);
+        });
+
+        $this->app->resolving(TelegramRouterInterface::class, function (TelegramRouter $telegramRouter) {
+            return $telegramRouter->resetState();
+        });
+
+        $this->app->singleton(TelegramRouterResolverInterface::class, function ($app) {
+            return $app->make(TelegramRouterInterface::class);
+        });
+
         $this->app->bind(TelegramAppFactoryInterface::class, function ($app) {
             return new TelegramAppFactory(
                 $app->make(TelegramBotApi::class),
-                $app->make(TelegramHandlerCollectionInterface::class)
+                $app->make(TelegramRouterResolverInterface::class)
             );
         });
 
-        $this->app->singleton(TelegramRouterInterface::class, function ($app) {
-            return new TelegramRouter;
+        $this->app->singleton(GlobalAppContextInitializerInterface::class, function ($app) {
+            return $app->make(GlobalAppContext::class);
         });
 
-        $this->app->singleton(TelegramHandlerCollectionInterface::class, function ($app) {
-            return $app->make(TelegramRouterInterface::class);
+        $this->app->bind(GlobalAppContextInterface::class, function ($app) {
+            return $app->make(GlobalAppContextInitializerInterface::class);
         });
 
         $this->loadRoutes();

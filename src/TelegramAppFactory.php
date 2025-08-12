@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Core\Drivers\LongPoolingDriverTelegram;
 use Lowel\Telepath\Core\Drivers\WebhookDriverTelegram;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerCollectionInterface;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInitializerInterface;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -18,7 +19,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
 {
     public function __construct(
         private TelegramBotApi $telegramBotApi,
-        private TelegramHandlerCollectionInterface $handlersCollection,
+        private TelegramRouterResolverInterface $handlersCollection,
     ) {}
 
     public function longPooling(): TelegramAppInterface
@@ -26,13 +27,14 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
         $profile = config('telepath.profiles')[config('telepath.profile', 'default')];
 
         return new TelegramApp(
+            telegramBotApi: $this->telegramBotApi,
             driver: new LongPoolingDriverTelegram(
                 timeout: $profile['timeout'] ?? 30,
                 limit: $profile['limit'] ?? 100,
                 allowedUpdates: UpdateTypeEnum::toArray($profile['allowed_updates']),
             ),
-            telegramBotApi: $this->telegramBotApi,
-            handlersCollection: $this->handlersCollection,
+            routerResolver: $this->handlersCollection,
+            appContextInitializer: App::make(GlobalAppContextInitializerInterface::class)
         );
     }
 
@@ -41,9 +43,10 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
         $request = App::make(Request::class);
 
         return new TelegramApp(
-            driver: new WebhookDriverTelegram($request),
             telegramBotApi: $this->telegramBotApi,
-            handlersCollection: $this->handlersCollection,
+            driver: new WebhookDriverTelegram($request),
+            routerResolver: $this->handlersCollection,
+            appContextInitializer: App::make(GlobalAppContextInitializerInterface::class)
         );
     }
 }

@@ -3,6 +3,7 @@
 namespace Lowel\Telepath\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\File;
 use Lowel\Telepath\TelepathServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -29,10 +30,8 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
         config()->set('telepath', require __DIR__.'/../config/telepath.php');
 
-        /*
-         foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/database/migrations') as $migration) {
+        foreach (File::allFiles(__DIR__.'/../database/migrations') as $migration) {
             (include $migration->getRealPath())->up();
-         }
-         */
+        }
     }
 }
