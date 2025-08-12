@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Enums;
 
-use Vjik\TelegramBot\Api\Type\Message;
+use Vjik\TelegramBot\Api\Type\Chat;
 
 enum ChatTypesEnum: string
 {
@@ -13,23 +13,23 @@ enum ChatTypesEnum: string
     case SUPERGROUP = 'supergroup';
     case CHANNEL = 'channel';
 
-    public static function isPrivate(Message $message): bool
+    public static function isPrivate(Chat $chat): bool
     {
-        return $message->chat->type === self::PRIVATE->value;
+        return $chat->type === self::PRIVATE->value;
     }
 
-    public static function isGroup(Message $message): bool
+    public static function isGroup(Chat $chat): bool
     {
-        return $message->chat->type === self::GROUP->value;
+        return $chat->type === self::GROUP->value;
     }
 
-    public static function isSupergroup(Message $message): bool
+    public static function isSupergroup(Chat $chat): bool
     {
-        return $message->chat->type === self::SUPERGROUP->value;
+        return $chat->type === self::SUPERGROUP->value;
     }
 
-    public static function isChannel(Message $message): bool
+    public static function isChannel(Chat $chat): bool
     {
-        return $message->chat->type === self::CHANNEL->value;
+        return $chat->type === self::CHANNEL->value;
     }
 }

@@ -6,6 +6,9 @@ namespace Lowel\Telepath\Middlewares\Messages\Type;
 
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\ChatTypesEnum;
+use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
+use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
+use Lowel\Telepath\Facades\Extrasense;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -17,10 +20,14 @@ final readonly class ChannelExcludeChatMiddleware implements TelegramMiddlewareI
 {
     public function __invoke(TelegramBotApi $api, Update $update, callable $next): void
     {
-        $message = $update->message;
+        try {
+            $chat = Extrasense::chat();
 
-        if ($message && ! ChatTypesEnum::isChannel($message)) {
-            $next();
+            if (! ChatTypesEnum::isChannel($chat)) {
+                $next();
+            }
+        } catch (UpdateNotFoundInCurrentContextException|ChatNotFoundInCurrentContextException $e) {
+
         }
     }
 }
