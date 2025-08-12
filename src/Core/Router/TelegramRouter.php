@@ -169,6 +169,8 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
         $this->mainGroupContext->appendRouteContext($context);
 
+        $this->resetState();
+
         return $context;
     }
 

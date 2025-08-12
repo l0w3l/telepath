@@ -180,9 +180,12 @@ final class RouteContextParams
 
     public function reset(): self
     {
+        $this->handler = null;
+        $this->updateTypeEnum = null;
         $this->middlewares = [];
         $this->name = null;
         $this->pattern = null;
+        $this->conversation = [];
 
         return $this;
     }
