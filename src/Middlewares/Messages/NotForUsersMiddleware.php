@@ -20,7 +20,7 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
  *
  * @see OnlyForUsersMiddleware
  */
-final readonly class NotForUsersMiddleware implements TelegramMiddlewareInterface
+final class NotForUsersMiddleware implements TelegramMiddlewareInterface
 {
     use AllowedExcludeIdsTrait;
 
