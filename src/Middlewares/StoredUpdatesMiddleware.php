@@ -26,7 +26,7 @@ class StoredUpdatesMiddleware implements TelegramMiddlewareInterface
         } catch (Throwable $exception) {
             throw new StoredUpdatesTableNotFoundException(
                 'telepath_stored_updates table not found! Please use php artisan vendor:publish --tag=telepath-migrations && php artisan migrate',
-                $exception->getCode(),
+                (int)$exception->getCode(),
                 $exception
             );
         }

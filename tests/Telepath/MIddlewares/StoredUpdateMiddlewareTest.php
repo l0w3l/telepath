@@ -7,11 +7,10 @@ use Lowel\Telepath\Models\TelepathStoredUpdate;
 use Lowel\Telepath\TelegramAppFactoryInterface;
 use Mockery\MockInterface;
 
+
 beforeEach(function () {
-    $this->artisan('vendor:publish', [
-        '--tag' => 'telepath-migrations',
-    ]);
-    $this->artisan('migrate:fresh');
+
+    $this->artisan('migrate:fresh')->run();
 
     Telepath::middleware(StoredUpdatesMiddleware::class)
         ->group(function () {
