@@ -18,7 +18,7 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
  * Middleware to allow processing messages only from specific users.
  * If the message is from a user not in the allowed list, it will not be processed.
  */
-final readonly class OnlyForUsersMiddleware implements TelegramMiddlewareInterface
+final class OnlyForUsersMiddleware implements TelegramMiddlewareInterface
 {
     use AllowedExcludeIdsTrait;
 
