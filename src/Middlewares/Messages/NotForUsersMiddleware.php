@@ -31,7 +31,7 @@ final class NotForUsersMiddleware implements TelegramMiddlewareInterface
         null|Closure|array $excludeUsers = null
     ) {
         $this->allowedUserIds = null;
-        $this->excludeUserIds = $excludeUsers ?? config('telepath.profiles')[config('telepath.profile')]['allowed'];
+        $this->excludeUserIds = $excludeUsers ?? config('telepath.profiles')[config('telepath.profile')]['banned'];
     }
 
     public function __invoke(TelegramBotApi $api, Update $update, callable $next): void

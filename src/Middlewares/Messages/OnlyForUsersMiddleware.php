@@ -28,8 +28,8 @@ final class OnlyForUsersMiddleware implements TelegramMiddlewareInterface
     public function __construct(
         null|Closure|array $allowedUserIds = null
     ) {
+        $this->allowedUserIds = $allowedUserIds ?? config('telepath.profiles')[config('telepath.profile')]['admins'];
         $this->excludeUserIds = null;
-        $this->allowedUserIds = $allowedUserIds ?? config('telepath.profiles')[config('telepath.profile')]['banned'];
     }
 
     public function __invoke(TelegramBotApi $api, Update $update, callable $next): void
@@ -37,7 +37,7 @@ final class OnlyForUsersMiddleware implements TelegramMiddlewareInterface
         try {
             $user = Extrasense::user();
 
-            if (in_array($user->id, $this->getAllowedIds(config('telepath.profiles')[config('telepath.profile')]['banned']))) {
+            if (in_array($user->id, $this->getAllowedIds())) {
                 $next();
             } else {
                 Log::debug("User {$user->username} ({$user->id}) was rejected", ['update' => $update]);
