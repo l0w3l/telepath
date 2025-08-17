@@ -2,6 +2,15 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.3.3 - 2025-08-17
+
+### What's Changed
+
+* refactor: middlewares logics + some DI helpers by @l0w3l in https://github.com/l0w3l/telepath/pull/21
+* update version by @l0w3l in https://github.com/l0w3l/telepath/pull/22
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.3.2...0.3.3
+
 ## 0.3.2 - 2025-08-12
 
 ### What's Changed
