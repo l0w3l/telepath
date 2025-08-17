@@ -14,10 +14,15 @@ use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
+use Lowel\Telepath\Facades\Extrasense;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Vjik\TelegramBot\Api\TelegramBotApi;
+use Vjik\TelegramBot\Api\Type\Chat;
+use Vjik\TelegramBot\Api\Type\Message;
+use Vjik\TelegramBot\Api\Type\Update\Update;
+use Vjik\TelegramBot\Api\Type\User;
 
 class TelepathServiceProvider extends PackageServiceProvider
 {
@@ -87,6 +92,8 @@ class TelepathServiceProvider extends PackageServiceProvider
             return $app->make(GlobalAppContextInitializerInterface::class);
         });
 
+        $this->bindExtrasense();
+
         $this->loadRoutes();
     }
 
@@ -110,5 +117,16 @@ class TelepathServiceProvider extends PackageServiceProvider
                 require_once config('telepath.routes');
             })();
         }
+    }
+
+    private function bindExtrasense(): void
+    {
+        $this->app->bind(Chat::class, fn () => Extrasense::chat());
+
+        $this->app->bind(Message::class, fn () => Extrasense::message());
+
+        $this->app->bind(User::class, fn () => Extrasense::user());
+
+        $this->app->bind(Update::class, fn () => Extrasense::update());
     }
 }
