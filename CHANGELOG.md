@@ -2,6 +2,14 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.3.4 - 2025-08-18
+
+### What's Changed
+
+* Hotfix\0.3.4 by @l0w3l in https://github.com/l0w3l/telepath/pull/23
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.3.3...0.3.4
+
 ## 0.3.3 - 2025-08-17
 
 ### What's Changed
