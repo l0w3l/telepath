@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Drivers;
 
 use Generator;
-use Lowel\Telepath\Commands\Exceptions\TelegramAppException;
+use Illuminate\Support\Facades\Log;
+use Lowel\Telepath\Exceptions\TelegramAppException;
 use Vjik\TelegramBot\Api\FailResult;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 
@@ -31,6 +32,8 @@ final class LongPoolingDriverTelegram implements TelegramAppDriverInterface
         $updates = $telegramBotApi->getUpdates($this->lastUpdateId, $this->limit, $this->timeout, $this->allowedUpdates);
 
         if ($updates instanceof FailResult) {
+            Log::error('Failed to retrieve updates', ['update' => $updates]);
+
             throw new TelegramAppException('Failed to retrieve updates: '.$updates->response->body);
         }
 

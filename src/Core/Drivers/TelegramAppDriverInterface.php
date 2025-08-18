@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Drivers;
 
 use Generator;
-use Lowel\Telepath\Commands\Exceptions\TelegramAppException;
+use Lowel\Telepath\Exceptions\TelegramAppException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 
 interface TelegramAppDriverInterface
