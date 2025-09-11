@@ -6,9 +6,9 @@ namespace Lowel\Telepath;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Lowel\Telepath\Core\Components\ComponentsBundle;
 use Lowel\Telepath\Core\Drivers\LongPoolingDriverTelegram;
 use Lowel\Telepath\Core\Drivers\WebhookDriverTelegram;
-use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInitializerInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
@@ -34,7 +34,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
                 allowedUpdates: UpdateTypeEnum::toArray($profile['allowed_updates']),
             ),
             routerResolver: $this->handlersCollection,
-            appContextInitializer: App::make(GlobalAppContextInitializerInterface::class)
+            componentsBundle: App::make(ComponentsBundle::class)
         );
     }
 
@@ -46,7 +46,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
             telegramBotApi: $this->telegramBotApi,
             driver: new WebhookDriverTelegram($request),
             routerResolver: $this->handlersCollection,
-            appContextInitializer: App::make(GlobalAppContextInitializerInterface::class)
+            componentsBundle: App::make(ComponentsBundle::class)
         );
     }
 }

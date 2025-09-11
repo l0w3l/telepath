@@ -48,9 +48,9 @@ trait UpdateHandlerTrait
             }
 
         } catch (Throwable $error) {
-            Log::error($error->getMessage(), $error->getTrace());
-
             $conversationStorage->delete();
+
+            throw $error;
         }
     }
 
