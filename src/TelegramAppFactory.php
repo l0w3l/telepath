@@ -12,7 +12,7 @@ use Lowel\Telepath\Core\Drivers\WebhookDriverTelegram;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
-use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Facades\Extrasense;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 
 final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
@@ -24,14 +24,14 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
 
     public function longPooling(): TelegramAppInterface
     {
-        $profile = config('telepath.profiles')[config('telepath.profile', 'default')];
+        $profile = Extrasense::profile();
 
         return new TelegramApp(
             telegramBotApi: $this->telegramBotApi,
             driver: new LongPoolingDriverTelegram(
-                timeout: $profile['timeout'] ?? 30,
-                limit: $profile['limit'] ?? 100,
-                allowedUpdates: UpdateTypeEnum::toArray($profile['allowed_updates']),
+                timeout: $profile->timeout,
+                limit: $profile->limit,
+                allowedUpdates: $profile->allowedUpdates,
             ),
             routerResolver: $this->handlersCollection,
             componentsBundle: App::make(ComponentsBundle::class)

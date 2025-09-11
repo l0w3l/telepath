@@ -29,11 +29,12 @@ return [
     'profiles' => [
         'default' => [
             'offset' => (int) env('TELEPATH_OFFSET', 0),
+            'limit' => (int) env('TELEPATH_LIMIT', 100),
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
             'allowed_updates' => explode(',', env('TELEPATH_ALLOWED_UPDATES', '*')),
 
-            'admins' => explode(',', env('TELEPATH_ADMINS', '')),
-            'banned' => explode(',', env('TELEPATH_BANNED', '')),
+            'whitelist' => explode(',', env('TELEPATH_ADMINS', '')),
+            'blacklist' => explode(',', env('TELEPATH_BANNED', '')),
         ],
     ],
 ];

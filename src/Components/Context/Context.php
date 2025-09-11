@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Components\Context;
 
 use Illuminate\Contracts\Foundation\Application;
+use Lowel\Telepath\Config\Profile;
 use Lowel\Telepath\Core\Components\AbstractComponent;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
+use Lowel\Telepath\Exceptions\Config\TelepathProfileNotFoundException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UserNotFoundInCurrentContextException;
@@ -108,5 +110,14 @@ class Context extends AbstractComponent implements ContextInterface
                 ?? $update->removedChatBoost->chat
                 ?? throw new ChatNotFoundInCurrentContextException('Chat not found in current context');
         }
+    }
+
+    public function profile(?string $profileKey = null): Profile
+    {
+        $profileKey ??= config('telepath.profile');
+
+        return Profile::fromArray(
+            config('telepath.profiles')[$profileKey] ?? throw new TelepathProfileNotFoundException($profileKey)
+        );
     }
 }
