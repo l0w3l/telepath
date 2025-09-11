@@ -6,7 +6,6 @@ namespace Lowel\Telepath\Components\ExceptionHandler;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Log;
 use Lowel\Telepath\Core\Components\AbstractComponent;
 use Lowel\Telepath\Core\Traits\InvokeAbleTrait;
 use Throwable;
