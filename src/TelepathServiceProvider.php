@@ -16,10 +16,17 @@ use Lowel\Telepath\Core\Components\ComponentsBundle;
 use Lowel\Telepath\Core\Router\TelegramRouter;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
+use Lowel\Telepath\Facades\Extrasense;
+use Lowel\Telepath\Facades\Paranormal;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\HtmlDumper;
+use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
+use Vjik\TelegramBot\Api\Type\InputFile;
+use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class TelepathServiceProvider extends PackageServiceProvider
 {
@@ -66,6 +73,10 @@ class TelepathServiceProvider extends PackageServiceProvider
         $this->bindComponents();
 
         $this->bindApp();
+
+        if (Extrasense::profile()->chatIdFallback !== null) {
+            $this->addReportFallbackInTheChat();
+        }
     }
 
     /**
@@ -140,5 +151,25 @@ class TelepathServiceProvider extends PackageServiceProvider
                 require_once config('telepath.routes');
             })();
         }
+    }
+
+    private function addReportFallbackInTheChat(): void
+    {
+        Paranormal::wrap(function (Throwable $e, Update $update, TelegramBotApi $api) {
+            $cloner = new VarCloner;
+            $dumper = new HtmlDumper;
+
+            $stream = fopen('php://memory', 'r+');
+
+            fwrite($stream, $dumper->dump($cloner->cloneVar($update), true));
+            fwrite($stream, $dumper->dump($cloner->cloneVar($e), true));
+            fwrite($stream, $dumper->dump($cloner->cloneVar(config('telepath')), true));
+
+            rewind($stream);
+
+            $api->sendDocument(Extrasense::profile()->chatIdFallback, new InputFile($stream, 'report_'.now()->format('Y-m-d_H-i-s').'.html'), caption: 'Report by '.now()->toString()."\n\nMessage: {$e->getMessage()}");
+
+            fclose($stream);
+        });
     }
 }

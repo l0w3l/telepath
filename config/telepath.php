@@ -26,6 +26,9 @@ return [
 
     'profile' => 'default',
 
+    /**
+     * see @link \Lowel\Telepath\Config\Profile
+     */
     'profiles' => [
         'default' => [
             'offset' => (int) env('TELEPATH_OFFSET', 0),
@@ -33,8 +36,11 @@ return [
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
             'allowed_updates' => explode(',', env('TELEPATH_ALLOWED_UPDATES', '*')),
 
-            'whitelist' => explode(',', env('TELEPATH_ADMINS', '')),
-            'blacklist' => explode(',', env('TELEPATH_BANNED', '')),
+            'whitelist' => array_map(fn ($x) => (int) $x, explode(',', env('TELEPATH_ADMINS', ''))),
+            'blacklist' => array_map(fn ($x) => (int) $x, explode(',', env('TELEPATH_BANNED', ''))),
+
+            // will send report about unhandled exceptions to the given chat_id instance (chat or dm)
+            'chat_id_fallback' => (int) env('TELEPATH_CHAT_ID_FALLBACK', null),
         ],
     ],
 ];

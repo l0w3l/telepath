@@ -10,8 +10,8 @@ final readonly class Profile
 {
     /**
      * @param  string[]  $allowedUpdates
-     * @param  array<int|string>  $whitelist
-     * @param  array<int|string>  $blacklist
+     * @param  int[]  $whitelist
+     * @param  int[]  $blacklist
      */
     public function __construct(
         public int $offset,
@@ -20,6 +20,7 @@ final readonly class Profile
         public array $allowedUpdates = [],
         public array $whitelist = [],
         public array $blacklist = [],
+        public ?int $chatIdFallback = null,
     ) {}
 
     public static function fromArray(array $array): Profile
@@ -31,6 +32,7 @@ final readonly class Profile
             UpdateTypeEnum::toArray($array['allowed_updates']),
             $array['whitelist'],
             $array['blacklist'],
+            $array['chat_id_fallback'],
         );
     }
 }

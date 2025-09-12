@@ -35,41 +35,47 @@ final readonly class ConversationStorage
 
     /**
      * @param  array<TelegramPromiseInterface>  $conversation
-     *
-     * @throws InvalidArgumentException
      */
     public function initialize(array $conversation): self
     {
-        if (! empty($conversation)) {
-            $this->cache->set(
-                $this->resolveKey(),
-                serialize($conversation),
-                $conversation[0]->ttl()
-            );
-        } else {
-            $this->cache->delete($this->resolveKey());
-        }
+        try {
+            if (! empty($conversation)) {
+                $this->cache->set(
+                    $this->resolveKey(),
+                    serialize($conversation),
+                    $conversation[0]->ttl()
+                );
 
-        return $this;
+            } else {
+                $this->cache->delete($this->resolveKey());
+            }
+
+            return $this;
+        } catch (InvalidArgumentException $e) {
+            throw new \RuntimeException('Unable to initialize conversation.', previous: $e);
+        }
     }
 
     /**
      * @return array<TelegramPromiseInterface>
-     *
-     * @throws InvalidArgumentException
      */
     public function get(): array
     {
-        return unserialize($this->cache->get($this->resolveKey()));
+        try {
+            return unserialize($this->cache->get($this->resolveKey()));
+        } catch (InvalidArgumentException $e) {
+            throw new \RuntimeException('Unable to unserialize message.', previous: $e);
+        }
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function delete(): void
     {
-        $this->cache->delete($this->resolveKey());
-        $this->cache->delete($this->resolveKey().'.shared');
+        try {
+            $this->cache->delete($this->resolveKey());
+            $this->cache->delete($this->resolveKey().'.shared');
+        } catch (InvalidArgumentException $e) {
+            throw new \RuntimeException('Unable to delete message.', previous: $e);
+        }
     }
 
     private function resolveKey(): string
@@ -88,9 +94,6 @@ final readonly class ConversationStorage
         }
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function popPromise(): TelegramPromiseInterface
     {
         $conversation = $this->get();
@@ -102,9 +105,6 @@ final readonly class ConversationStorage
         return $promise;
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function pushPromise(TelegramPromiseInterface $promise): self
     {
         $conversation = $this->get();
@@ -116,19 +116,21 @@ final readonly class ConversationStorage
         return $this;
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function getShared(): mixed
     {
-        return $this->cache->get($this->resolveKey().'.shared', '');
+        try {
+            return $this->cache->get($this->resolveKey().'.shared', '');
+        } catch (InvalidArgumentException $e) {
+            throw new \RuntimeException('Unable to get shared message.', previous: $e);
+        }
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function storeShared($shared, TelegramPromiseInterface $promise): void
     {
-        $this->cache->set($this->resolveKey().'.shared', $shared, $promise->ttl());
+        try {
+            $this->cache->set($this->resolveKey().'.shared', $shared, $promise->ttl());
+        } catch (InvalidArgumentException $e) {
+            throw new \RuntimeException('Unable to store shared message.', previous: $e);
+        }
     }
 }

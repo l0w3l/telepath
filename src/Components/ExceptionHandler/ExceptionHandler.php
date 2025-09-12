@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Components\ExceptionHandler;
 
-use Closure;
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Core\Components\AbstractComponent;
 use Lowel\Telepath\Core\Traits\InvokeAbleTrait;
@@ -15,7 +14,7 @@ class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInte
 {
     use InvokeAbleTrait;
 
-    /** @var Closure[] */
+    /** @var callable[] */
     private array $stack = [];
 
     public static function register(Application $app): void
@@ -29,7 +28,7 @@ class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInte
         $this->catch($update, $e);
     }
 
-    public function wrap(Closure $callback): void
+    public function wrap(mixed $callback): void
     {
         $this->stack[] = $callback;
     }
