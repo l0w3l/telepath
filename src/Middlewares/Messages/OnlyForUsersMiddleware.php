@@ -28,7 +28,7 @@ final class OnlyForUsersMiddleware implements TelegramMiddlewareInterface
     public function __construct(
         null|Closure|array $allowedUserIds = null
     ) {
-        $this->allowedUserIds = $allowedUserIds ?? config('telepath.profiles')[config('telepath.profile')]['admins'];
+        $this->allowedUserIds = $allowedUserIds ?? Extrasense::profile()->whitelist;
         $this->excludeUserIds = null;
     }
 
