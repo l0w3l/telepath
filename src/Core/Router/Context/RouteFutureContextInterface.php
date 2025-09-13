@@ -7,14 +7,17 @@ namespace Lowel\Telepath\Core\Router\Context;
 use Closure;
 use Lowel\Telepath\Core\Router\Conversation\TelegramConversationInterface;
 use Lowel\Telepath\Core\Router\Conversation\TelegramPromiseInterface;
+use Throwable;
+use Vjik\TelegramBot\Api\TelegramBotApi;
+use Vjik\TelegramBot\Api\Type\Update\Update;
 
 /**
  * Interface for route context that supports asynchronous handling.
  *
  * @extends RouteContextInterface<RouteFutureContextInterface>
  *
- * @phpstan-type ResolveClosure = Closure
- * @phpstan-type RejectClosure = Closure
+ * @phpstan-type ResolveClosure = Closure(TelegramBotApi $api, Update $update): void
+ * @phpstan-type RejectClosure = Closure(TelegramBotApi $api, Update $update, Throwable $error): void
  */
 interface RouteFutureContextInterface extends RouteContextInterface
 {

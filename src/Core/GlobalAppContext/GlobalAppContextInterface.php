@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Components\Context;
+namespace Lowel\Telepath\Core\GlobalAppContext;
 
-use Lowel\Telepath\Config\Profile;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
@@ -14,10 +13,7 @@ use Vjik\TelegramBot\Api\Type\Message;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 use Vjik\TelegramBot\Api\Type\User;
 
-/**
- * Context interface for current application state.
- */
-interface ContextInterface
+interface GlobalAppContextInterface
 {
     /**
      * @throws UpdateNotFoundInCurrentContextException
@@ -42,5 +38,7 @@ interface ContextInterface
      */
     public function chat(): Chat;
 
-    public function profile(?string $profileKey = null): Profile;
+    public function isLongPooling(): bool;
+
+    public function isWebhook(): bool;
 }

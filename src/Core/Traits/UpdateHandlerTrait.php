@@ -9,7 +9,6 @@ use Lowel\Telepath\Core\Router\Conversation\ConversationStorage;
 use Lowel\Telepath\Core\Router\Conversation\ConversationStorageFactory;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use RuntimeException;
 use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
@@ -38,12 +37,10 @@ trait UpdateHandlerTrait
 
         try {
             try {
-                /** @phpstan-ignore-next-line  */
                 $shared = $promise->resolve($this->telegramBotApi, $update, $shared);
 
                 $conversationStorage->storeShared($shared, $promise);
             } catch (Throwable $error) {
-                /** @phpstan-ignore-next-line  */
                 $promise->reject($this->telegramBotApi, $update, $error, $shared);
 
                 // reset state
@@ -51,13 +48,9 @@ trait UpdateHandlerTrait
             }
 
         } catch (Throwable $error) {
-            $conversationStorage->delete();
+            Log::error($error->getMessage(), $error->getTrace());
 
-            if ($error instanceof RuntimeException) {
-                throw $error;
-            } else {
-                throw new RuntimeException(previous: $error);
-            }
+            $conversationStorage->delete();
         }
     }
 
