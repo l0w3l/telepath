@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInterface;
+use Lowel\Telepath\Components\Context\ContextInterface;
 
 /**
- * @mixin GlobalAppContextInterface
+ * @mixin ContextInterface
  */
 class Extrasense extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return GlobalAppContextInterface::class;
+        return ContextInterface::class;
     }
 }
