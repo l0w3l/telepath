@@ -8,36 +8,24 @@ use Lowel\Telepath\Commands\Hook\SetCommand;
 use Lowel\Telepath\Commands\MakeHandlerCommand;
 use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
-use Lowel\Telepath\Components\Context\Context;
-use Lowel\Telepath\Components\ExceptionHandler\ExceptionHandler;
-use Lowel\Telepath\Core\Components\ComponentInterface;
-use Lowel\Telepath\Core\Components\ComponentRegistratorInterface;
-use Lowel\Telepath\Core\Components\ComponentsBundle;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContext;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInitializerInterface;
+use Lowel\Telepath\Core\GlobalAppContext\GlobalAppContextInterface;
 use Lowel\Telepath\Core\Router\TelegramRouter;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Facades\Extrasense;
-use Lowel\Telepath\Facades\Paranormal;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Symfony\Component\VarDumper\Dumper\HtmlDumper;
-use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\InputFile;
+use Vjik\TelegramBot\Api\Type\Chat;
+use Vjik\TelegramBot\Api\Type\Message;
 use Vjik\TelegramBot\Api\Type\Update\Update;
+use Vjik\TelegramBot\Api\Type\User;
 
 class TelepathServiceProvider extends PackageServiceProvider
 {
-    /**
-     * @var class-string<ComponentInterface>[]
-     */
-    private array $components = [
-        Context::class,
-        ExceptionHandler::class,
-    ];
-
     public function configurePackage(Package $package): void
     {
         /*
@@ -70,46 +58,13 @@ class TelepathServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->bindComponents();
-
-        $this->bindApp();
-
-        if (Extrasense::profile()->chatIdFallback !== null) {
-            $this->addReportFallbackInTheChat();
-        }
-    }
-
-    /**
-     * Bootstrap services.
-     */
-    public function boot(): void
-    {
-        parent::boot();
-    }
-
-    private function bindComponents(): void
-    {
-        foreach ($this->components as $component) {
-            if (is_subclass_of($component, ComponentRegistratorInterface::class)) {
-                $component::register($this->app);
-            }
-        }
-
-        $this->app->singleton(ComponentsBundle::class, function ($app) {
-            $componentBundle = new ComponentsBundle;
-
-            foreach ($this->components as $component) {
-                $componentBundle->append(
-                    $app->make($component)
-                );
-            }
-
-            return $componentBundle;
+        $this->app->bind(TelegramBotApi::class, function () {
+            return new TelegramBotApi(
+                token: config('telepath.token'),
+                baseUrl: config('telepath.base_uri'),
+                logger: logger());
         });
-    }
 
-    private function bindApp(): void
-    {
         $this->app->singleton(TelegramRouterInterface::class, function ($app) {
             return $app->make(TelegramRouter::class);
         });
@@ -122,13 +77,6 @@ class TelepathServiceProvider extends PackageServiceProvider
             return $app->make(TelegramRouterInterface::class);
         });
 
-        $this->app->bind(TelegramBotApi::class, function () {
-            return new TelegramBotApi(
-                token: config('telepath.token'),
-                baseUrl: config('telepath.base_uri'),
-                logger: logger());
-        });
-
         $this->app->bind(TelegramAppFactoryInterface::class, function ($app) {
             return new TelegramAppFactory(
                 $app->make(TelegramBotApi::class),
@@ -136,7 +84,25 @@ class TelepathServiceProvider extends PackageServiceProvider
             );
         });
 
+        $this->app->singleton(GlobalAppContextInitializerInterface::class, function ($app) {
+            return $app->make(GlobalAppContext::class);
+        });
+
+        $this->app->bind(GlobalAppContextInterface::class, function ($app) {
+            return $app->make(GlobalAppContextInitializerInterface::class);
+        });
+
+        $this->bindExtrasense();
+
         $this->loadRoutes();
+    }
+
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
+    {
+        parent::boot();
     }
 
     private function loadRoutes(): void
@@ -153,23 +119,14 @@ class TelepathServiceProvider extends PackageServiceProvider
         }
     }
 
-    private function addReportFallbackInTheChat(): void
+    private function bindExtrasense(): void
     {
-        Paranormal::wrap(function (Throwable $e, Update $update, TelegramBotApi $api) {
-            $cloner = new VarCloner;
-            $dumper = new HtmlDumper;
+        $this->app->bind(Chat::class, fn () => Extrasense::chat());
 
-            $stream = fopen('php://memory', 'r+');
+        $this->app->bind(Message::class, fn () => Extrasense::message());
 
-            fwrite($stream, $dumper->dump($cloner->cloneVar($update), true));
-            fwrite($stream, $dumper->dump($cloner->cloneVar($e), true));
-            fwrite($stream, $dumper->dump($cloner->cloneVar(config('telepath')), true));
+        $this->app->bind(User::class, fn () => Extrasense::user());
 
-            rewind($stream);
-
-            $api->sendDocument(Extrasense::profile()->chatIdFallback, new InputFile($stream, 'report_'.now()->format('Y-m-d_H-i-s').'.html'), caption: 'Report by '.now()->toString()."\n\nMessage: {$e->getMessage()}");
-
-            fclose($stream);
-        });
+        $this->app->bind(Update::class, fn () => Extrasense::update());
     }
 }

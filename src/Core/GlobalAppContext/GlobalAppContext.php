@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Components\Context;
+namespace Lowel\Telepath\Core\GlobalAppContext;
 
-use Illuminate\Contracts\Foundation\Application;
-use Lowel\Telepath\Config\Profile;
-use Lowel\Telepath\Core\Components\AbstractComponent;
+use LogicException;
+use Lowel\Telepath\Core\Drivers\LongPoolingDriverTelegram;
+use Lowel\Telepath\Core\Drivers\TelegramAppDriverInterface;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
-use Lowel\Telepath\Exceptions\Config\TelepathProfileNotFoundException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UserNotFoundInCurrentContextException;
@@ -17,29 +16,24 @@ use Vjik\TelegramBot\Api\Type\Message;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 use Vjik\TelegramBot\Api\Type\User;
 
-class Context extends AbstractComponent implements ContextInterface
+class GlobalAppContext implements GlobalAppContextInitializerInterface
 {
     private ?Update $update = null;
 
-    public static function register(Application $app): void
-    {
-        $app->singleton(Context::class, fn () => new self);
-        $app->singleton(ContextInterface::class, fn ($app) => $app->make(Context::class));
+    private ?bool $isLongPooling = null;
 
-        $app->bind(Chat::class, fn ($aoo) => $aoo->make(ContextInterface::class)->chat());
-        $app->bind(Message::class, fn ($app) => $app->make(ContextInterface::class)->message());
-        $app->bind(User::class, fn ($app) => $app->make(ContextInterface::class)->user());
-        $app->bind(Update::class, fn ($app) => $app->make(ContextInterface::class)->update());
-    }
-
-    public function before(Update $update): void
+    public function setUpdate(Update $update): GlobalAppContextInitializerInterface
     {
         $this->update = $update;
+
+        return $this;
     }
 
-    public function after(Update $update): void
+    public function setDriver(TelegramAppDriverInterface $driver): GlobalAppContextInitializerInterface
     {
-        $this->update = null;
+        $this->isLongPooling = ($driver instanceof LongPoolingDriverTelegram);
+
+        return $this;
     }
 
     public function update(): Update
@@ -112,12 +106,19 @@ class Context extends AbstractComponent implements ContextInterface
         }
     }
 
-    public function profile(?string $profileKey = null): Profile
+    public function isLongPooling(): bool
     {
-        $profileKey ??= config('telepath.profile');
+        return $this->isLongPooling ?? throw new LogicException('Driver not set or not initialized');
+    }
 
-        return Profile::fromArray(
-            config('telepath.profiles')[$profileKey] ?? throw new TelepathProfileNotFoundException($profileKey)
-        );
+    public function isWebhook(): bool
+    {
+        return ! $this->isLongPooling();
+    }
+
+    public function destroy(): void
+    {
+        $this->update = null;
+        $this->isLongPooling = null;
     }
 }

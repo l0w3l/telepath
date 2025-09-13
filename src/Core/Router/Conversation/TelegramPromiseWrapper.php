@@ -50,7 +50,11 @@ readonly class TelegramPromiseWrapper implements TelegramPromiseInterface
     {
         return $this->invokeStaticClassWithArgs(
             $this->resolve,
-            compact('api', 'update', 'shared'),
+            [
+                'api' => $api,
+                'update' => $update,
+                'shared' => $shared,
+            ]
         );
     }
 
@@ -63,7 +67,12 @@ readonly class TelegramPromiseWrapper implements TelegramPromiseInterface
         if ($this->reject !== null) {
             return $this->invokeStaticClassWithArgs(
                 $this->reject,
-                compact('api', 'update', 'shared', 'error'),
+                [
+                    'api' => $api,
+                    'update' => $update,
+                    'error' => $error,
+                    'shared' => $shared,
+                ]
             );
         } else {
             throw new RuntimeException(
