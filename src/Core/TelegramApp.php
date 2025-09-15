@@ -37,6 +37,8 @@ final readonly class TelegramApp implements TelegramAppInterface
                 $this->componentsBundle->onSuccess($update);
             } catch (Throwable $e) {
                 $this->componentsBundle->onFailure($update, $e);
+
+                throw $e;
             }
 
             $this->componentsBundle->after($update);

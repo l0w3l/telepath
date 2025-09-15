@@ -74,7 +74,7 @@ class TelepathServiceProvider extends PackageServiceProvider
 
         $this->bindApp();
 
-        if (Extrasense::profile()->chatIdFallback !== null) {
+        if (Extrasense::profile()->chatIdFallback !== null && in_array(ExceptionHandler::class, $this->components)) {
             $this->addReportFallbackInTheChat();
         }
     }

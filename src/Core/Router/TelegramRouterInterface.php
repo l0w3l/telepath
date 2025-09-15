@@ -175,7 +175,7 @@ interface TelegramRouterInterface extends RouteContextInterface
      *
      * @param  RouterHandler  $handler
      *
-     * @link https://core.telegram.org/bots/api#chatmemberupdated
+     * @link https://core.telegram.org/bots/api#poll
      */
     public function onPoll(string|callable $handler): RouteContextInterface;
 
