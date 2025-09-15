@@ -73,6 +73,7 @@ class Context extends AbstractComponent implements ContextInterface
                 ?? $update->myChatMember->from
                 ?? $update->chatJoinRequest->from
                 ?? $update->purchasedPaidMedia->from
+                ?? $update->chatBoost->boost->source->getUser()
                 ?? throw new UserNotFoundInCurrentContextException('User not found in current context');
         }
     }
@@ -108,6 +109,7 @@ class Context extends AbstractComponent implements ContextInterface
                 ?? $update->chatJoinRequest->chat
                 ?? $update->chatBoost->chat
                 ?? $update->removedChatBoost->chat
+                ?? $update->messageReaction->actorChat
                 ?? throw new ChatNotFoundInCurrentContextException('Chat not found in current context');
         }
     }

@@ -46,7 +46,7 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     public function onChannelPost(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        return $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
+        return $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
     }
 
     public function onMessageReaction(string|callable $handler): RouteContextInterface
@@ -61,7 +61,7 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     public function onChannelPostEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        return $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
+        return $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
     }
 
     public function onBusinessConnection(string|callable $handler): RouteContextInterface
