@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Lowel\Telepath\Commands\Hook\RemoveCommand;
 use Lowel\Telepath\Commands\Hook\SetCommand;
 use Lowel\Telepath\Commands\MakeHandlerCommand;
+use Lowel\Telepath\Commands\MakeInlineKeyboardCommand;
 use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Components\Context\Context;
@@ -60,6 +61,7 @@ class TelepathServiceProvider extends PackageServiceProvider
                 RemoveCommand::class,
                 MakeHandlerCommand::class,
                 MakeMiddlewareCommand::class,
+                MakeInlineKeyboardCommand::class,
             ]);
     }
 
