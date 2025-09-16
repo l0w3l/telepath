@@ -10,6 +10,7 @@ use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Components\Context\Context;
 use Lowel\Telepath\Components\ExceptionHandler\ExceptionHandler;
+use Lowel\Telepath\Components\KeyboardsWatcher\KeyboardsWatcher;
 use Lowel\Telepath\Core\Components\ComponentInterface;
 use Lowel\Telepath\Core\Components\ComponentRegistratorInterface;
 use Lowel\Telepath\Core\Components\ComponentsBundle;
@@ -35,6 +36,7 @@ class TelepathServiceProvider extends PackageServiceProvider
      */
     private array $components = [
         Context::class,
+        KeyboardsWatcher::class,
         ExceptionHandler::class,
     ];
 

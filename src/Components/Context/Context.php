@@ -32,12 +32,12 @@ class Context extends AbstractComponent implements ContextInterface
         $app->bind(Update::class, fn ($app) => $app->make(ContextInterface::class)->update());
     }
 
-    public function before(Update $update): void
+    public function onBefore(Update $update): void
     {
         $this->update = $update;
     }
 
-    public function after(Update $update): void
+    public function onAfter(Update $update): void
     {
         $this->update = null;
     }
@@ -88,6 +88,7 @@ class Context extends AbstractComponent implements ContextInterface
             ?? $update->editedBusinessMessage
             ?? $update->channelPost
             ?? $update->editedChannelPost
+            ?? $update->callbackQuery->message
             ?? throw new MessageNotFoundInCurrentContextException('Message not found in current context');
     }
 

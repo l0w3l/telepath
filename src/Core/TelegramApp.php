@@ -24,26 +24,24 @@ final readonly class TelegramApp implements TelegramAppInterface
 
     public function start(): void
     {
-        $this->componentsBundle->created();
+        $this->componentsBundle->onCreated();
 
         $updates = $this->driver->proceed($this->telegramBotApi);
 
         foreach ($updates as $update) {
-            $this->componentsBundle->before($update);
+            $this->componentsBundle->onBefore($update);
 
             try {
                 $this->handleUpdate($update);
-
-                $this->componentsBundle->onSuccess($update);
             } catch (Throwable $e) {
-                $this->componentsBundle->onFailure($update, $e);
+                $this->componentsBundle->onError($update, $e);
 
                 throw $e;
             }
 
-            $this->componentsBundle->after($update);
+            $this->componentsBundle->onAfter($update);
         }
 
-        $this->componentsBundle->destroy();
+        $this->componentsBundle->onDestroy();
     }
 }

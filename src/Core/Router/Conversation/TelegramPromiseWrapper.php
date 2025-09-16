@@ -6,7 +6,7 @@ namespace Lowel\Telepath\Core\Router\Conversation;
 
 use Closure;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Lowel\Telepath\Core\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Traits\InvokeAbleTrait;
 use ReflectionException;
 use RuntimeException;
 use Throwable;

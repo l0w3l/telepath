@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Core\Traits;
+namespace Lowel\Telepath\Traits;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use ReflectionException;
@@ -15,9 +15,9 @@ trait InvokeAbleTrait
      * @throws ReflectionException
      * @throws BindingResolutionException
      */
-    private function invokeStaticClassWithArgs(object $class, array $args = []): mixed
+    private function invokeStaticClassWithArgs(object $class, array $args = [], string $customMethod = '__invoke'): mixed
     {
-        $reflectionMethod = new ReflectionMethod($class, '__invoke');
+        $reflectionMethod = new ReflectionMethod($class, $customMethod);
         $parameters = $reflectionMethod->getParameters();
 
         $app = app();

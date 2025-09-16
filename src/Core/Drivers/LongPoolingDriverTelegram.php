@@ -34,13 +34,13 @@ final class LongPoolingDriverTelegram implements TelegramAppDriverInterface
         if ($updates instanceof FailResult) {
             Log::error('Failed to retrieve updates', ['update' => $updates]);
 
-            throw new TelegramAppException('Failed to retrieve updates: '.$updates->response->body);
+            throw new TelegramAppException($updates);
         }
 
         foreach ($updates as $update) {
-            yield $update;
-
             $this->lastUpdateId = $update->updateId + 1;
+
+            yield $update;
         }
     }
 }

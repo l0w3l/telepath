@@ -11,32 +11,27 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class AbstractComponent implements ComponentInterface, ComponentRegistratorInterface
 {
-    public function created(): void
+    public function onCreated(): void
     {
         // TODO: Implement created() method.
     }
 
-    public function before(Update $update): void
+    public function onBefore(Update $update): void
     {
         // TODO: Implement before() method.
     }
 
-    public function onSuccess(Update $update): void
-    {
-        // TODO: Implement onSuccess() method.
-    }
-
-    public function onFailure(Update $update, Throwable $e): void
+    public function onError(Update $update, Throwable $e): void
     {
         // TODO: Implement onFailure() method.
     }
 
-    public function after(Update $update): void
+    public function onAfter(Update $update): void
     {
         // TODO: Implement after() method.
     }
 
-    public function destroy(): void
+    public function onDestroy(): void
     {
         // TODO: Implement destroy() method.
     }
