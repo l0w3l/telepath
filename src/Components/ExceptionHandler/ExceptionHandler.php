@@ -38,7 +38,7 @@ class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInte
         $returnValue = null;
 
         foreach ($this->stack as $handler) {
-            $returnValue = $this->invokeStaticClassWithArgs($handler, compact('update', 'e', 'returnValue'));
+            $returnValue = $this::invokeStaticClassWithArgs($handler, compact('update', 'e', 'returnValue'));
         }
     }
 

@@ -52,7 +52,6 @@ trait UpdateHandlerTrait
                 // reset state
                 $conversationStorage->pushPromise($promise);
             }
-
         } catch (Throwable $error) {
             $conversationStorage->delete();
 
@@ -83,7 +82,7 @@ trait UpdateHandlerTrait
         }
 
         if (empty($executors)) {
-            $executors = $this->routerResolver->getHandlers();
+            $executors = $this->routerResolver->getFallbacks();
         }
 
         foreach ($executors as $handler) {

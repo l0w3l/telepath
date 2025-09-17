@@ -15,7 +15,7 @@ trait InvokeAbleTrait
      * @throws ReflectionException
      * @throws BindingResolutionException
      */
-    private function invokeStaticClassWithArgs(object $class, array $args = [], string $customMethod = '__invoke'): mixed
+    private static function invokeStaticClassWithArgs(object $class, array $args = [], string $customMethod = '__invoke'): mixed
     {
         $reflectionMethod = new ReflectionMethod($class, $customMethod);
         $parameters = $reflectionMethod->getParameters();

@@ -48,7 +48,7 @@ readonly class TelegramPromiseWrapper implements TelegramPromiseInterface
      */
     public function resolve(TelegramBotApi $api, Update $update, mixed $shared)
     {
-        return $this->invokeStaticClassWithArgs(
+        return $this::invokeStaticClassWithArgs(
             $this->resolve,
             compact('api', 'update', 'shared'),
         );
@@ -61,7 +61,7 @@ readonly class TelegramPromiseWrapper implements TelegramPromiseInterface
     public function reject(TelegramBotApi $api, Update $update, Throwable $error, mixed $shared)
     {
         if ($this->reject !== null) {
-            return $this->invokeStaticClassWithArgs(
+            return $this::invokeStaticClassWithArgs(
                 $this->reject,
                 compact('api', 'update', 'shared', 'error'),
             );

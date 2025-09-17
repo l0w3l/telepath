@@ -6,13 +6,13 @@ namespace Lowel\Telepath\Components\KeyboardsWatcher\Keyboards;
 
 use Closure;
 use Illuminate\Support\Facades\App;
-use Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\Attributes\InlineButtonAttribute;
 use Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\ButtonHandler;
+use Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\ButtonMetadata;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Traits\HashAbleTrait;
+use Lowel\Telepath\Traits\InvokeAbleTrait;
 use ReflectionClass;
 use ReflectionMethod;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
 use Vjik\TelegramBot\Api\Type\InlineKeyboardMarkup;
 
 /**
@@ -20,77 +20,50 @@ use Vjik\TelegramBot\Api\Type\InlineKeyboardMarkup;
  */
 abstract class AbstractInlineKeyboard implements KeyboardInterface
 {
-    use HashAbleTrait;
+    use HashAbleTrait, InvokeAbleTrait;
 
     /**
-     * @return array<array{
-     *     name: string,
-     *     meta?: InlineButtonAttribute
-     * }>
+     * @return ButtonMetadata[]
      */
-    public static function getButtonMethods(): array
+    public static function getButtonsMetadata(): array
     {
         $reflection = new ReflectionClass(static::class);
 
-        $methodsInfo = [];
+        $buttonMetadataCollection = [];
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             // only child methods
             if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
                 continue;
             }
 
-            // only methods with '*Button' postfix
-            if (! str_ends_with($method->getName(), 'Button')) {
-                continue;
+            $buttonMetadata = ButtonMetadata::fromReflectionMethod($method);
+
+            if ($buttonMetadata !== null) {
+                $buttonMetadataCollection[] = $buttonMetadata;
             }
-
-            // collect attributes
-            $meta = null;
-            foreach ($method->getAttributes() as $attr) {
-                $instance = $attr->newInstance();
-
-                if ($instance instanceof InlineButtonAttribute) {
-                    $meta = $instance;
-                }
-
-            }
-
-            $methodsInfo[] = [
-                'name' => $method->getName(),
-                'meta' => $meta,
-            ];
         }
 
-        return $methodsInfo;
+        return $buttonMetadataCollection;
     }
 
-    public static function build(): InlineKeyboardMarkup
+    public static function build(array $args = []): InlineKeyboardMarkup
     {
-        $methods = self::getButtonMethods();
+        $instance = App::make(static::class);
+        $buttonMetadataCollection = self::getButtonsMetadata();
 
         $buttons = [[]];
-        foreach ($methods as $method) {
-            $meta = $method['meta'] ?? new InlineButtonAttribute($method['name']);
+        foreach ($buttonMetadataCollection as $buttonMetadata) {
+            $dynamicText = null;
 
-            $callbackData = self::getCallbackData($meta, $method['name']);
+            if (method_exists($instance, $buttonMetadata->getTextMethodName())) {
+                $dynamicText = self::invokeStaticClassWithArgs($instance, $args, $buttonMetadata->getTextMethodName());
+            }
 
-            $inlineButton = new InlineKeyboardButton(
-                $meta->text,
-                $meta->url,
-                $callbackData,
-                $meta->webApp,
-                $meta->loginUrl,
-                $meta->switchInlineQuery,
-                $meta->switchInlineQueryCurrentChat,
-                $meta->switchInlineQueryChosenChat,
-                $meta->callbackGame,
-                $meta->pay,
-                $meta->copyText
-            );
+            $inlineButton = $buttonMetadata->metadata->toButton($buttonMetadata->name, $dynamicText);
 
-            if ($meta->direction === 'row') {
+            if ($buttonMetadata->metadata->direction === 'row') {
                 $buttons[array_key_last($buttons)][] = $inlineButton;
-            } elseif ($meta->direction === 'col') {
+            } elseif ($buttonMetadata->metadata->direction === 'col') {
                 $buttons[][] = $inlineButton;
             }
         }
@@ -102,25 +75,17 @@ abstract class AbstractInlineKeyboard implements KeyboardInterface
     {
         $handlers = [];
 
-        foreach (static::getButtonMethods() as $method) {
+        foreach (static::getButtonsMetadata() as $buttonMetadata) {
             $instance = App::make(static::class);
-            $meta = $method['meta'] ?? new InlineButtonAttribute($method['name']);
+            $meta = $buttonMetadata->metadata;
 
             $handlers[] = new ButtonHandler(
-                Closure::fromCallable([$instance, $method['name']]),
-                self::getCallbackData($meta, $method['name']),
+                Closure::fromCallable([$instance, $buttonMetadata->name]),
+                $meta->getCallbackData($buttonMetadata->name),
                 UpdateTypeEnum::CALLBACK_QUERY
             );
         }
 
         return $handlers;
-    }
-
-    protected static function getCallbackData(mixed $meta, $name): ?string
-    {
-        return match ($meta->copyText || $meta->switchInlineQuery || $meta->switchInlineQueryCurrentChat || $meta->webApp || $meta->loginUrl || $meta->url) {
-            true => null,
-            false => $meta->callbackData ?? (self::shortHash(static::class).':'.self::shortHash($name)),
-        };
     }
 }

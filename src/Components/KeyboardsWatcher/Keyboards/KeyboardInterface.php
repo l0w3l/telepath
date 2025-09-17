@@ -16,9 +16,9 @@ use Vjik\TelegramBot\Api\Type\ReplyKeyboardRemove;
 interface KeyboardInterface
 {
     /**
-     * @return InlineKeyboardMarkup
+     * @return T
      */
-    public static function build();
+    public static function build(array $args = []);
 
     /**
      * @return ButtonHandler[]
