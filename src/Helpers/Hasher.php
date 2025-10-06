@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Traits;
+namespace Lowel\Telepath\Helpers;
 
-trait HashAbleTrait
+class Hasher
 {
     const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-    protected static function shortHash(string $text, $len = 8): string
+    public static function shortHash(string $text, $len = 8): string
     {
         return substr(md5($text), 0, $len);
     }
 
-    protected static function encrypt(string $text): string
+    public static function encrypt(string $text): string
     {
         return self::binToBase62($text);
     }
 
-    protected static function decrypt(string $text): string
+    public static function decrypt(string $text): string
     {
         return self::base62ToBin($text); // или base62_decode
     }
@@ -47,10 +47,5 @@ trait HashAbleTrait
         }
 
         return hex2bin(gmp_strval($num, 16));
-    }
-
-    private static function getKey(): string
-    {
-        return substr(config('app.key'), 0, 16);
     }
 }

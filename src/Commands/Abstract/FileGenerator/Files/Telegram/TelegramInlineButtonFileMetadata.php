@@ -7,7 +7,7 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Files\Telegram;
 use Illuminate\Support\Str;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Files\FileMetadataInterface;
 
-final readonly class TelegramInlineKeyboardFileMetadata implements FileMetadataInterface
+final readonly class TelegramInlineButtonFileMetadata implements FileMetadataInterface
 {
     public function getPath(): string
     {
@@ -21,10 +21,10 @@ final readonly class TelegramInlineKeyboardFileMetadata implements FileMetadataI
 
     public function convertInClassName(string $argumentName): string
     {
-        if (Str::endsWith($argumentName, 'InlineKeyboardFactory')) {
+        if (Str::endsWith($argumentName, 'InlineButton')) {
             return $argumentName;
         } else {
-            return "{$argumentName}InlineKeyboardFactory";
+            return "{$argumentName}InlineButton";
         }
     }
 }

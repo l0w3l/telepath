@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Conversation;
 
 use Closure;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use ReflectionException;
 use RuntimeException;
 use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
@@ -42,26 +40,19 @@ readonly class TelegramPromiseWrapper implements TelegramPromiseInterface
 
     /**
      * Resolve the promise with the provided API, update, and shared data.
-     *
-     * @throws ReflectionException
-     * @throws BindingResolutionException
      */
     public function resolve(TelegramBotApi $api, Update $update, mixed $shared)
     {
-        return $this::invokeStaticClassWithArgs(
+        return $this::invokeCallableWithArgs(
             $this->resolve,
             compact('api', 'update', 'shared'),
         );
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws BindingResolutionException
-     */
     public function reject(TelegramBotApi $api, Update $update, Throwable $error, mixed $shared)
     {
         if ($this->reject !== null) {
-            return $this::invokeStaticClassWithArgs(
+            return $this::invokeCallableWithArgs(
                 $this->reject,
                 compact('api', 'update', 'shared', 'error'),
             );
