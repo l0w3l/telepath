@@ -52,12 +52,12 @@ trait InvokeAbleTrait
     {
         if (is_array($callable)) {
             // ['ClassName', 'method'] or [$object, 'method']
-            return new ReflectionMethod($callable[0], $callable[1]);
+            return new ReflectionFunction(Closure::fromCallable($callable));
         }
 
         if (is_string($callable) && str_contains($callable, '::')) {
             // 'ClassName::method'
-            return new ReflectionMethod(...explode('::', $callable, 2));
+            return new ReflectionFunction(Closure::fromCallable(explode('::', $callable, 2)));
         }
 
         if ($callable instanceof Closure) {
@@ -65,7 +65,7 @@ trait InvokeAbleTrait
         }
 
         if (is_object($callable) && method_exists($callable, '__invoke')) {
-            return new ReflectionMethod($callable, '__invoke');
+            return new ReflectionFunction(Closure::fromCallable([$callable, '__invoke']));
         }
 
         return new ReflectionFunction($callable);

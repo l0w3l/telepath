@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\Inline;
+namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
-use Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\ButtonInterface;
+use Closure;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Enums\SwitchInlineQueryAllowTypesEnum;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
 use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
@@ -32,10 +33,10 @@ abstract class AbstractSwitchInlineQueryButton implements ButtonInterface
         $text = $this->text($args);
         $switchInlineQuery = $this->switchInlineQuery($args);
 
-        if (is_callable($text)) {
+        if ($text instanceof Closure) {
             $text = $this::invokeCallableWithArgs($text);
         }
-        if (is_callable($switchInlineQuery)) {
+        if ($switchInlineQuery instanceof Closure) {
             $switchInlineQuery = $this::invokeCallableWithArgs($switchInlineQuery);
         }
 

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\Inline;
+namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
-use Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons\ButtonInterface;
+use Closure;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Helpers\Hasher;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
 use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
@@ -30,10 +31,10 @@ abstract class AbstractCallbackButton implements ButtonInterface
         $text = $this->text($args);
         $callbackData = $this->callbackData($args);
 
-        if (is_callable($text)) {
+        if ($text instanceof Closure) {
             $text = $this::invokeCallableWithArgs($text);
         }
-        if (is_callable($callbackData)) {
+        if ($callbackData instanceof Closure) {
             $callbackData = $this::invokeCallableWithArgs($callbackData);
         }
 

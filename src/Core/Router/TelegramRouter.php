@@ -13,9 +13,15 @@ use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContext;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply\AbstractReplyButton;
+use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Facades\Telepath;
 use RuntimeException;
+use Vjik\TelegramBot\Api\TelegramBotApi;
+use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverInterface
 {
@@ -209,6 +215,40 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
         $this->mainGroupContext->appendRouteContext($childGroupContext);
 
         return $childGroupContext;
+    }
+
+    /**
+     * @param  class-string<KeyboardFactoryInterface>  ...$keyboards
+     */
+    public function keyboard(string ...$keyboards): RouteContextInterface
+    {
+        return Telepath::group(function () use ($keyboards) {
+            foreach ($keyboards as $keyboard) {
+                $keyboardFactoryInstance = App::make($keyboard);
+
+                if (! ($keyboardFactoryInstance instanceof KeyboardFactoryInterface)) {
+                    throw new \RuntimeException('KeyboardWatcher accept only KeyboardFactoryInterface instances as a keyboard');
+                }
+
+                $markup = $keyboardFactoryInstance->make()->toArray();
+
+                foreach ($markup as $column) {
+                    foreach ($column as $button) {
+                        if ($button instanceof AbstractCallbackButton) {
+                            $this->onCallbackQuery($button->handle()(...), "/^{$button->callbackDataId()}.*$/")
+                                ->middleware(function (TelegramBotApi $api, Update $update, callable $next) {
+                                    $next();
+                                    $api->answerCallbackQuery($update->callbackQuery->id);
+                                });
+                        } elseif ($button instanceof AbstractReplyButton) {
+                            // reply keyboards works only with static content
+                            $this->onMessage($button->handle()(...), "/{$button->pattern()}/");
+                        }
+                    }
+
+                }
+            }
+        });
     }
 
     public function type(UpdateTypeEnum $updateTypeEnum): TelegramRouterInterface

@@ -6,21 +6,16 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram;
 
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\AbstractCreateFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Generator\ClassGenerator;
-use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Chat;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply\AbstractReplyButton;
 
-readonly class CreateInlineTelegramButtonFileAction extends AbstractCreateFileAction
+readonly class CreateReplyTelegramButtonFileAction extends AbstractCreateFileAction
 {
     public function create(): string
     {
-        $classGenerator = new ClassGenerator('ExampleInlineButton', $this->namespace."\\$this->argumentName\\Buttons");
+        $classGenerator = new ClassGenerator('ExampleReplyButton', $this->namespace."\\$this->argumentName\\Buttons");
 
         $classGenerator
-            ->setUse(TelegramBotApi::class)
-            ->setUse(Chat::class)
-            ->setExtends(AbstractCallbackButton::class)
-            ->setFunction("function handle(): callable\n{\n{$classGenerator->spaces}return function(TelegramBotApi \$api, Chat \$chat) {\n{$classGenerator->spaces}{$classGenerator->spaces}\$api->sendMessage(\$chat->id, 'example text');\n{$classGenerator->spaces}};\n}")
+            ->setExtends(AbstractReplyButton::class)
             ->setFunction("function text(array \$args = []): int|string|callable\n{\n{$classGenerator->spaces}return 'example';\n}");
 
         $this->createDirectoryIfNotExists();
@@ -33,7 +28,7 @@ readonly class CreateInlineTelegramButtonFileAction extends AbstractCreateFileAc
             $this->filesystem->makeDirectory($this->folderPath."{$this->argumentName}/Buttons");
         }
 
-        $this->save($this->folderPath."{$this->argumentName}/Buttons/ExampleInlineButton.php", $classGenerator->generate());
+        $this->save($this->folderPath."{$this->argumentName}/Buttons/ExampleReplyButton.php", $classGenerator->generate());
 
         return $this->classPath;
     }

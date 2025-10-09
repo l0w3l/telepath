@@ -6,22 +6,22 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram;
 
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\AbstractCreateFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Generator\ClassGenerator;
-use Lowel\Telepath\Core\Router\Keyboard\InlineKeyboardBuilder;
 use Lowel\Telepath\Core\Router\Keyboard\KeyboardBuilderInterface;
 use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
+use Lowel\Telepath\Core\Router\Keyboard\ReplyKeyboardBuilder;
 
-readonly class CreateInlineTelegramKeyboardFileAction extends AbstractCreateFileAction
+readonly class CreateReplyTelegramKeyboardFileAction extends AbstractCreateFileAction
 {
     public function create(): string
     {
         $classGenerator = new ClassGenerator($this->className, $this->namespace."\\$this->argumentName");
 
         $classGenerator
-            ->setUse($this->namespace."\\$this->argumentName\\Buttons\\ExampleInlineButton")
+            ->setUse($this->namespace."\\$this->argumentName\\Buttons\\ExampleReplyButton")
             ->setUse(KeyboardBuilderInterface::class)
-            ->setUse(InlineKeyboardBuilder::class)
+            ->setUse(ReplyKeyboardBuilder::class)
             ->setImplements(KeyboardFactoryInterface::class)
-            ->setFunction("function make(): KeyboardBuilderInterface\n{\n{$classGenerator->spaces}\$builder = new InlineKeyboardBuilder;\n\n{$classGenerator->spaces}return \$builder->row(new ExampleInlineButton());\n}");
+            ->setFunction("function make(): KeyboardBuilderInterface\n{\n{$classGenerator->spaces}\$builder = new ReplyKeyboardBuilder;\n\n{$classGenerator->spaces}return \$builder->row(new ExampleReplyButton());\n}");
 
         $this->createDirectoryIfNotExists();
 

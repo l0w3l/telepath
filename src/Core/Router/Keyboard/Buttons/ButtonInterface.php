@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Components\KeyboardsWatcher\Keyboards\Buttons;
+namespace Lowel\Telepath\Core\Router\Keyboard\Buttons;
 
 use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
 use Vjik\TelegramBot\Api\Type\KeyboardButton;

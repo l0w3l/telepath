@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Components\KeyboardsWatcher\Keyboards;
+namespace Lowel\Telepath\Core\Router\Keyboard;
 
 interface KeyboardFactoryInterface
 {
