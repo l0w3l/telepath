@@ -6,6 +6,7 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply;
 
 use Closure;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
+use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
 use Vjik\TelegramBot\Api\Type\KeyboardButton;
 
@@ -13,9 +14,9 @@ abstract class AbstractReplyButton implements ButtonInterface
 {
     use InvokeAbleTrait;
 
-    public function handle(): callable
+    public function handle(): ?callable
     {
-        return fn () => null;
+        return null;
     }
 
     public function pattern(): string
@@ -36,5 +37,17 @@ abstract class AbstractReplyButton implements ButtonInterface
         return new KeyboardButton(
             text: (string) $text
         );
+    }
+
+    public function resolve(TelegramRouterInterface $telegramRouter): void
+    {
+        if ($this->handle() === null) {
+            return;
+        }
+
+        $pattern = "/{$this->pattern()}/";
+
+        // reply keyboards works only with static content
+        $telegramRouter->onMessage($this->handle()(...), $pattern);
     }
 }
