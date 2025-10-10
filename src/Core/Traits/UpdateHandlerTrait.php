@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Traits;
 
-use Illuminate\Support\Facades\Log;
 use Lowel\Telepath\Core\Router\Conversation\ConversationStorage;
 use Lowel\Telepath\Core\Router\Conversation\ConversationStorageFactory;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Exceptions\Router\TelegramHandlerNotFoundException;
 use RuntimeException;
 use Throwable;
 use Vjik\TelegramBot\Api\TelegramBotApi;
@@ -20,6 +20,9 @@ trait UpdateHandlerTrait
 
     public readonly TelegramRouterResolverInterface $routerResolver;
 
+    /**
+     * @throws TelegramHandlerNotFoundException
+     */
     protected function handleUpdate(Update $update): void
     {
         $conversationStorage = (new ConversationStorageFactory)->create($update);
@@ -49,7 +52,6 @@ trait UpdateHandlerTrait
                 // reset state
                 $conversationStorage->pushPromise($promise);
             }
-
         } catch (Throwable $error) {
             $conversationStorage->delete();
 
@@ -61,6 +63,9 @@ trait UpdateHandlerTrait
         }
     }
 
+    /**
+     * @throws TelegramHandlerNotFoundException
+     */
     private function resolveUpdate(Update $update): void
     {
         $types = UpdateTypeEnum::resolve($update);
@@ -77,8 +82,6 @@ trait UpdateHandlerTrait
         }
 
         if (empty($executors)) {
-            Log::debug('Telegram Handler not found for update', $update->getRaw(true) ?? [print_r($update, true)]);
-
             $executors = $this->routerResolver->getFallbacks();
         }
 

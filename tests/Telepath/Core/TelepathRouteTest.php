@@ -1,5 +1,9 @@
 <?php
 
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
+use Lowel\Telepath\Core\Router\Keyboard\InlineKeyboardBuilder;
+use Lowel\Telepath\Core\Router\Keyboard\KeyboardBuilderInterface;
+use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Facades\Telepath;
 use Lowel\Telepath\TelegramAppFactoryInterface;
 use Vjik\TelegramBot\Api\Type\Chat;
@@ -305,6 +309,42 @@ test('chat boost remove', function (): void {
         expect($update->removedChatBoost)->not()->toBeNull()
             ->and($chat)->not()->toEqual(null);
     });
+
+    telegramApp()->start();
+});
+
+test('keyboards', function (): void {
+    $testFactory = new class implements KeyboardFactoryInterface
+    {
+        public function make(): KeyboardBuilderInterface
+        {
+            return (new InlineKeyboardBuilder)->row(new class extends AbstractCallbackButton
+            {
+                public function handle(): callable
+                {
+                    return function (Update $update) {
+                        expect($update)->not()->toBeNull();
+                    };
+                }
+
+                public function text(array $args = []): string
+                {
+                    return 'test';
+                }
+
+                public function callbackDataId(array $args = []): string
+                {
+                    return 'test';
+                }
+            });
+        }
+    };
+
+    $this->updatesMockBuilder
+        ->addCallbackQuery('test')
+        ->mock();
+
+    Telepath::keyboard($testFactory::class);
 
     telegramApp()->start();
 });

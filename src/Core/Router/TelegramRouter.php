@@ -13,8 +13,11 @@ use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContext;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
+use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Facades\Telepath;
 use RuntimeException;
 
 class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverInterface
@@ -209,6 +212,31 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
         $this->mainGroupContext->appendRouteContext($childGroupContext);
 
         return $childGroupContext;
+    }
+
+    /**
+     * @param  class-string<KeyboardFactoryInterface>  ...$keyboards
+     */
+    public function keyboard(string ...$keyboards): RouteContextInterface
+    {
+        return Telepath::group(function () use ($keyboards) {
+            foreach ($keyboards as $keyboard) {
+                $keyboardFactoryInstance = App::make($keyboard);
+
+                if (! ($keyboardFactoryInstance instanceof KeyboardFactoryInterface)) {
+                    throw new \RuntimeException('KeyboardWatcher accept only KeyboardFactoryInterface instances as a keyboard');
+                }
+
+                $buffer = [];
+                $keyboardFactoryInstance->make()->each(function (ButtonInterface $button) use (&$buffer) {
+                    if (! in_array($button::class, $buffer)) {
+                        $buffer[] = $button::class;
+
+                        $button->resolve($this);
+                    }
+                });
+            }
+        });
     }
 
     public function type(UpdateTypeEnum $updateTypeEnum): TelegramRouterInterface

@@ -6,7 +6,7 @@ namespace Lowel\Telepath\Components\ExceptionHandler;
 
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Core\Components\AbstractComponent;
-use Lowel\Telepath\Core\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Traits\InvokeAbleTrait;
 use Throwable;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -23,7 +23,7 @@ class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInte
         $app->singleton(ExceptionHandlerInterface::class, fn ($app) => $app->make(ExceptionHandler::class));
     }
 
-    public function onFailure(Update $update, Throwable $e): void
+    public function onError(Update $update, Throwable $e): void
     {
         $this->catch($update, $e);
     }
@@ -38,7 +38,7 @@ class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInte
         $returnValue = null;
 
         foreach ($this->stack as $handler) {
-            $returnValue = $this->invokeStaticClassWithArgs($handler, compact('update', 'e', 'returnValue'));
+            $returnValue = $this::invokeCallableWithArgs($handler, compact('update', 'e', 'returnValue'));
         }
     }
 

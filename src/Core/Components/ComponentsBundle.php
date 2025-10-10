@@ -22,45 +22,38 @@ class ComponentsBundle implements ComponentInterface
         return $this;
     }
 
-    public function created(): void
+    public function onCreated(): void
     {
         foreach ($this->components as $component) {
-            $component->created();
+            $component->onCreated();
         }
     }
 
-    public function before(Update $update): void
+    public function onBefore(Update $update): void
     {
         foreach ($this->components as $component) {
-            $component->before($update);
+            $component->onBefore($update);
         }
     }
 
-    public function onSuccess(Update $update): void
+    public function onError(Update $update, Throwable $e): void
     {
         foreach ($this->components as $component) {
-            $component->onSuccess($update);
+            $component->onError($update, $e);
         }
     }
 
-    public function onFailure(Update $update, Throwable $e): void
+    public function onAfter(Update $update): void
     {
         foreach ($this->components as $component) {
-            $component->onFailure($update, $e);
+            $component->onAfter($update);
         }
     }
 
-    public function after(Update $update): void
+    public function onDestroy(): void
     {
         foreach ($this->components as $component) {
-            $component->after($update);
-        }
-    }
-
-    public function destroy(): void
-    {
-        foreach ($this->components as $component) {
-            $component->destroy();
+            $component->onDestroy();
         }
     }
 

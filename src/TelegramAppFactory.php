@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Core\Components\ComponentsBundle;
 use Lowel\Telepath\Core\Drivers\LongPoolingDriverTelegram;
@@ -13,6 +12,7 @@ use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
 use Lowel\Telepath\Facades\Extrasense;
+use Psr\Http\Message\ServerRequestInterface;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 
 final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
@@ -40,7 +40,7 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
 
     public function webhook(): TelegramAppInterface
     {
-        $request = App::make(Request::class);
+        $request = App::make(ServerRequestInterface::class);
 
         return new TelegramApp(
             telegramBotApi: $this->telegramBotApi,
