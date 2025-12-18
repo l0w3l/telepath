@@ -10,6 +10,7 @@ use Lowel\Telepath\Commands\MakeKeyboardInlineCommand;
 use Lowel\Telepath\Commands\MakeKeyboardReplyCommand;
 use Lowel\Telepath\Commands\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
+use Lowel\Telepath\Components\Benchmark\Benchmark;
 use Lowel\Telepath\Components\Context\Context;
 use Lowel\Telepath\Components\ExceptionHandler\ExceptionHandler;
 use Lowel\Telepath\Core\Components\ComponentInterface;
@@ -93,6 +94,10 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     private function bindComponents(): void
     {
+        if (! env('TESTING', false) || config('telepath.benchmark', false)) {
+            $this->components[] = Benchmark::class;
+        }
+
         foreach ($this->components as $component) {
             if (is_subclass_of($component, ComponentRegistratorInterface::class)) {
                 $component::register($this->app);

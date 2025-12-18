@@ -27,7 +27,7 @@ final readonly class Profile
     public static function fromArray(array $array): Profile
     {
         return new self(
-            $array['token'],
+            $array['token'] ?? '',
             $array['offset'],
             $array['limit'],
             $array['timeout'],

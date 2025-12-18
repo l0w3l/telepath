@@ -26,7 +26,7 @@ class Context extends AbstractComponent implements ContextInterface
         $app->singleton(Context::class, fn () => new self);
         $app->singleton(ContextInterface::class, fn ($app) => $app->make(Context::class));
 
-        $app->bind(Chat::class, fn ($aoo) => $aoo->make(ContextInterface::class)->chat());
+        $app->bind(Chat::class, fn ($app) => $app->make(ContextInterface::class)->chat());
         $app->bind(Message::class, fn ($app) => $app->make(ContextInterface::class)->message());
         $app->bind(User::class, fn ($app) => $app->make(ContextInterface::class)->user());
         $app->bind(Update::class, fn ($app) => $app->make(ContextInterface::class)->update());
