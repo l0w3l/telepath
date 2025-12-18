@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Core\Router\Conversation;
+namespace Lowel\Telepath\Core\Router\Conversation\Storage;
 
 use Illuminate\Support\Facades\Cache;
 use Vjik\TelegramBot\Api\Type\Update\Update;

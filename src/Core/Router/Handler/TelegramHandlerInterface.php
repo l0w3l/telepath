@@ -13,12 +13,30 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
  * Handlers are invoked when a specific pattern matches an incoming update.
  *
  * @phpstan-import-type MiddlewareHandler from TelegramRouterInterface
- *
- * @method mixed|void __invoke() - DI supported method
- * @method null|string pattern() - text regex pattern for a handler (optional)
- * @method null|UpdateTypeEnum type() - handler type (optional)
- * @method MiddlewareHandler[] middlewares() - handler middlewares list (optional)
- *
- * @noinspection PhpUndefinedClassInspection
  */
-interface TelegramHandlerInterface {}
+interface TelegramHandlerInterface
+{
+    /**
+     * Handle telegram typed event
+     *
+     * @return callable = DI supported telegram handler callback
+     */
+    public function handler(): callable;
+
+    /**
+     * Text pattern of telegram event
+     */
+    public function pattern(): ?string;
+
+    /**
+     * Type of telegram event
+     */
+    public function type(): ?UpdateTypeEnum;
+
+    /**
+     * Telegram event middlewares
+     *
+     * @return MiddlewareHandler[]
+     */
+    public function middlewares(): array;
+}

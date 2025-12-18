@@ -11,11 +11,8 @@ return [
     |
     */
 
-    'token' => env('TELEPATH_TOKEN'),
     'base_uri' => env('TELEPATH_BASE_URL', 'https://api.telegram.org'),
     'conversation' => [
-        'storage' => env('TELEPATH_CONVERSATION_STORAGE', 'file'),
-        'enabled' => (bool) env('TELEPATH_CONVERSATION', true),
         'ttl' => (int) env('TELEPATH_CONVERSATION_TIMEOUT', 60),
     ],
 
@@ -31,6 +28,7 @@ return [
      */
     'profiles' => [
         'default' => [
+            'token' => env('TELEPATH_TOKEN'),
             'offset' => (int) env('TELEPATH_OFFSET', 0),
             'limit' => (int) env('TELEPATH_LIMIT', 100),
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),

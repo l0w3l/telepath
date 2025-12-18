@@ -30,5 +30,6 @@
     </source>
     <php>
         <env name="TELEPATH_TOKEN" value="test"/>
+        <env name="TESTING" value="true"/>
     </php>
 </phpunit>

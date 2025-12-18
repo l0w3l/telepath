@@ -46,6 +46,22 @@ enum UpdateTypeEnum: string
         return $types;
     }
 
+    public static function extractText(Update $update, UpdateTypeEnum $type): ?string
+    {
+        return match ($type) {
+            UpdateTypeEnum::MESSAGE => $update->message->text,
+            UpdateTypeEnum::EDITED_MESSAGE => $update->editedMessage->text,
+            UpdateTypeEnum::CHANNEL_POST => $update->channelPost->text,
+            UpdateTypeEnum::EDITED_CHANNEL_POST => $update->editedChannelPost->text,
+            UpdateTypeEnum::INLINE_QUERY => $update->inlineQuery->query,
+            UpdateTypeEnum::CHOSEN_INLINE_RESULT => $update->chosenInlineResult->query,
+            UpdateTypeEnum::CALLBACK_QUERY => $update->callbackQuery->data,
+            UpdateTypeEnum::BUSINESS_MESSAGE => $update->businessMessage->text,
+            UpdateTypeEnum::EDIT_BUSINESS_MESSAGE => $update->editedBusinessMessage->text,
+            default => null,
+        };
+    }
+
     /**
      * @return string[]
      */

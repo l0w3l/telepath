@@ -12,7 +12,7 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 class TestAppDriver implements TelegramAppDriverInterface
 {
     /**
-     * @param  Update  $updates
+     * @param  Update[]  $updates
      */
     public function __construct(
         public array $updates

@@ -14,6 +14,7 @@ final readonly class Profile
      * @param  int[]  $blacklist
      */
     public function __construct(
+        public string $token,
         public int $offset,
         public int $limit,
         public int $timeout,
@@ -26,6 +27,7 @@ final readonly class Profile
     public static function fromArray(array $array): Profile
     {
         return new self(
+            $array['token'],
             $array['offset'],
             $array['limit'],
             $array['timeout'],

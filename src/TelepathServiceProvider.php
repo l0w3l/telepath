@@ -128,7 +128,7 @@ class TelepathServiceProvider extends PackageServiceProvider
 
         $this->app->bind(TelegramBotApi::class, function () {
             return new TelegramBotApi(
-                token: config('telepath.token'),
+                token: Extrasense::profile()->token,
                 baseUrl: config('telepath.base_uri'),
                 logger: logger());
         });
