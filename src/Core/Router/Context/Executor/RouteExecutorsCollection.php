@@ -26,7 +26,7 @@ final readonly class RouteExecutorsCollection
         $executors = $this->resolve($conversationPositionData->trigger);
 
         foreach ($executors as $executor) {
-            if ($executor->hasConversation()) {
+            if ($executor->params()->hasConversation()) {
                 return $executor;
             }
         }
@@ -61,9 +61,8 @@ final readonly class RouteExecutorsCollection
         $types = [];
 
         foreach ($this->handlers as $executor) {
-            $type = $executor->type()->value;
-
-            if (!in_array($type, $types)) {
+            $type = $executor->params()->getUpdateTypeEnum()->value ?? throw new \RuntimeException('Executor has no defined update type.');
+            if (! in_array($type, $types)) {
                 $types[] = $type;
             }
         }

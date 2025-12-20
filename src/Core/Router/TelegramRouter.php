@@ -308,7 +308,7 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
     {
         static $routeExecutorsCollection = null;
 
-        if (config('app.debug', false) || env('TESTING', false)) {
+        if (config('app.debug', false) || env('TELEPATH_TESTING', false)) {
             return new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
         } else {
             return $routeExecutorsCollection ??= new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());

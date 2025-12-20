@@ -5,6 +5,7 @@ namespace Lowel\Telepath;
 use Illuminate\Support\Facades\Route;
 use Lowel\Telepath\Commands\Hook\RemoveCommand;
 use Lowel\Telepath\Commands\Hook\SetCommand;
+use Lowel\Telepath\Commands\Hook\StatusCommand;
 use Lowel\Telepath\Commands\MakeHandlerCommand;
 use Lowel\Telepath\Commands\MakeKeyboardInlineCommand;
 use Lowel\Telepath\Commands\MakeKeyboardReplyCommand;
@@ -34,9 +35,10 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 class TelepathServiceProvider extends PackageServiceProvider
 {
     /**
-     * @var class-string<ComponentInterface>[]
+     * @var class-string<ComponentInterface&ComponentRegistratorInterface>[]
      */
     private array $components = [
+        Benchmark::class,
         Context::class,
         ExceptionHandler::class,
     ];
@@ -63,6 +65,7 @@ class TelepathServiceProvider extends PackageServiceProvider
                 MakeMiddlewareCommand::class,
                 MakeKeyboardInlineCommand::class,
                 MakeKeyboardReplyCommand::class,
+                StatusCommand::class,
             ]);
     }
 
@@ -94,23 +97,19 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     private function bindComponents(): void
     {
-        if (! env('TESTING', false) || config('telepath.benchmark', false)) {
-            $this->components[] = Benchmark::class;
-        }
-
         foreach ($this->components as $component) {
-            if (is_subclass_of($component, ComponentRegistratorInterface::class)) {
-                $component::register($this->app);
-            }
+            $component::register($this->app);
         }
 
         $this->app->singleton(ComponentsBundle::class, function ($app) {
             $componentBundle = new ComponentsBundle;
 
             foreach ($this->components as $component) {
-                $componentBundle->append(
-                    $app->make($component)
-                );
+                if ($component::isRegistered()) {
+                    $componentBundle->append(
+                        $app->make($component)
+                    );
+                }
             }
 
             return $componentBundle;

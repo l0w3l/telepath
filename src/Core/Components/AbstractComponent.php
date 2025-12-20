@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Components;
 
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\App;
 use Throwable;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -38,7 +37,7 @@ class AbstractComponent implements ComponentInterface, ComponentRegistratorInter
 
     public static function register(Application $app): void
     {
-        App::bind(static::class, fn ($app) => $app->make(static::class));
+        $app->bind(static::class);
     }
 
     public static function isRegistered(): bool

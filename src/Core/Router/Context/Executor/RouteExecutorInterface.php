@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Context\Executor;
 
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
-use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
-use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationPositionData;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
@@ -24,11 +22,5 @@ interface RouteExecutorInterface
 
     public function match(UpdateTypeEnum $updateTypeEnum, ?string $text = null): bool;
 
-    public function hasConversation(): bool;
-
-    public function continueConversation(ConversationPositionData $conversationPositionData): TelegramPromiseInterface;
-
-    public function nextConversationTtl(ConversationPositionData $currentConversationPositionData): int;
-
-    public function type(): UpdateTypeEnum;
+    public function params(): RouteContextParams;
 }

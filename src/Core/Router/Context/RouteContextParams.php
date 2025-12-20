@@ -10,7 +10,6 @@ use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Lowel\Telepath\Facades\Telepath;
 use RuntimeException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;

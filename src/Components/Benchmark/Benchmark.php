@@ -29,6 +29,11 @@ class Benchmark extends AbstractComponent implements BenchmarkInterface
         $app->singleton(BenchmarkInterface::class, fn ($app) => $app->make(Benchmark::class));
     }
 
+    public static function isRegistered(): bool
+    {
+        return config('app.debug') && (env('TELEPATH_TESTING', false) === false);
+    }
+
     public function onCreated(): void
     {
         $this->getUpdateTrigger = new DateTimeImmutable;
@@ -57,9 +62,7 @@ class Benchmark extends AbstractComponent implements BenchmarkInterface
             'get_update_duration_ms' => (float) $now->diff($this->getUpdateTrigger)->format('%s.%f') * 1000,
         ];
 
-        if (config('app.debug')) {
-            dump($this->getJournal());
-        }
+        dump($this->getJournal());
 
         $this->journal = [];
     }

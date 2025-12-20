@@ -6,12 +6,9 @@ namespace Lowel\Telepath\Core\Router\Context\Executor;
 
 use Illuminate\Support\Str;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
-use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
-use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationPositionData;
 use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use RuntimeException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -60,28 +57,9 @@ final readonly class RouteExecutor implements RouteExecutorInterface
         }
     }
 
-    public function hasConversation(): bool
+    public function params(): RouteContextParams
     {
-        return $this->params->hasConversation();
-    }
-
-    public function continueConversation(ConversationPositionData $conversationPositionData): TelegramPromiseInterface
-    {
-        return $this->params->getConversationPosition($conversationPositionData->position);
-    }
-
-    public function nextConversationTtl(ConversationPositionData $currentConversationPositionData): int
-    {
-        if ($currentConversationPositionData->position + 1 >= $currentConversationPositionData->end) {
-            return 0;
-        }
-
-        return $this->params->getConversationPosition($currentConversationPositionData->position + 1)->ttl();
-    }
-
-    public function type(): UpdateTypeEnum
-    {
-        return $this->params->getUpdateTypeEnum() ?? throw new RuntimeException("Cannot find update for given route executor.");
+        return $this->params;
     }
 
     protected function resolve(TelegramBotApi $api, Update $update)

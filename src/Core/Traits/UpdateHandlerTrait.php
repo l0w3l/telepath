@@ -37,8 +37,12 @@ trait UpdateHandlerTrait
         $executor = $this->routerResolver->getExecutors()
             ->resolveConversation($conversationPositionData);
 
-        $promise = $executor->continueConversation($conversationPositionData);
-        $newTtl = $executor->nextConversationTtl($conversationPositionData);
+        $promise = $executor->params()->getConversationPosition($conversationPositionData->position);
+
+        $newTtl = match ($conversationPositionData->position + 1 < $conversationPositionData->end) {
+            true => $executor->params()->getConversationPosition($conversationPositionData->position + 1)->ttl(),
+            false => 0,
+        };
 
         try {
             try {

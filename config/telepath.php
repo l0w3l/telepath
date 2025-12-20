@@ -41,6 +41,4 @@ return [
             'chat_id_fallback' => (int) env('TELEPATH_CHAT_ID_FALLBACK', null),
         ],
     ],
-
-    'benchmark' => env('TELEPATH_BENCHMARK', false),
 ];

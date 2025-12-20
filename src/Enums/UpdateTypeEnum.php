@@ -73,7 +73,7 @@ enum UpdateTypeEnum: string
 
         if (in_array('*', $filter)) {
             return $array;
-        } else if (in_array('auto', $filter)) {
+        } elseif (in_array('auto', $filter)) {
             $routerResolver = App::make(TelegramRouterResolverInterface::class);
 
             return $routerResolver->getExecutors()->getAllUpdateTypes();
