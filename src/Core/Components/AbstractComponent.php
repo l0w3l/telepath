@@ -40,4 +40,9 @@ class AbstractComponent implements ComponentInterface, ComponentRegistratorInter
     {
         App::bind(static::class, fn ($app) => $app->make(static::class));
     }
+
+    public static function isRegistered(): bool
+    {
+        return true;
+    }
 }

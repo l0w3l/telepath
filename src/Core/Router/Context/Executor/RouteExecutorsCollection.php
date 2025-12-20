@@ -55,4 +55,19 @@ final readonly class RouteExecutorsCollection
 
         return $executors;
     }
+
+    public function getAllUpdateTypes(): array
+    {
+        $types = [];
+
+        foreach ($this->handlers as $executor) {
+            $type = $executor->type()->value;
+
+            if (!in_array($type, $types)) {
+                $types[] = $type;
+            }
+        }
+
+        return $types;
+    }
 }

@@ -29,4 +29,6 @@ interface RouteExecutorInterface
     public function continueConversation(ConversationPositionData $conversationPositionData): TelegramPromiseInterface;
 
     public function nextConversationTtl(ConversationPositionData $currentConversationPositionData): int;
+
+    public function type(): UpdateTypeEnum;
 }

@@ -11,6 +11,7 @@ use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationPositionData;
 use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
+use RuntimeException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -76,6 +77,11 @@ final readonly class RouteExecutor implements RouteExecutorInterface
         }
 
         return $this->params->getConversationPosition($currentConversationPositionData->position + 1)->ttl();
+    }
+
+    public function type(): UpdateTypeEnum
+    {
+        return $this->params->getUpdateTypeEnum() ?? throw new RuntimeException("Cannot find update for given route executor.");
     }
 
     protected function resolve(TelegramBotApi $api, Update $update)

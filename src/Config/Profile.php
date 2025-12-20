@@ -4,37 +4,40 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Config;
 
+use Illuminate\Support\Str;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 
+/**
+ * @property string $token
+ * @property int $offset
+ * @property int $limit
+ * @property int $timeout
+ * @property string[] $allowedUpdates
+ * @property int[] $whitelist
+ * @property int[] $blacklist
+ * @property int|null $chatIdFallback
+ */
 final readonly class Profile
 {
-    /**
-     * @param  string[]  $allowedUpdates
-     * @param  int[]  $whitelist
-     * @param  int[]  $blacklist
-     */
     public function __construct(
-        public string $token,
-        public int $offset,
-        public int $limit,
-        public int $timeout,
-        public array $allowedUpdates = [],
-        public array $whitelist = [],
-        public array $blacklist = [],
-        public ?int $chatIdFallback = null,
+        public string $profileName
     ) {}
 
-    public static function fromArray(array $array): Profile
+    public function __get(string $name)
     {
-        return new self(
-            $array['token'] ?? '',
-            $array['offset'],
-            $array['limit'],
-            $array['timeout'],
-            UpdateTypeEnum::toArray($array['allowed_updates']),
-            $array['whitelist'],
-            $array['blacklist'],
-            $array['chat_id_fallback'],
-        );
+        $snakeName = Str::snake($name);
+        $mutator = $this->mutator($snakeName);
+
+        return $mutator(config("telepath.profiles.{$this->profileName}.{$snakeName}"));
+    }
+
+    private function mutator(string $name): callable
+    {
+        return match ($name) {
+            'allowed_updates' => fn ($value) => UpdateTypeEnum::toArray(explode(',', $value)),
+            'whitelist' => fn ($value) => array_map(fn ($x) => (int) $x, explode(',', $value)),
+            'blacklist' => fn ($value) => array_map(fn ($x) => (int) $x, explode(',', $value)),
+            default => fn ($value) => $value,
+        };
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Enums;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
 enum UpdateTypeEnum: string
@@ -71,6 +73,10 @@ enum UpdateTypeEnum: string
 
         if (in_array('*', $filter)) {
             return $array;
+        } else if (in_array('auto', $filter)) {
+            $routerResolver = App::make(TelegramRouterResolverInterface::class);
+
+            return $routerResolver->getExecutors()->getAllUpdateTypes();
         } else {
             return array_filter($array, fn (string $value) => in_array($value, $filter));
         }
