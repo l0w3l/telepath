@@ -21,6 +21,22 @@ final readonly class RouteExecutorsCollection
         private array $fallbacks,
     ) {}
 
+    /**
+     * @return RouteExecutorInterface[]
+     */
+    public function handlers(): array
+    {
+        return $this->handlers;
+    }
+
+    /**
+     * @return RouteExecutorInterface[]
+     */
+    public function fallbacks(): array
+    {
+        return $this->fallbacks;
+    }
+
     public function resolveConversation(ConversationPositionData $conversationPositionData): RouteExecutorInterface
     {
         $executors = $this->resolve($conversationPositionData->trigger);

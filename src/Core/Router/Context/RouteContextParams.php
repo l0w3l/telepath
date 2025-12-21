@@ -23,12 +23,11 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 final class RouteContextParams
 {
     /**
-     * @param  TelegramHandlerInterface|Closure(TelegramBotApi, Update): void|null  $handler
      * @param  array<Closure(TelegramBotApi, Update, callable): void>  $middlewares
      * @param  array<TelegramPromiseInterface>  $conversation
      */
     public function __construct(
-        private null|TelegramHandlerInterface|Closure $handler = null,
+        private ?TelegramHandlerInterface $handler = null,
         private ?UpdateTypeEnum $updateTypeEnum = null,
         private array $middlewares = [],
         private ?string $name = null,
@@ -53,16 +52,16 @@ final class RouteContextParams
         return $this->handler === null;
     }
 
-    public function setHandler(TelegramHandlerInterface|Closure $handler): self
+    public function setHandler(TelegramHandlerInterface $handler): self
     {
         $this->handler = $handler;
 
         return $this;
     }
 
-    public function getHandler(): TelegramHandlerInterface|Closure|null
+    public function getHandler(): TelegramHandlerInterface
     {
-        return $this->handler;
+        return $this->handler ?? throw new RuntimeException('Handler is not set.');
     }
 
     public function setUpdateTypeEnum(?UpdateTypeEnum $updateTypeEnum): self

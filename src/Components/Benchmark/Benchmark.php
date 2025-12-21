@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Components\Benchmark;
 
 use DateTimeImmutable;
+use Illuminate\Console\Concerns\InteractsWithIO;
+use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Core\Components\AbstractComponent;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class Benchmark extends AbstractComponent implements BenchmarkInterface
 {
+    use InteractsWithIO;
+
     private DateTimeImmutable $getUpdateTrigger;
 
     private DateTimeImmutable $updateExecutionTrigger;
@@ -21,6 +27,7 @@ class Benchmark extends AbstractComponent implements BenchmarkInterface
     {
         $this->getUpdateTrigger = new DateTimeImmutable;
         $this->updateExecutionTrigger = new DateTimeImmutable;
+        $this->output = new OutputStyle(new StringInput(''), new ConsoleOutput);
     }
 
     public static function register(Application $app): void
@@ -50,7 +57,7 @@ class Benchmark extends AbstractComponent implements BenchmarkInterface
 
         $this->journal[] = [
             'update_id' => $update->updateId,
-            'update_execution_duration_ms' => (float) $now->diff($this->updateExecutionTrigger)->format('%s.%f') * 1000,
+            'execution' => (float) $now->diff($this->updateExecutionTrigger)->format('%s.%f') * 1000,
         ];
     }
 
@@ -59,10 +66,14 @@ class Benchmark extends AbstractComponent implements BenchmarkInterface
         $now = new DateTimeImmutable;
 
         $this->journal[] = [
-            'get_update_duration_ms' => (float) $now->diff($this->getUpdateTrigger)->format('%s.%f') * 1000,
+            'update_id' => 'total',
+            'execution' => (float) $now->diff($this->getUpdateTrigger)->format('%s.%f') * 1000,
         ];
 
-        dump($this->getJournal());
+        $this->table([
+            'update_id',
+            'execution_duration_ms',
+        ], $this->journal);
 
         $this->journal = [];
     }

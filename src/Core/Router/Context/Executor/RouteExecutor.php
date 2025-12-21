@@ -64,7 +64,7 @@ final readonly class RouteExecutor implements RouteExecutorInterface
 
     protected function resolve(TelegramBotApi $api, Update $update)
     {
-        $callable = fn () => $this::invokeCallableWithArgs($this->params->getHandler(), [
+        $callable = fn () => $this::invokeCallableWithArgs($this->params->getHandler()->handler(), [
             'api' => $api,
             'telegramBotApi' => $api,
             'update' => $update,

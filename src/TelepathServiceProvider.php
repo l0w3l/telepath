@@ -3,13 +3,15 @@
 namespace Lowel\Telepath;
 
 use Illuminate\Support\Facades\Route;
+use Lowel\Telepath\Commands\Conversation\MakeConversationCommand;
+use Lowel\Telepath\Commands\Handler\MakeHandlerCommand;
 use Lowel\Telepath\Commands\Hook\RemoveCommand;
 use Lowel\Telepath\Commands\Hook\SetCommand;
 use Lowel\Telepath\Commands\Hook\StatusCommand;
-use Lowel\Telepath\Commands\MakeHandlerCommand;
-use Lowel\Telepath\Commands\MakeKeyboardInlineCommand;
-use Lowel\Telepath\Commands\MakeKeyboardReplyCommand;
-use Lowel\Telepath\Commands\MakeMiddlewareCommand;
+use Lowel\Telepath\Commands\Keyboard\MakeKeyboardInlineCommand;
+use Lowel\Telepath\Commands\Keyboard\MakeKeyboardReplyCommand;
+use Lowel\Telepath\Commands\MIddleware\MakeMiddlewareCommand;
+use Lowel\Telepath\Commands\Router\RouteListCommand;
 use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Components\Benchmark\Benchmark;
 use Lowel\Telepath\Components\Context\Context;
@@ -65,7 +67,9 @@ class TelepathServiceProvider extends PackageServiceProvider
                 MakeMiddlewareCommand::class,
                 MakeKeyboardInlineCommand::class,
                 MakeKeyboardReplyCommand::class,
+                MakeConversationCommand::class,
                 StatusCommand::class,
+                RouteListCommand::class,
             ]);
     }
 

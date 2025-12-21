@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Commands;
+namespace Lowel\Telepath\Commands\Handler;
 
 use Lowel\Telepath\Commands\Abstract\FileGenerator\AbstractMakeFilesCommand;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram\CreateTelegramHandlerFileAction;
