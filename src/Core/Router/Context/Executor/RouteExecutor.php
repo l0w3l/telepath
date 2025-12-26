@@ -8,8 +8,8 @@ use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 final readonly class RouteExecutor implements RouteExecutorInterface
 {

@@ -6,8 +6,8 @@ namespace Lowel\Telepath\Core\Drivers;
 
 use Generator;
 use Lowel\Telepath\Exceptions\TelegramAppException;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 interface TelegramAppDriverInterface
 {

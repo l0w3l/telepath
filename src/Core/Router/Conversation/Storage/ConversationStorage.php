@@ -6,8 +6,8 @@ namespace Lowel\Telepath\Core\Router\Conversation\Storage;
 
 use Illuminate\Contracts\Cache\Repository;
 use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
+use Phptg\BotApi\Type\Update\Update;
 use Psr\SimpleCache\InvalidArgumentException;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 use function Opis\Closure\serialize;
 use function Opis\Closure\unserialize;

@@ -35,8 +35,8 @@ That's it! now you can handle Update request in your telegram.php file.
 
 ```php
 use Lowel\Telepath\Facades\Telepath;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 Telepath::middleware(function (TelegramBotApi $telegramBotApi, Update $update, callable $callback) {
     logger()->info('Middleware in');
@@ -216,8 +216,8 @@ And then use it in your handlers:
 
 ```php
 use Lowel\Telepath\Facades\Telepath;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 Telepath::on(function (TelegramBotApi $telegramBotApi, Update $update) {
 //
@@ -242,8 +242,8 @@ And then, after describing your keyboard layout in the generated files, you can 
 
 ```php
 use Lowel\Telepath\Facades\Telepath;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 use Lowel\Telepath\Keyboards\InlineKeyboard\SampleInlineKeyboard;
 
 Telepath::on(function (TelegramBotApi $telegramBotApi, Update $update) {

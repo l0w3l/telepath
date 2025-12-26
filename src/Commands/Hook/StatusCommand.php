@@ -3,7 +3,7 @@
 namespace Lowel\Telepath\Commands\Hook;
 
 use Illuminate\Console\Command;
-use Vjik\TelegramBot\Api\TelegramBotApi;
+use Phptg\BotApi\TelegramBotApi;
 
 class StatusCommand extends Command
 {

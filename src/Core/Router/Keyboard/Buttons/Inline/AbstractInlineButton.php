@@ -6,10 +6,10 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
-use Vjik\TelegramBot\Api\Type\KeyboardButton;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\InlineKeyboardButton;
+use Phptg\BotApi\Type\KeyboardButton;
+use Phptg\BotApi\Type\Update\Update;
 
 abstract class AbstractInlineButton implements ButtonInterface
 {

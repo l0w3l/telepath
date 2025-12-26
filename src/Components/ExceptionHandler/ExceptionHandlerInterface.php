@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Components\ExceptionHandler;
 
 use Closure;
+use Phptg\BotApi\Type\Update\Update;
 use Throwable;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 /**
  * Describe method to manage and execute global exception handlers

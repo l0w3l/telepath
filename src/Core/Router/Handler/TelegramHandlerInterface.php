@@ -6,7 +6,7 @@ namespace Lowel\Telepath\Core\Router\Handler;
 
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 /**
  * Interface for Telegram handlers.

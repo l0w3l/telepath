@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons;
 
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
-use Vjik\TelegramBot\Api\Type\KeyboardButton;
+use Phptg\BotApi\Type\InlineKeyboardButton;
+use Phptg\BotApi\Type\KeyboardButton;
 
 interface ButtonInterface
 {

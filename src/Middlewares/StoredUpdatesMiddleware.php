@@ -7,9 +7,9 @@ namespace Lowel\Telepath\Middlewares;
 use Lowel\Telepath\Core\Router\Middleware\AbstractTelegramMiddleware;
 use Lowel\Telepath\Exceptions\StoredUpdatesTableNotFoundException;
 use Lowel\Telepath\Models\TelepathStoredUpdate;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 use Throwable;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 /**
  * Middleware that stores updates in the telepath_stored_updates table.

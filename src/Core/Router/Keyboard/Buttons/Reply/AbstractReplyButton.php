@@ -8,7 +8,7 @@ use Closure;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use Vjik\TelegramBot\Api\Type\KeyboardButton;
+use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractReplyButton implements ButtonInterface
 {

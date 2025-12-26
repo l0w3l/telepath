@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Enums;
 
-use Vjik\TelegramBot\Api\Type\Chat;
+use Phptg\BotApi\Type\Chat;
 
 enum ChatTypesEnum: string
 {

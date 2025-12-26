@@ -7,9 +7,9 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 use Closure;
 use Lowel\Telepath\Enums\SwitchInlineQueryAllowTypesEnum;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
-use Vjik\TelegramBot\Api\Type\KeyboardButton;
-use Vjik\TelegramBot\Api\Type\SwitchInlineQueryChosenChat;
+use Phptg\BotApi\Type\InlineKeyboardButton;
+use Phptg\BotApi\Type\KeyboardButton;
+use Phptg\BotApi\Type\SwitchInlineQueryChosenChat;
 
 abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
 {

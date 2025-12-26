@@ -3,7 +3,7 @@
 namespace Lowel\Telepath\Exceptions\Router;
 
 use Exception;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 class TelegramHandlerNotFoundException extends Exception
 {

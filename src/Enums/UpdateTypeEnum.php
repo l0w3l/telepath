@@ -7,7 +7,7 @@ namespace Lowel\Telepath\Enums;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 enum UpdateTypeEnum: string
 {

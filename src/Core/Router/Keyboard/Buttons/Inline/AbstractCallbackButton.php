@@ -7,8 +7,8 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 use Closure;
 use Lowel\Telepath\Helpers\Hasher;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardButton;
-use Vjik\TelegramBot\Api\Type\KeyboardButton;
+use Phptg\BotApi\Type\InlineKeyboardButton;
+use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractCallbackButton extends AbstractInlineButton
 {

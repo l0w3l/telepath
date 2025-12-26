@@ -24,15 +24,15 @@ use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Facades\Paranormal;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\InputFile;
+use Phptg\BotApi\Type\Update\Update;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Throwable;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\InputFile;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class TelepathServiceProvider extends PackageServiceProvider
 {

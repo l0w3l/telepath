@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard;
 
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
-use Vjik\TelegramBot\Api\Type\ForceReply;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardMarkup;
-use Vjik\TelegramBot\Api\Type\ReplyKeyboardMarkup;
-use Vjik\TelegramBot\Api\Type\ReplyKeyboardRemove;
+use Phptg\BotApi\Type\ForceReply;
+use Phptg\BotApi\Type\InlineKeyboardMarkup;
+use Phptg\BotApi\Type\ReplyKeyboardMarkup;
+use Phptg\BotApi\Type\ReplyKeyboardRemove;
 
 interface KeyboardBuilderInterface
 {

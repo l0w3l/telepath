@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Components;
 
+use Phptg\BotApi\Type\Update\Update;
 use Throwable;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 /**
  * Telepath component interface

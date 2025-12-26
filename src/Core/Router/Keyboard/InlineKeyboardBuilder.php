@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard;
 
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
-use Vjik\TelegramBot\Api\Type\InlineKeyboardMarkup;
+use Phptg\BotApi\Type\InlineKeyboardMarkup;
 
 final class InlineKeyboardBuilder extends AbstractKeyboardBuilder
 {

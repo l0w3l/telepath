@@ -8,8 +8,8 @@ use Lowel\Telepath\Core\Components\ComponentsBundle;
 use Lowel\Telepath\Core\Drivers\TelegramAppDriverInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\Traits\UpdateHandlerTrait;
+use Phptg\BotApi\TelegramBotApi;
 use Throwable;
-use Vjik\TelegramBot\Api\TelegramBotApi;
 
 final readonly class TelegramApp implements TelegramAppInterface
 {

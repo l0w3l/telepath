@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Components;
 
 use Illuminate\Contracts\Foundation\Application;
+use Phptg\BotApi\Type\Update\Update;
 use Throwable;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class AbstractComponent implements ComponentInterface, ComponentRegistratorInterface
 {

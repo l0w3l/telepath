@@ -7,8 +7,8 @@ namespace Lowel\Telepath\Core\Drivers;
 use Generator;
 use Illuminate\Support\Facades\Log;
 use Lowel\Telepath\Exceptions\TelegramAppException;
-use Vjik\TelegramBot\Api\FailResult;
-use Vjik\TelegramBot\Api\TelegramBotApi;
+use Phptg\BotApi\FailResult;
+use Phptg\BotApi\TelegramBotApi;
 
 final class LongPoolingDriverTelegram implements TelegramAppDriverInterface
 {

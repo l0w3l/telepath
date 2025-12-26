@@ -4,7 +4,7 @@ namespace Lowel\Telepath\Commands\Hook;
 
 use Exception;
 use Illuminate\Console\Command;
-use Vjik\TelegramBot\Api\TelegramBotApi;
+use Phptg\BotApi\TelegramBotApi;
 
 class RemoveCommand extends Command
 {

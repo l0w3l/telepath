@@ -7,8 +7,8 @@ namespace Lowel\Telepath\Components\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Core\Components\AbstractComponent;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Phptg\BotApi\Type\Update\Update;
 use Throwable;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInterface
 {

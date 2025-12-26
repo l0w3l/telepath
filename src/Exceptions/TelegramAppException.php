@@ -3,8 +3,8 @@
 namespace Lowel\Telepath\Exceptions;
 
 use Exception;
+use Phptg\BotApi\FailResult;
 use Psr\Http\Message\ServerRequestInterface;
-use Vjik\TelegramBot\Api\FailResult;
 
 class TelegramAppException extends Exception
 {

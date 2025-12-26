@@ -9,9 +9,9 @@ use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Core\Components\AbstractComponent;
+use Phptg\BotApi\Type\Update\Update;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 class Benchmark extends AbstractComponent implements BenchmarkInterface
 {

@@ -6,10 +6,10 @@ namespace Lowel\Telepath\Core\Drivers;
 
 use Generator;
 use Lowel\Telepath\Exceptions\TelegramAppException;
+use Phptg\BotApi\ParseResult\TelegramParseResultException;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 use Psr\Http\Message\ServerRequestInterface;
-use Vjik\TelegramBot\Api\ParseResult\TelegramParseResultException;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 final readonly class WebhookDriverTelegram implements TelegramAppDriverInterface
 {

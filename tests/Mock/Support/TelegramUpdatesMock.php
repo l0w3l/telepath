@@ -7,7 +7,7 @@ namespace Lowel\Telepath\Tests\Mock\Support;
 use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Tests\Mock\TestAppDriver;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 class TelegramUpdatesMock
 {

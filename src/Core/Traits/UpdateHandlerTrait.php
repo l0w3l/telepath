@@ -8,10 +8,10 @@ use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorage;
 use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Exceptions\Router\ConversationException;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 use RuntimeException;
 use Throwable;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 trait UpdateHandlerTrait
 {

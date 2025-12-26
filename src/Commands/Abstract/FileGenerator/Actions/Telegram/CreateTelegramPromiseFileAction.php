@@ -7,8 +7,8 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\AbstractCreateFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Generator\ClassGenerator;
 use Lowel\Telepath\Core\Router\Conversation\Promise\AbstractTelegramPromise;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Chat;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Chat;
 
 readonly class CreateTelegramPromiseFileAction extends AbstractCreateFileAction
 {

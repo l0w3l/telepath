@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Vjik\TelegramBot\Api\TelegramBotApi;
+use Phptg\BotApi\TelegramBotApi;
 
 /**
  * @mixin TelegramBotApi

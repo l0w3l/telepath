@@ -12,8 +12,8 @@ use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
 use Lowel\Telepath\Facades\Extrasense;
+use Phptg\BotApi\TelegramBotApi;
 use Psr\Http\Message\ServerRequestInterface;
-use Vjik\TelegramBot\Api\TelegramBotApi;
 
 final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
 {

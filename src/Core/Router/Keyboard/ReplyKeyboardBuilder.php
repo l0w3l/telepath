@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard;
 
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
-use Vjik\TelegramBot\Api\Type\ReplyKeyboardMarkup;
-use Vjik\TelegramBot\Api\Type\ReplyKeyboardRemove;
+use Phptg\BotApi\Type\ReplyKeyboardMarkup;
+use Phptg\BotApi\Type\ReplyKeyboardRemove;
 
 class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
 {

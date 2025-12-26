@@ -11,8 +11,8 @@ use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UserNotFoundInCurrentContextException;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Middlewares\Traits\AllowedExcludeIdsTrait;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 /**
  * Middleware to allow processing messages only from specific users.

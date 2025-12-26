@@ -9,10 +9,10 @@ use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UserNotFoundInCurrentContextException;
-use Vjik\TelegramBot\Api\Type\Chat;
-use Vjik\TelegramBot\Api\Type\Message;
-use Vjik\TelegramBot\Api\Type\Update\Update;
-use Vjik\TelegramBot\Api\Type\User;
+use Phptg\BotApi\Type\Chat;
+use Phptg\BotApi\Type\Message;
+use Phptg\BotApi\Type\Update\Update;
+use Phptg\BotApi\Type\User;
 
 /**
  * Context interface for current application state.
