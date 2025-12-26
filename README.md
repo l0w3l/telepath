@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/l0w3l/telepath/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/l0w3l/telepath/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/lowel/telepath.svg?style=flat-square)](https://packagist.org/packages/lowel/telepath)
 
-Telegram bot SDK for Laravel inspired by [vjik/telegram-bot-api](https://github.com/vjik/telegram-bot-api). 
+Telegram bot SDK for Laravel inspired by [phptg/bot-api](https://github.com/phptg/bot-api). 
 
 SDK supports routes and long pooling \ webhook handling
 
