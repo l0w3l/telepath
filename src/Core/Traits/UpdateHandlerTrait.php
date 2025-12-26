@@ -60,7 +60,7 @@ trait UpdateHandlerTrait
                     'shared' => $conversationPositionData->shared,
                 ]);
 
-                // reset state
+                // reset state and alert about error
                 if (false === ($error instanceof ConversationException)) {
                     $conversationStorage->delete();
                 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Context\Executor;
 
-use Illuminate\Support\Str;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -44,16 +43,12 @@ final readonly class RouteExecutor implements RouteExecutorInterface
     {
         if ($this->params->hasUpdateTypeEnum()) {
             if ($this->params->hasPattern()) {
-                return $this->params->getUpdateTypeEnum() === $updateTypeEnum && Str::match(Str::deduplicate("/{$this->params->getPattern()}/", '/'), $text ?? '');
+                return $this->params->getUpdateTypeEnum() === $updateTypeEnum && $this->params->matchPattern($text);
             } else {
                 return $this->params->getUpdateTypeEnum() === $updateTypeEnum;
             }
         } else {
-            if ($this->params->hasPattern()) {
-                return (bool) Str::match($this->params->getPattern(), $text ?? '');
-            } else {
-                return true;
-            }
+            throw new \RuntimeException('Update type is not defined in route params');
         }
     }
 

@@ -6,7 +6,9 @@ namespace Lowel\Telepath\Commands\Conversation;
 
 use Lowel\Telepath\Commands\Abstract\FileGenerator\AbstractMakeFilesCommand;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram\CreateTelegramConversationFileAction;
+use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram\CreateTelegramPromiseFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Files\Telegram\TelegramConversationFileMetadata;
+use Lowel\Telepath\Commands\Abstract\FileGenerator\Files\Telegram\TelegramPromiseFileMetadata;
 
 class MakeConversationCommand extends AbstractMakeFilesCommand
 {
@@ -27,6 +29,7 @@ class MakeConversationCommand extends AbstractMakeFilesCommand
     public function getActions(string $argument): array
     {
         return [
+            new CreateTelegramPromiseFileAction(new TelegramPromiseFileMetadata, $this->argument('name')),
             new CreateTelegramConversationFileAction(new TelegramConversationFileMetadata, $this->argument('name')),
         ];
     }

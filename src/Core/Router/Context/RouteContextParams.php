@@ -154,13 +154,10 @@ final class RouteContextParams
 
     public function setPattern(?string $pattern): self
     {
-        if ($pattern !== null) {
-            if ($this->pattern !== null) {
-                $this->pattern = $pattern.$this->pattern;
-
-            } else {
-                $this->pattern = $pattern;
-            }
+        if ($this->pattern !== null) {
+            $this->pattern = $pattern.$this->pattern;
+        } else {
+            $this->pattern = $pattern;
         }
 
         return $this;
@@ -174,6 +171,24 @@ final class RouteContextParams
     public function hasPattern(): bool
     {
         return $this->pattern !== null;
+    }
+
+    public function matchPattern(?string $text): bool
+    {
+
+        if ($this->hasPattern()) {
+            $pattern = $this->getPattern();
+
+            if (str_starts_with($pattern, '/') && str_ends_with($pattern, '/')) {
+                return preg_match(sprintf('%s', $pattern), $text ?? '') === 1;
+            } elseif (str_starts_with($pattern, '/')) {
+                return preg_match(sprintf('/^\\%s$/', $pattern), $text ?? '') === 1;
+            } else {
+                return preg_match(sprintf('/^%s$/', $pattern), $text ?? '') === 1;
+            }
+        }
+
+        return true;
     }
 
     public function reset(): self
