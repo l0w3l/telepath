@@ -3,13 +3,17 @@
 namespace Lowel\Telepath;
 
 use Illuminate\Support\Facades\Route;
+use Lowel\Telepath\Commands\Conversation\MakeConversationCommand;
+use Lowel\Telepath\Commands\Handler\MakeHandlerCommand;
 use Lowel\Telepath\Commands\Hook\RemoveCommand;
 use Lowel\Telepath\Commands\Hook\SetCommand;
-use Lowel\Telepath\Commands\MakeHandlerCommand;
-use Lowel\Telepath\Commands\MakeKeyboardInlineCommand;
-use Lowel\Telepath\Commands\MakeKeyboardReplyCommand;
-use Lowel\Telepath\Commands\MakeMiddlewareCommand;
+use Lowel\Telepath\Commands\Hook\StatusCommand;
+use Lowel\Telepath\Commands\Keyboard\MakeKeyboardInlineCommand;
+use Lowel\Telepath\Commands\Keyboard\MakeKeyboardReplyCommand;
+use Lowel\Telepath\Commands\MIddleware\MakeMiddlewareCommand;
+use Lowel\Telepath\Commands\Router\RouteListCommand;
 use Lowel\Telepath\Commands\RunCommand;
+use Lowel\Telepath\Components\Benchmark\Benchmark;
 use Lowel\Telepath\Components\Context\Context;
 use Lowel\Telepath\Components\ExceptionHandler\ExceptionHandler;
 use Lowel\Telepath\Core\Components\ComponentInterface;
@@ -33,9 +37,10 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 class TelepathServiceProvider extends PackageServiceProvider
 {
     /**
-     * @var class-string<ComponentInterface>[]
+     * @var class-string<ComponentInterface&ComponentRegistratorInterface>[]
      */
     private array $components = [
+        Benchmark::class,
         Context::class,
         ExceptionHandler::class,
     ];
@@ -62,6 +67,9 @@ class TelepathServiceProvider extends PackageServiceProvider
                 MakeMiddlewareCommand::class,
                 MakeKeyboardInlineCommand::class,
                 MakeKeyboardReplyCommand::class,
+                MakeConversationCommand::class,
+                StatusCommand::class,
+                RouteListCommand::class,
             ]);
     }
 
@@ -94,18 +102,18 @@ class TelepathServiceProvider extends PackageServiceProvider
     private function bindComponents(): void
     {
         foreach ($this->components as $component) {
-            if (is_subclass_of($component, ComponentRegistratorInterface::class)) {
-                $component::register($this->app);
-            }
+            $component::register($this->app);
         }
 
         $this->app->singleton(ComponentsBundle::class, function ($app) {
             $componentBundle = new ComponentsBundle;
 
             foreach ($this->components as $component) {
-                $componentBundle->append(
-                    $app->make($component)
-                );
+                if ($component::isRegistered()) {
+                    $componentBundle->append(
+                        $app->make($component)
+                    );
+                }
             }
 
             return $componentBundle;
@@ -128,7 +136,7 @@ class TelepathServiceProvider extends PackageServiceProvider
 
         $this->app->bind(TelegramBotApi::class, function () {
             return new TelegramBotApi(
-                token: config('telepath.token'),
+                token: Extrasense::profile()->token,
                 baseUrl: config('telepath.base_uri'),
                 logger: logger());
         });

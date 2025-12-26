@@ -25,11 +25,7 @@ readonly class CreateInlineTelegramKeyboardFileAction extends AbstractCreateFile
 
         $this->createDirectoryIfNotExists();
 
-        if (! $this->filesystem->isDirectory($this->folderPath."{$this->argumentName}")) {
-            $this->filesystem->makeDirectory($this->folderPath."{$this->argumentName}");
-        }
-
-        $this->save($this->folderPath."{$this->argumentName}/{$this->className}.php", $classGenerator->generate());
+        $this->saveInDirectoryName($classGenerator->generate());
 
         return $this->classPath;
     }

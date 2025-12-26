@@ -21,4 +21,6 @@ interface RouteExecutorInterface
     public function proceed(TelegramBotApi $api, Update $update): void;
 
     public function match(UpdateTypeEnum $updateTypeEnum, ?string $text = null): bool;
+
+    public function params(): RouteContextParams;
 }

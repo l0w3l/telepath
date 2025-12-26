@@ -45,7 +45,7 @@ abstract class AbstractReplyButton implements ButtonInterface
             return;
         }
 
-        $pattern = "/{$this->pattern()}/";
+        $pattern = "{$this->pattern()}";
 
         // reply keyboards works only with static content
         $telegramRouter->onMessage($this->handle()(...), $pattern);

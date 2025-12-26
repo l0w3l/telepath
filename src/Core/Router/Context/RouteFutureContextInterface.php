@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Context;
 
 use Closure;
+use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
 use Lowel\Telepath\Core\Router\Conversation\TelegramConversationInterface;
-use Lowel\Telepath\Core\Router\Conversation\TelegramPromiseInterface;
 
 /**
  * Interface for route context that supports asynchronous handling.

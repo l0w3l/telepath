@@ -19,4 +19,6 @@ interface ComponentRegistratorInterface
      * @link \Lowel\Telepath\TelepathServiceProvider::bindComponents()
      */
     public static function register(Application $app): void;
+
+    public static function isRegistered(): bool;
 }

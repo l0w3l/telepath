@@ -72,4 +72,13 @@ abstract readonly class AbstractCreateFileAction
 
         $this->filesystem->put($path, $fileContent);
     }
+
+    protected function saveInDirectoryName(string $content): void
+    {
+        if (! $this->filesystem->isDirectory($this->folderPath."{$this->argumentName}")) {
+            $this->filesystem->makeDirectory($this->folderPath."{$this->argumentName}");
+        }
+
+        $this->save($this->folderPath."{$this->argumentName}/{$this->className}.php", $content);
+    }
 }

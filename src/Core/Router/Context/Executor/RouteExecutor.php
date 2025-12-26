@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Context\Executor;
 
-use Illuminate\Support\Str;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
-use Lowel\Telepath\Core\Router\Conversation\ConversationStorageFactory;
+use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Traits\InvokeAbleTrait;
-use Psr\SimpleCache\InvalidArgumentException;
 use Vjik\TelegramBot\Api\TelegramBotApi;
 use Vjik\TelegramBot\Api\Type\Update\Update;
 
@@ -32,9 +30,6 @@ final readonly class RouteExecutor implements RouteExecutorInterface
         return $this;
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function proceed(TelegramBotApi $api, Update $update): void
     {
         $proceedResult = $this->resolve($api, $update);
@@ -48,22 +43,23 @@ final readonly class RouteExecutor implements RouteExecutorInterface
     {
         if ($this->params->hasUpdateTypeEnum()) {
             if ($this->params->hasPattern()) {
-                return $this->params->getUpdateTypeEnum() === $updateTypeEnum && Str::match(Str::deduplicate("/{$this->params->getPattern()}/", '/'), $text ?? '');
+                return $this->params->getUpdateTypeEnum() === $updateTypeEnum && $this->params->matchPattern($text);
             } else {
                 return $this->params->getUpdateTypeEnum() === $updateTypeEnum;
             }
         } else {
-            if ($this->params->hasPattern()) {
-                return (bool) Str::match($this->params->getPattern(), $text ?? '');
-            } else {
-                return true;
-            }
+            throw new \RuntimeException('Update type is not defined in route params');
         }
+    }
+
+    public function params(): RouteContextParams
+    {
+        return $this->params;
     }
 
     protected function resolve(TelegramBotApi $api, Update $update)
     {
-        $callable = fn () => $this::invokeCallableWithArgs($this->params->getHandler(), [
+        $callable = fn () => $this::invokeCallableWithArgs($this->params->getHandler()->handler(), [
             'api' => $api,
             'telegramBotApi' => $api,
             'update' => $update,
@@ -86,17 +82,12 @@ final readonly class RouteExecutor implements RouteExecutorInterface
         return $callable();
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     private function initializeConversation(Update $update, mixed $proceedResult): void
     {
         $conversation = $this->params->getConversation();
         $conversationStorageFactory = new ConversationStorageFactory;
 
         $conversationStorageFactory->create($update)
-            ->initialize($conversation)
-            ->storeShared($proceedResult, $conversation[0]);
-
+            ->initialize($conversation, $proceedResult);
     }
 }
