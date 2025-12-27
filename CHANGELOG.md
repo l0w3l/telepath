@@ -2,6 +2,23 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.4.0 Keyboard, conversations, components, cache, debug, optiomizations - 2025-12-27
+
+### What's Changed
+
+* Update vjik/telegram-bot-api to phptg/bot-api
+* Feature/global exception handler by @l0w3l in https://github.com/l0w3l/telepath/pull/24
+* Revert "Feature/global exception handler" by @l0w3l in https://github.com/l0w3l/telepath/pull/25
+* Feature/global exception handler by @l0w3l in https://github.com/l0w3l/telepath/pull/26
+* test: tests for telepath routing system + bug fixes by @l0w3l in https://github.com/l0w3l/telepath/pull/27
+* Feature/poltergeist by @l0w3l in https://github.com/l0w3l/telepath/pull/28
+* Feature/refactoring before 0.4 by @l0w3l in https://github.com/l0w3l/telepath/pull/32
+* build(deps): bump stefanzweifel/git-auto-commit-action from 6 to 7 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/29
+* build(deps): bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/31
+* Develop\0.4.0 by @l0w3l in https://github.com/l0w3l/telepath/pull/33
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.3.4...0.4.0
+
 ## 0.3.4 - 2025-08-18
 
 ### What's Changed
