@@ -6,13 +6,13 @@ namespace Lowel\Telepath\Middlewares\Messages;
 
 use Closure;
 use Illuminate\Support\Facades\Log;
-use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
+use Lowel\Telepath\Core\Router\Middleware\AbstractTelegramMiddleware;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UserNotFoundInCurrentContextException;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Middlewares\Traits\AllowedExcludeIdsTrait;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 /**
  * Middleware to exclude messages from users.
@@ -20,7 +20,7 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
  *
  * @see OnlyForUsersMiddleware
  */
-final class NotForUsersMiddleware implements TelegramMiddlewareInterface
+final class NotForUsersMiddleware extends AbstractTelegramMiddleware
 {
     use AllowedExcludeIdsTrait;
 
@@ -31,21 +31,23 @@ final class NotForUsersMiddleware implements TelegramMiddlewareInterface
         null|Closure|array $excludeUsers = null
     ) {
         $this->allowedUserIds = null;
-        $this->excludeUserIds = $excludeUsers ?? config('telepath.profiles')[config('telepath.profile')]['banned'];
+        $this->excludeUserIds = $excludeUsers ?? Extrasense::profile()->blacklist;
     }
 
-    public function __invoke(TelegramBotApi $api, Update $update, callable $next): void
+    public function handler(): callable
     {
-        try {
-            $user = Extrasense::user();
+        return function (TelegramBotApi $api, Update $update, callable $next): void {
+            try {
+                $user = Extrasense::user();
 
-            if (! in_array($user->id, $this->getExcludeIds())) {
-                $next();
-            } else {
-                Log::debug("User {$user->username} ({$user->id}) was rejected", ['update' => $update]);
+                if (! in_array($user->id, $this->getExcludeIds())) {
+                    $next();
+                } else {
+                    Log::debug("User {$user->username} ({$user->id}) was rejected", ['update' => $update]);
+                }
+            } catch (UserNotFoundInCurrentContextException|UpdateNotFoundInCurrentContextException $e) {
+                // not valid type
             }
-        } catch (UserNotFoundInCurrentContextException|UpdateNotFoundInCurrentContextException $e) {
-            // not valid type
-        }
+        };
     }
 }

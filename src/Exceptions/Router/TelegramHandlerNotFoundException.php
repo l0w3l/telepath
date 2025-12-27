@@ -3,16 +3,16 @@
 namespace Lowel\Telepath\Exceptions\Router;
 
 use Exception;
-use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Phptg\BotApi\Type\Update\Update;
 
 class TelegramHandlerNotFoundException extends Exception
 {
-    public function __construct(string|UpdateTypeEnum $target = '.')
+    public Update $update;
+
+    public function __construct(Update $update)
     {
-        if (is_string($target)) {
-            parent::__construct("Handler not found by text `{$target}`");
-        } else {
-            parent::__construct("Handler not found by update type `{$target->value}`");
-        }
+        $this->update = $update;
+
+        parent::__construct('Update not found exception');
     }
 }

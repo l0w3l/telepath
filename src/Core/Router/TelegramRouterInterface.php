@@ -7,16 +7,22 @@ namespace Lowel\Telepath\Core\Router;
 use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
+use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 /**
  * @extends  RouteContextInterface<TelegramRouterInterface>
  *
- * @phpstan-type RouterHandler class-string<TelegramHandlerInterface>|callable(TelegramBotApi, Update): mixed
- * @phpstan-type MiddlewareHandler array<class-string<TelegramMiddlewareInterface>|callable(TelegramBotApi, Update, callable): mixed>|class-string<TelegramMiddlewareInterface>|callable(TelegramBotApi, Update, callable): void
+ * DI supported callback or TelegramHandlerInterface instance
+ *
+ * @phpstan-type RouterHandler class-string<TelegramHandlerInterface>|callable
+ *
+ * DI supported callback or TelegramMiddlewareInterface instance
+ * @phpstan-type MiddlewareHandler array<class-string<TelegramMiddlewareInterface>|callable>|class-string<TelegramMiddlewareInterface>|callable
+ *
+ * DI supported callback or TelegramHandlerInterface instance
  * @phpstan-type FallbackHandler RouterHandler
  */
 interface TelegramRouterInterface extends RouteContextInterface
@@ -170,7 +176,7 @@ interface TelegramRouterInterface extends RouteContextInterface
      *
      * @param  RouterHandler  $handler
      *
-     * @link https://core.telegram.org/bots/api#chatmemberupdated
+     * @link https://core.telegram.org/bots/api#poll
      */
     public function onPoll(string|callable $handler): RouteContextInterface;
 
@@ -252,4 +258,11 @@ interface TelegramRouterInterface extends RouteContextInterface
      * This method is useful for organizing related handlers and applying common logic.
      */
     public function group(callable $callback): RouteContextInterface;
+
+    /**
+     * Watch keyboards handlers
+     *
+     * @param  class-string<KeyboardFactoryInterface>  ...$keyboards
+     */
+    public function keyboard(string ...$keyboards): RouteContextInterface;
 }

@@ -1,7 +1,7 @@
 <?php
 
 use Lowel\Telepath\Models\TelepathStoredUpdate;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 beforeEach(function (): void {
     $this->artisan('migrate:fresh');

@@ -4,7 +4,7 @@ namespace Lowel\Telepath\Commands\Hook;
 
 use Illuminate\Console\Command;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Vjik\TelegramBot\Api\TelegramBotApi;
+use Phptg\BotApi\TelegramBotApi;
 
 class SetCommand extends Command
 {

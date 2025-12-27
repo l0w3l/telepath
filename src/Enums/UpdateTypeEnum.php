@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Enums;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
+use Phptg\BotApi\Type\Update\Update;
 
 enum UpdateTypeEnum: string
 {
@@ -46,6 +48,22 @@ enum UpdateTypeEnum: string
         return $types;
     }
 
+    public static function extractText(Update $update, UpdateTypeEnum $type): ?string
+    {
+        return match ($type) {
+            UpdateTypeEnum::MESSAGE => $update->message->text,
+            UpdateTypeEnum::EDITED_MESSAGE => $update->editedMessage->text,
+            UpdateTypeEnum::CHANNEL_POST => $update->channelPost->text,
+            UpdateTypeEnum::EDITED_CHANNEL_POST => $update->editedChannelPost->text,
+            UpdateTypeEnum::INLINE_QUERY => $update->inlineQuery->query,
+            UpdateTypeEnum::CHOSEN_INLINE_RESULT => $update->chosenInlineResult->query,
+            UpdateTypeEnum::CALLBACK_QUERY => $update->callbackQuery->data,
+            UpdateTypeEnum::BUSINESS_MESSAGE => $update->businessMessage->text,
+            UpdateTypeEnum::EDIT_BUSINESS_MESSAGE => $update->editedBusinessMessage->text,
+            default => null,
+        };
+    }
+
     /**
      * @return string[]
      */
@@ -55,6 +73,10 @@ enum UpdateTypeEnum: string
 
         if (in_array('*', $filter)) {
             return $array;
+        } elseif (in_array('auto', $filter)) {
+            $routerResolver = App::make(TelegramRouterResolverInterface::class);
+
+            return $routerResolver->getExecutors()->getAllUpdateTypes();
         } else {
             return array_filter($array, fn (string $value) => in_array($value, $filter));
         }

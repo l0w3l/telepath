@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Middleware;
 
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
-
 /**
  * Interface for Telegram middleware.
  *
  * Middleware can be used to process updates before they reach the handler.
  * It can modify the update, perform logging, or handle specific conditions.
- *
- * @method mixed|void __invoke(TelegramBotApi $api, Update $update, callable $next)
  */
-interface TelegramMiddlewareInterface {}
+interface TelegramMiddlewareInterface
+{
+    /**
+     * Middleware handler creation
+     *
+     * @return callable - DI supported callable handler
+     */
+    public function handler(): callable;
+}

@@ -6,8 +6,8 @@ namespace Lowel\Telepath\Core\Router\Context\Executor;
 
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 
 /**
  * Interface for route context executors.
@@ -21,4 +21,6 @@ interface RouteExecutorInterface
     public function proceed(TelegramBotApi $api, Update $update): void;
 
     public function match(UpdateTypeEnum $updateTypeEnum, ?string $text = null): bool;
+
+    public function params(): RouteContextParams;
 }

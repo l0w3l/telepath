@@ -6,19 +6,37 @@ namespace Lowel\Telepath\Core\Router\Handler;
 
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
+use Phptg\BotApi\Type\Update\Update;
 
 /**
  * Interface for Telegram handlers.
  * Handlers are invoked when a specific pattern matches an incoming update.
  *
- *
- * @method mixed|void __invoke(TelegramBotApi $api, Update $update)
- * @method null|string pattern()
- * @method null|UpdateTypeEnum type()
- * @method MiddlewareHandler[] middlewares()
- *
  * @phpstan-import-type MiddlewareHandler from TelegramRouterInterface
  */
-interface TelegramHandlerInterface {}
+interface TelegramHandlerInterface
+{
+    /**
+     * Handle telegram typed event
+     *
+     * @return callable = DI supported telegram handler callback
+     */
+    public function handler(): callable;
+
+    /**
+     * Text pattern of telegram event
+     */
+    public function pattern(): ?string;
+
+    /**
+     * Type of telegram event
+     */
+    public function type(): ?UpdateTypeEnum;
+
+    /**
+     * Telegram event middlewares
+     *
+     * @return MiddlewareHandler[]
+     */
+    public function middlewares(): array;
+}

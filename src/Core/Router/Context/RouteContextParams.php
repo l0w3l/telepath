@@ -6,14 +6,13 @@ namespace Lowel\Telepath\Core\Router\Context;
 
 use Closure;
 use Illuminate\Support\Facades\App;
-use Lowel\Telepath\Core\Router\Conversation\TelegramPromiseInterface;
-use Lowel\Telepath\Core\Router\Conversation\TelegramPromiseWrapper;
+use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Phptg\BotApi\TelegramBotApi;
+use Phptg\BotApi\Type\Update\Update;
 use RuntimeException;
-use Vjik\TelegramBot\Api\TelegramBotApi;
-use Vjik\TelegramBot\Api\Type\Update\Update;
 
 /**
  * Class RouteContextParams
@@ -24,12 +23,11 @@ use Vjik\TelegramBot\Api\Type\Update\Update;
 final class RouteContextParams
 {
     /**
-     * @param  TelegramHandlerInterface|Closure(TelegramBotApi, Update): void|null  $handler
      * @param  array<Closure(TelegramBotApi, Update, callable): void>  $middlewares
-     * @param  array<TelegramPromiseWrapper>  $conversation
+     * @param  array<TelegramPromiseInterface>  $conversation
      */
     public function __construct(
-        private null|TelegramHandlerInterface|Closure $handler = null,
+        private ?TelegramHandlerInterface $handler = null,
         private ?UpdateTypeEnum $updateTypeEnum = null,
         private array $middlewares = [],
         private ?string $name = null,
@@ -54,16 +52,16 @@ final class RouteContextParams
         return $this->handler === null;
     }
 
-    public function setHandler(TelegramHandlerInterface|Closure $handler): self
+    public function setHandler(TelegramHandlerInterface $handler): self
     {
         $this->handler = $handler;
 
         return $this;
     }
 
-    public function getHandler(): TelegramHandlerInterface|Closure|null
+    public function getHandler(): TelegramHandlerInterface
     {
-        return $this->handler;
+        return $this->handler ?? throw new RuntimeException('Handler is not set.');
     }
 
     public function setUpdateTypeEnum(?UpdateTypeEnum $updateTypeEnum): self
@@ -156,13 +154,10 @@ final class RouteContextParams
 
     public function setPattern(?string $pattern): self
     {
-        if ($pattern !== null) {
-            if ($this->pattern !== null) {
-                $this->pattern = $pattern.$this->pattern;
-
-            } else {
-                $this->pattern = $pattern;
-            }
+        if ($this->pattern !== null) {
+            $this->pattern = $pattern.$this->pattern;
+        } else {
+            $this->pattern = $pattern;
         }
 
         return $this;
@@ -178,6 +173,24 @@ final class RouteContextParams
         return $this->pattern !== null;
     }
 
+    public function matchPattern(?string $text): bool
+    {
+
+        if ($this->hasPattern()) {
+            $pattern = $this->getPattern();
+
+            if (str_starts_with($pattern, '/') && str_ends_with($pattern, '/')) {
+                return preg_match(sprintf('%s', $pattern), $text ?? '') === 1;
+            } elseif (str_starts_with($pattern, '/')) {
+                return preg_match(sprintf('/^\\%s$/', $pattern), $text ?? '') === 1;
+            } else {
+                return preg_match(sprintf('/^%s$/', $pattern), $text ?? '') === 1;
+            }
+        }
+
+        return true;
+    }
+
     public function reset(): self
     {
         $this->handler = null;
@@ -190,9 +203,9 @@ final class RouteContextParams
         return $this;
     }
 
-    public function appendConversation(Closure $then, ?Closure $catch, ?int $ttl): self
+    public function appendConversationPromise(TelegramPromiseInterface $promise): self
     {
-        $this->conversation[] = new TelegramPromiseWrapper($then, $catch, $ttl);
+        $this->conversation[] = $promise;
 
         return $this;
     }
@@ -207,7 +220,7 @@ final class RouteContextParams
         return count($this->conversation);
     }
 
-    public function getConversationPart(int $index): TelegramPromiseInterface
+    public function getConversationPosition(int $index): TelegramPromiseInterface
     {
         return $this->conversation[$index] ?? throw new RuntimeException("Promise with index {$index} does not exist.");
     }

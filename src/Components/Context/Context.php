@@ -2,38 +2,43 @@
 
 declare(strict_types=1);
 
-namespace Lowel\Telepath\Core\GlobalAppContext;
+namespace Lowel\Telepath\Components\Context;
 
-use LogicException;
-use Lowel\Telepath\Core\Drivers\LongPoolingDriverTelegram;
-use Lowel\Telepath\Core\Drivers\TelegramAppDriverInterface;
+use Illuminate\Contracts\Foundation\Application;
+use Lowel\Telepath\Config\Profile;
+use Lowel\Telepath\Core\Components\AbstractComponent;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UserNotFoundInCurrentContextException;
-use Vjik\TelegramBot\Api\Type\Chat;
-use Vjik\TelegramBot\Api\Type\Message;
-use Vjik\TelegramBot\Api\Type\Update\Update;
-use Vjik\TelegramBot\Api\Type\User;
+use Phptg\BotApi\Type\Chat;
+use Phptg\BotApi\Type\Message;
+use Phptg\BotApi\Type\Update\Update;
+use Phptg\BotApi\Type\User;
 
-class GlobalAppContext implements GlobalAppContextInitializerInterface
+class Context extends AbstractComponent implements ContextInterface
 {
     private ?Update $update = null;
 
-    private ?bool $isLongPooling = null;
-
-    public function setUpdate(Update $update): GlobalAppContextInitializerInterface
+    public static function register(Application $app): void
     {
-        $this->update = $update;
+        $app->singleton(Context::class, fn () => new self);
+        $app->singleton(ContextInterface::class, fn ($app) => $app->make(Context::class));
 
-        return $this;
+        $app->bind(Chat::class, fn ($app) => $app->make(ContextInterface::class)->chat());
+        $app->bind(Message::class, fn ($app) => $app->make(ContextInterface::class)->message());
+        $app->bind(User::class, fn ($app) => $app->make(ContextInterface::class)->user());
+        $app->bind(Update::class, fn ($app) => $app->make(ContextInterface::class)->update());
     }
 
-    public function setDriver(TelegramAppDriverInterface $driver): GlobalAppContextInitializerInterface
+    public function onBefore(Update $update): void
     {
-        $this->isLongPooling = ($driver instanceof LongPoolingDriverTelegram);
+        $this->update = $update;
+    }
 
-        return $this;
+    public function onAfter(Update $update): void
+    {
+        $this->update = null;
     }
 
     public function update(): Update
@@ -67,6 +72,7 @@ class GlobalAppContext implements GlobalAppContextInitializerInterface
                 ?? $update->myChatMember->from
                 ?? $update->chatJoinRequest->from
                 ?? $update->purchasedPaidMedia->from
+                ?? $update->chatBoost->boost->source->getUser()
                 ?? throw new UserNotFoundInCurrentContextException('User not found in current context');
         }
     }
@@ -81,6 +87,7 @@ class GlobalAppContext implements GlobalAppContextInitializerInterface
             ?? $update->editedBusinessMessage
             ?? $update->channelPost
             ?? $update->editedChannelPost
+            ?? $update->callbackQuery->message
             ?? throw new MessageNotFoundInCurrentContextException('Message not found in current context');
     }
 
@@ -102,23 +109,13 @@ class GlobalAppContext implements GlobalAppContextInitializerInterface
                 ?? $update->chatJoinRequest->chat
                 ?? $update->chatBoost->chat
                 ?? $update->removedChatBoost->chat
+                ?? $update->messageReaction->actorChat
                 ?? throw new ChatNotFoundInCurrentContextException('Chat not found in current context');
         }
     }
 
-    public function isLongPooling(): bool
+    public function profile(?string $profileKey = null): Profile
     {
-        return $this->isLongPooling ?? throw new LogicException('Driver not set or not initialized');
-    }
-
-    public function isWebhook(): bool
-    {
-        return ! $this->isLongPooling();
-    }
-
-    public function destroy(): void
-    {
-        $this->update = null;
-        $this->isLongPooling = null;
+        return new Profile($profileKey ?? config('telepath.profile'));
     }
 }

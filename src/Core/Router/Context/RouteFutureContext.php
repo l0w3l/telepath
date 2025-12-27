@@ -6,8 +6,9 @@ namespace Lowel\Telepath\Core\Router\Context;
 
 use Closure;
 use Illuminate\Support\Facades\App;
+use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseFactory;
+use Lowel\Telepath\Core\Router\Conversation\Promise\TelegramPromiseInterface;
 use Lowel\Telepath\Core\Router\Conversation\TelegramConversationInterface;
-use Lowel\Telepath\Core\Router\Conversation\TelegramPromiseInterface;
 
 /**
  * Class RouteFutureContext
@@ -17,9 +18,13 @@ use Lowel\Telepath\Core\Router\Conversation\TelegramPromiseInterface;
  */
 readonly class RouteFutureContext extends RouteContext implements RouteFutureContextInterface
 {
+    private TelegramPromiseFactory $telegramPromiseFactory;
+
     public function __construct(RouteContextParams $params)
     {
         parent::__construct($params);
+
+        $this->telegramPromiseFactory = new TelegramPromiseFactory;
     }
 
     public static function from(RouteContextInterface $routeContext): RouteFutureContextInterface
@@ -29,29 +34,6 @@ readonly class RouteFutureContext extends RouteContext implements RouteFutureCon
         }
 
         return new self($routeContext->getParams());
-    }
-
-    public function promise(TelegramPromiseInterface|Closure $resolve, ?Closure $reject = null, ?int $ttl = null): RouteFutureContextInterface
-    {
-        if (($resolveObject = $resolve) instanceof TelegramPromiseInterface) {
-            /** @phpstan-ignore-next-line  */
-            $resolve = $resolveObject->resolve(...);
-
-            /** @phpstan-ignore-next-line  */
-            if (method_exists($resolveObject, 'reject')) {
-                /** @phpstan-ignore-next-line  */
-                $reject = $resolveObject->reject(...);
-            }
-
-            /** @phpstan-ignore-next-line  */
-            if (method_exists($resolveObject, 'ttl')) {
-                $ttl = $resolveObject->ttl();
-            }
-        }
-
-        $this->params->appendConversation($resolve, $reject, $ttl);
-
-        return $this;
     }
 
     public function conversation(TelegramConversationInterface|string $conversation): RouteFutureContextInterface
@@ -69,9 +51,23 @@ readonly class RouteFutureContext extends RouteContext implements RouteFutureCon
         }
 
         foreach ($conversation->promises() as $promise) {
-            /** @phpstan-ignore-next-line  */
-            $this->promise($promise->resolve(...), $promise->reject(...), $promise->ttl());
+            if (is_array($promise) && isset($promise['resolve'])) {
+                $this->promise($promise['resolve'], $promise['reject'] ?? null, $promise['ttl'] ?? null);
+            } else {
+                $this->promise($promise);
+            }
         }
+
+        return $this;
+    }
+
+    public function promise(TelegramPromiseInterface|Closure $resolve, ?Closure $reject = null, ?int $ttl = null): RouteFutureContextInterface
+    {
+        if (! (($resolveObject = $resolve) instanceof TelegramPromiseInterface)) {
+            $resolveObject = $this->telegramPromiseFactory->fromCallable($resolve, $reject, $ttl);
+        }
+
+        $this->params->appendConversationPromise($resolveObject);
 
         return $this;
     }

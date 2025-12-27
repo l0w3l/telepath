@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router;
 
 use Illuminate\Support\Facades\App;
+use Lowel\Telepath\Core\Router\Context\Executor\RouteExecutorsCollection;
 use Lowel\Telepath\Core\Router\Context\GroupContext;
 use Lowel\Telepath\Core\Router\Context\GroupContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteContext;
@@ -12,9 +13,14 @@ use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContext;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
+use Lowel\Telepath\Core\Router\Handler\TelegramHandlerFactory;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
+use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
+use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareFactory;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Facades\Telepath;
 use RuntimeException;
 
 class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverInterface
@@ -25,11 +31,18 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     protected RouteContextParams $state;
 
+    protected TelegramHandlerFactory $telegramHandlerFactory;
+
+    protected TelegramMiddlewareFactory $telegramMiddlewareFactory;
+
     public function __construct()
     {
         $this->mainGroupContext = new GroupContext;
         $this->fallbackGroupContext = new GroupContext;
         $this->state = new RouteContextParams;
+
+        $this->telegramHandlerFactory = new TelegramHandlerFactory;
+        $this->telegramMiddlewareFactory = new TelegramMiddlewareFactory;
     }
 
     public function onMessage(string|callable $handler, ?string $pattern = null): RouteFutureContextInterface
@@ -46,7 +59,7 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     public function onChannelPost(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        return $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
+        return $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
     }
 
     public function onMessageReaction(string|callable $handler): RouteContextInterface
@@ -61,7 +74,7 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     public function onChannelPostEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
     {
-        return $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
+        return $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
     }
 
     public function onBusinessConnection(string|callable $handler): RouteContextInterface
@@ -152,19 +165,17 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
     public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): RouteContextInterface
     {
         if (is_string($handler)) {
-            $handler = App::make($handler);
-
-            if (! is_object($handler) || ! ($handler instanceof TelegramHandlerInterface)) {
-                throw new RuntimeException("Handler {$handler} should implement TelegramHandlerInterface");
-            }
+            $handlerInstance = $this->telegramHandlerFactory->fromClassString($handler);
+        } else {
+            $handlerInstance = $this->telegramHandlerFactory->fromCallable($handler);
         }
 
         $context = new RouteContext(
             $this->state->clone()
-                ->setHandler($handler)
-                ->pushMiddleware(method_exists($handler, 'middlewares') ? $handler->middlewares() : [])
-                ->setUpdateTypeEnum(method_exists($handler, 'type') ? $handler->type() : $type)
-                ->setPattern(method_exists($handler, 'pattern') ? $handler->pattern() : $pattern)
+                ->setHandler($handlerInstance)
+                ->pushMiddleware($handlerInstance->middlewares())
+                ->setUpdateTypeEnum($handlerInstance->type() ?? $type)
+                ->setPattern($handlerInstance->pattern() ?? $pattern)
         );
 
         $this->mainGroupContext->appendRouteContext($context);
@@ -211,6 +222,31 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
         return $childGroupContext;
     }
 
+    /**
+     * @param  class-string<KeyboardFactoryInterface>  ...$keyboards
+     */
+    public function keyboard(string ...$keyboards): RouteContextInterface
+    {
+        return Telepath::group(function () use ($keyboards) {
+            foreach ($keyboards as $keyboard) {
+                $keyboardFactoryInstance = App::make($keyboard);
+
+                if (! ($keyboardFactoryInstance instanceof KeyboardFactoryInterface)) {
+                    throw new \RuntimeException('KeyboardWatcher accept only KeyboardFactoryInterface instances as a keyboard');
+                }
+
+                $buffer = [];
+                $keyboardFactoryInstance->make()->each(function (ButtonInterface $button) use (&$buffer) {
+                    if (! in_array($button::class, $buffer)) {
+                        $buffer[] = $button::class;
+
+                        $button->resolve($this);
+                    }
+                });
+            }
+        });
+    }
+
     public function type(UpdateTypeEnum $updateTypeEnum): TelegramRouterInterface
     {
         $this->state->setUpdateTypeEnum($updateTypeEnum);
@@ -224,7 +260,20 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
      */
     public function middleware(callable|string|array $handler): TelegramRouterInterface
     {
-        $this->state->pushMiddleware($handler);
+        if (is_string($handler)) {
+            $middlewareInstance = $this->telegramMiddlewareFactory->fromClassString($handler);
+        } elseif ($handler instanceof TelegramMiddlewareInterface) {
+            $middlewareInstance = $this->telegramMiddlewareFactory->fromCallable($handler);
+        } else {
+            $handers = $handler;
+            foreach ($handers as $handler) {
+                $this->middleware($handler);
+            }
+
+            return $this;
+        }
+
+        $this->state->pushMiddleware($middlewareInstance->handler());
 
         return $this;
     }
@@ -255,13 +304,14 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
         return $this;
     }
 
-    public function getHandlers(): array
+    public function getExecutors(): RouteExecutorsCollection
     {
-        return $this->mainGroupContext->collect();
-    }
+        static $routeExecutorsCollection = null;
 
-    public function getFallbacks(): array
-    {
-        return $this->fallbackGroupContext->collect();
+        if (config('app.debug', false) || env('TELEPATH_TESTING', false)) {
+            return new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
+        } else {
+            return $routeExecutorsCollection ??= new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
+        }
     }
 }
