@@ -9,6 +9,7 @@ use Lowel\Telepath\Enums\UpdateTypeEnum;
 
 /**
  * @property string $token
+ * @property string $username
  * @property int $offset
  * @property int $limit
  * @property int $timeout

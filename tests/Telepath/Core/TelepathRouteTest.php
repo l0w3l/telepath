@@ -16,6 +16,33 @@ function telegramApp()
     return App::make(TelegramAppFactoryInterface::class)->webhook();
 }
 
+test('command', function (): void {
+    $this->updatesMockBuilder
+        ->addMessage('/'.$this->name())
+        ->mock();
+
+    Telepath::onCommand($this->name(), function (Message $message, Chat $chat, User $user) {
+        expect($message->text)->toEqual('/'.$this->name())
+            ->and($chat)->and($user)->not()->toEqual(null);
+    });
+
+    telegramApp()->start();
+});
+
+test('command with username', function (): void {
+    config()->set('telepath.profiles.default.username', 'TestBot');
+    $this->updatesMockBuilder
+        ->addMessage('/'.$this->name().'@TestBot')
+        ->mock();
+
+    Telepath::onCommand($this->name(), function (Message $message, Chat $chat, User $user) {
+        expect($message->text)->toEqual('/'.$this->name().'@TestBot')
+            ->and($chat)->and($user)->not()->toEqual(null);
+    });
+
+    telegramApp()->start();
+});
+
 test('message', function (): void {
     $this->updatesMockBuilder
         ->addMessage($this->name())

@@ -7,6 +7,7 @@ namespace Lowel\Telepath\Core\Router;
 use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
 use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
 use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -27,6 +28,13 @@ use Phptg\BotApi\Type\Update\Update;
  */
 interface TelegramRouterInterface extends RouteContextInterface
 {
+    /**
+     * Registers a handler for command patterns.
+     *
+     * @param  RouterHandler  $handler
+     */
+    public function onCommand(string $pattern, string|callable $handler): RouteFutureContextInterface;
+
     /**
      * Registers a handler for the 'update' type.
      *
@@ -265,4 +273,9 @@ interface TelegramRouterInterface extends RouteContextInterface
      * @param  class-string<KeyboardFactoryInterface>  ...$keyboards
      */
     public function keyboard(string ...$keyboards): RouteContextInterface;
+
+    /**
+     * Register buttons to the router
+     */
+    public function buttons(ButtonInterface ...$buttons): RouteContextInterface;
 }
