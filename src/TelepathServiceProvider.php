@@ -153,7 +153,7 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     private function loadRoutes(): void
     {
-        Route::middleware('api')->get('/api/webhook', function () {
+        Route::middleware('api')->post('/api/webhook', function () {
             app(TelegramAppFactoryInterface::class)
                 ->webhook()->start();
         });
