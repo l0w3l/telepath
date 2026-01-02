@@ -29,6 +29,7 @@ return [
     'profiles' => [
         'default' => [
             'token' => env('TELEPATH_TOKEN'),
+            'username' => env('TELEPATH_USERNAME', ''),
             'offset' => (int) env('TELEPATH_OFFSET', 0),
             'limit' => (int) env('TELEPATH_LIMIT', 100),
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
