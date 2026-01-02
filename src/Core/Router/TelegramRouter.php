@@ -20,6 +20,7 @@ use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareFactory;
 use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Facades\Telepath;
 use RuntimeException;
 
@@ -35,6 +36,9 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     protected TelegramMiddlewareFactory $telegramMiddlewareFactory;
 
+    /** @var string[] */
+    protected array $buttonsBuffer = [];
+
     public function __construct()
     {
         $this->mainGroupContext = new GroupContext;
@@ -43,6 +47,17 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
         $this->telegramHandlerFactory = new TelegramHandlerFactory;
         $this->telegramMiddlewareFactory = new TelegramMiddlewareFactory;
+    }
+
+    public function onCommand(string $pattern, string|callable $handler): RouteFutureContextInterface
+    {
+        if (ucfirst($pattern) === '/') {
+            $pattern = substr($pattern, 1);
+        }
+
+        return RouteFutureContext::from(
+            $this->on($handler, UpdateTypeEnum::MESSAGE, "\/{$pattern}(@".Extrasense::profile()->username.')?')
+        );
     }
 
     public function onMessage(string|callable $handler, ?string $pattern = null): RouteFutureContextInterface
@@ -232,18 +247,35 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
                 $keyboardFactoryInstance = App::make($keyboard);
 
                 if (! ($keyboardFactoryInstance instanceof KeyboardFactoryInterface)) {
-                    throw new \RuntimeException('KeyboardWatcher accept only KeyboardFactoryInterface instances as a keyboard');
+                    throw new RuntimeException('KeyboardWatcher accept only KeyboardFactoryInterface instances as a keyboard');
                 }
 
-                $buffer = [];
-                $keyboardFactoryInstance->make()->each(function (ButtonInterface $button) use (&$buffer) {
-                    if (! in_array($button::class, $buffer)) {
-                        $buffer[] = $button::class;
-
-                        $button->resolve($this);
-                    }
+                $keyboardFactoryInstance->make()->each(function (ButtonInterface $button) {
+                    $this->button($button);
                 });
             }
+        });
+    }
+
+    public function buttons(ButtonInterface ...$buttons): RouteContextInterface
+    {
+        return Telepath::group(function () use ($buttons) {
+            foreach ($buttons as $button) {
+                $this->button($button);
+            }
+        });
+    }
+
+    public function button(ButtonInterface $button): RouteContextInterface
+    {
+        if (in_array($button::class, $this->buttonsBuffer)) {
+            throw new RuntimeException('Button '.$button::class.' has been already registered in this context');
+        }
+
+        $this->buttonsBuffer[] = $button::class;
+
+        return $this->group(function () use ($button) {
+            $button->resolve($this);
         });
     }
 

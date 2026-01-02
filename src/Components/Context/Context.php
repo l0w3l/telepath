@@ -49,14 +49,6 @@ class Context extends AbstractComponent implements ContextInterface
     public function user(): User
     {
         try {
-            $message = $this->message();
-
-            return $message->from
-                ?? $message->viaBot
-                ?? $message->leftChatMember
-                ?? $message->senderBusinessBot
-                ?? throw new UserNotFoundInCurrentContextException('User not found in current context');
-        } catch (MessageNotFoundInCurrentContextException|UserNotFoundInCurrentContextException $e) {
             $update = $this->update();
 
             return
@@ -72,7 +64,19 @@ class Context extends AbstractComponent implements ContextInterface
                 ?? $update->myChatMember->from
                 ?? $update->chatJoinRequest->from
                 ?? $update->purchasedPaidMedia->from
-                ?? $update->chatBoost->boost->source->getUser()
+                ?? $update->chatBoost?->boost?->source?->getUser()
+                ?? throw new UserNotFoundInCurrentContextException('User not found in current context');
+        } catch (UserNotFoundInCurrentContextException $e) {
+            try {
+                $message = $this->message();
+            } catch (MessageNotFoundInCurrentContextException $e) {
+                throw new UserNotFoundInCurrentContextException('User not found in current context', previous: $e);
+            }
+
+            return $message->from
+                ?? $message->viaBot
+                ?? $message->leftChatMember
+                ?? $message->senderBusinessBot
                 ?? throw new UserNotFoundInCurrentContextException('User not found in current context');
         }
     }
