@@ -2,6 +2,16 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.0 SpiritBox enhance and bug fixes - 2026-01-02
+
+### What's Changed
+
+* feat: upgraded SpiritBox and more by @l0w3l in https://github.com/l0w3l/telepath/pull/36
+* build(deps): update phptg/bot-api requirement from ^0.10 to ^0.11 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/35
+* Develop by @l0w3l in https://github.com/l0w3l/telepath/pull/37
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.4.0...0.5.0
+
 ## 0.4.0 Keyboard, conversations, components, cache, debug, optiomizations - 2025-12-27
 
 ### What's Changed
