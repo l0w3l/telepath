@@ -1,6 +1,6 @@
 {
     "name": "lowel/telepath",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "Telegram bot sdk for laravel inspired by phptg/bot-api",
     "keywords": [
         "lowel",
