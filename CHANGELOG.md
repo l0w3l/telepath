@@ -2,6 +2,14 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.1 Bug fixes - 2026-01-03
+
+### What's Changed
+
+* Release/0.5.1 by @l0w3l in https://github.com/l0w3l/telepath/pull/38
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.0...0.5.1
+
 ## 0.5.0 SpiritBox enhance and bug fixes - 2026-01-02
 
 ### What's Changed
