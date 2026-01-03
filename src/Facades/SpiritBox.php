@@ -1436,7 +1436,6 @@ class SpiritBox extends Facade
 
     /**
      * @see https://core.telegram.org/bots/api#answercallbackquery
-     *
      * @link TelegramBotApi::answerCallbackQuery()
      */
     public function answerCallbackQuery(
