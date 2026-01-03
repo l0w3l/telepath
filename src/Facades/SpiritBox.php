@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Illuminate\Support\Facades\Facade;
 use Lowel\Telepath\Core\Router\Keyboard\KeyboardBuilderInterface;
 use Phptg\BotApi\FailResult;
+use Phptg\BotApi\Method\AnswerCallbackQuery;
 use Phptg\BotApi\Method\DeleteChatPhoto;
 use Phptg\BotApi\Method\DeleteChatStickerSet;
 use Phptg\BotApi\Method\DeleteForumTopic;
@@ -1253,7 +1254,7 @@ class SpiritBox extends Facade
                 $parseMode,
                 $entities,
                 $linkPreviewOptions,
-                $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup ?? Extrasense::message()->replyMarkup,
+                $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
             ),
         );
     }
@@ -1430,6 +1431,22 @@ class SpiritBox extends Facade
                 $directMessagesTopicId,
                 $suggestedPostParameters,
             ),
+        );
+    }
+
+    /**
+     * @see https://core.telegram.org/bots/api#answercallbackquery
+     * @link TelegramBotApi::answerCallbackQuery()
+     */
+    public function answerCallbackQuery(
+        ?string $callbackQueryId = null,
+        ?string $text = null,
+        ?bool $showAlert = null,
+        ?string $url = null,
+        ?int $cacheTime = null,
+    ): FailResult|true {
+        return $this->call(
+            new AnswerCallbackQuery($callbackQueryId ?? Extrasense::update()->callbackQuery->id, $text, $showAlert, $url, $cacheTime),
         );
     }
 }
