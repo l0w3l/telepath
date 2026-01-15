@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Components;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Cache;
+use Lowel\Telepath\Facades\Extrasense;
 use Phptg\BotApi\Type\Update\Update;
 use Throwable;
 
@@ -36,10 +38,27 @@ class ComponentsBundle implements ComponentInterface
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function onError(Update $update, Throwable $e): void
     {
+        $profile = Extrasense::profile();
+
+        /** @var array{times: int} $repeated */
+        $repeated = Cache::remember('telegram.exceptions.update_'.$update->updateId, $profile->repeatAfterException * $profile->timeoutAfterException * 10, fn () => [
+            'times' => $profile->repeatAfterException - 1,
+        ]);
+
         foreach ($this->components as $component) {
             $component->onError($update, $e);
+        }
+
+        Cache::decrement('telegram.exceptions.update_'.$update->updateId.'.times');
+
+        if ($repeated['times'] > 0) {
+            sleep($profile->timeoutAfterException);
+            throw new $e;
         }
     }
 
