@@ -2,6 +2,16 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.2 - 2026-01-15
+
+### What's Changed
+
+* build(deps): bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/40
+* build(deps): update phptg/bot-api requirement from ^0.11 to ^0.12 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/39
+* Release 0.5.2 - fixes by @l0w3l in https://github.com/l0w3l/telepath/pull/41
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.1...0.5.2
+
 ## 0.5.1 Bug fixes - 2026-01-03
 
 ### What's Changed
