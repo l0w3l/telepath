@@ -17,6 +17,8 @@ use Lowel\Telepath\Enums\UpdateTypeEnum;
  * @property int[] $whitelist
  * @property int[] $blacklist
  * @property int|null $chatIdFallback
+ * @property int $repeatAfterException
+ * @property int $timeoutAfterException
  */
 final readonly class Profile
 {

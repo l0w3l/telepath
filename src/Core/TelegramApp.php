@@ -8,6 +8,7 @@ use Lowel\Telepath\Core\Components\ComponentsBundle;
 use Lowel\Telepath\Core\Drivers\TelegramAppDriverInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Core\Traits\UpdateHandlerTrait;
+use Lowel\Telepath\Exceptions\TelegramAppException;
 use Phptg\BotApi\TelegramBotApi;
 use Throwable;
 
@@ -22,6 +23,10 @@ final readonly class TelegramApp implements TelegramAppInterface
         public ComponentsBundle $componentsBundle
     ) {}
 
+    /**
+     * @throws TelegramAppException
+     * @throws Throwable
+     */
     public function start(): void
     {
         $this->componentsBundle->onCreated();
@@ -36,7 +41,7 @@ final readonly class TelegramApp implements TelegramAppInterface
             } catch (Throwable $e) {
                 $this->componentsBundle->onError($update, $e);
 
-                throw $e;
+                continue;
             }
 
             $this->componentsBundle->onAfter($update);

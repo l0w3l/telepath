@@ -35,6 +35,11 @@ return [
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
             'allowed_updates' => env('TELEPATH_ALLOWED_UPDATES', '*'),
 
+            // todo: currently works only in webhook
+            // BE CAREFUL: enabling this option may lead to lost updates if your bot cannot process them in time
+            'repeat_after_exception' => (int) env('TELEPATH_REPEAT_AFTER_EXCEPTION', 1),
+            'timeout_after_exception' => (int) env('TELEPATH_TIMEOUT_AFTER_EXCEPTION', 5),
+
             'whitelist' => env('TELEPATH_ADMINS', ''),
             'blacklist' => env('TELEPATH_BANNED', ''),
 

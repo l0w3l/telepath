@@ -1,6 +1,6 @@
 {
     "name": "lowel/telepath",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Telegram bot sdk for laravel inspired by phptg/bot-api",
     "keywords": [
         "lowel",
@@ -25,7 +25,7 @@
         "symfony/property-access": "^7.3",
         "symfony/psr-http-message-bridge": "^7.3",
         "symfony/serializer": "^7.3",
-        "phptg/bot-api": "^0.11"
+        "phptg/bot-api": "^0.12"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
