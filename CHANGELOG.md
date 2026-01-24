@@ -2,6 +2,17 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.4 - fixes - 2026-01-24
+
+### What's Changed
+
+* Release 0.5.4: fixes by @l0w3l in https://github.com/l0w3l/telepath/pull/45
+
+- fix middelware casting exception
+- clean dead code
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.3...0.5.4
+
 ## 0.5.3 Release: performans improvments - 2026-01-24
 
 ### What's Changed
