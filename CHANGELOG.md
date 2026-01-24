@@ -2,6 +2,16 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.3 Release: performans improvments - 2026-01-24
+
+### What's Changed
+
+* refactor: replace self-maded static invoker trait on Invoker helper +… by @l0w3l in https://github.com/l0w3l/telepath/pull/43
+* build(deps): update phptg/bot-api requirement from ^0.12 to ^0.13 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/42
+* Release 0.5.3 by @l0w3l in https://github.com/l0w3l/telepath/pull/44
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.2...0.5.3
+
 ## 0.5.2 - 2026-01-15
 
 ### What's Changed
