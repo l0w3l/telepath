@@ -6,14 +6,12 @@ namespace Lowel\Telepath\Components\ExceptionHandler;
 
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Core\Components\AbstractComponent;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\Update\Update;
 use Throwable;
 
 class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInterface
 {
-    use InvokeAbleTrait;
-
     /** @var callable[] */
     private array $stack = [];
 
@@ -38,7 +36,7 @@ class ExceptionHandler extends AbstractComponent implements ExceptionHandlerInte
         $returnValue = null;
 
         foreach ($this->stack as $handler) {
-            $returnValue = $this::invokeCallableWithArgs($handler, compact('update', 'e', 'returnValue'));
+            $returnValue = Invoker::call($handler, compact('update', 'e', 'returnValue'));
         }
     }
 

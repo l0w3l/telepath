@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
 use Closure;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\CopyTextButton;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractCopyButton extends AbstractInlineButton
 {
-    use InvokeAbleTrait;
-
     abstract public function copyText(array $args = []): int|string|callable;
 
     public function toButton(array $args = []): InlineKeyboardButton|KeyboardButton
@@ -22,10 +20,10 @@ abstract class AbstractCopyButton extends AbstractInlineButton
         $copyText = $this->copyText($args);
 
         if ($text instanceof Closure) {
-            $text = $this::invokeCallableWithArgs($text);
+            $text = Invoker::call($text);
         }
         if ($copyText instanceof Closure) {
-            $copyText = $this::invokeCallableWithArgs($copyText);
+            $copyText = Invoker::call($copyText);
         }
 
         return new InlineKeyboardButton(

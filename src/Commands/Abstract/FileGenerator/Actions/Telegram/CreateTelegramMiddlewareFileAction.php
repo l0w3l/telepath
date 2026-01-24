@@ -20,7 +20,7 @@ readonly class CreateTelegramMiddlewareFileAction extends AbstractCreateFileActi
             ->setUse(TelegramBotApi::class)
             ->setUse(Update::class)
             ->setExtends(AbstractTelegramMiddleware::class)
-            ->setFunction("function __invoke(TelegramBotApi \$telegramBotApi, Update \$update, callable \$callback): void\n{\n{$classGenerator->spaces}\$callback();\n}");
+            ->setFunction("function handler(): callable\n{\n{$classGenerator->spaces}return static function(callable \$callback) {\n{$classGenerator->spaces}{$classGenerator->spaces}\$callback();\n{$classGenerator->spaces}};\n}");
 
         $this->createDirectoryIfNotExists();
 

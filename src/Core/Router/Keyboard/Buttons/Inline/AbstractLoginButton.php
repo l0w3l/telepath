@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
 use Closure;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 use Phptg\BotApi\Type\LoginUrl;
 
 abstract class AbstractLoginButton extends AbstractInlineButton
 {
-    use InvokeAbleTrait;
-
     abstract public function url(array $args = []): int|string|callable;
 
     public function forwardText(array $args = []): null|int|string|callable
@@ -40,16 +38,16 @@ abstract class AbstractLoginButton extends AbstractInlineButton
         $requestWriteAccess = $this->requestWriteAccess($args);
 
         if ($text instanceof Closure) {
-            $text = $this::invokeCallableWithArgs($text);
+            $text = Invoker::call($text);
         }
         if ($forwardText instanceof Closure) {
-            $forwardText = $this::invokeCallableWithArgs($forwardText);
+            $forwardText = Invoker::call($forwardText);
         }
         if ($botUsername instanceof Closure) {
-            $botUsername = $this::invokeCallableWithArgs($botUsername);
+            $botUsername = Invoker::call($botUsername);
         }
         if ($requestWriteAccess instanceof Closure) {
-            $requestWriteAccess = $this::invokeCallableWithArgs($requestWriteAccess);
+            $requestWriteAccess = Invoker::call($requestWriteAccess);
         }
 
         return new InlineKeyboardButton(
