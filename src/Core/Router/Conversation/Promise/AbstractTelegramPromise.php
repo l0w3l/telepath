@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Conversation\Promise;
 
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use RuntimeException;
 use Throwable;
 
 abstract class AbstractTelegramPromise implements TelegramPromiseInterface
 {
-    use InvokeAbleTrait;
-
     public function execResolve(array $params = []): mixed
     {
-        return $this::invokeCallableWithArgs(
+        return Invoker::call(
             $this->resolve(),
             $params,
         );
@@ -31,7 +29,7 @@ abstract class AbstractTelegramPromise implements TelegramPromiseInterface
             );
         }
 
-        return $this::invokeCallableWithArgs(
+        return Invoker::call(
             $reject,
             $params
         );

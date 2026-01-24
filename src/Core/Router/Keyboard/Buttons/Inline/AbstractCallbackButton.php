@@ -6,14 +6,12 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
 use Closure;
 use Lowel\Telepath\Helpers\Hasher;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractCallbackButton extends AbstractInlineButton
 {
-    use InvokeAbleTrait;
-
     protected bool $pay = false;
 
     abstract public function handle(): callable;
@@ -29,10 +27,10 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
         $callbackData = $this->callbackData($args);
 
         if ($text instanceof Closure) {
-            $text = $this::invokeCallableWithArgs($text);
+            $text = Invoker::call($text);
         }
         if ($callbackData instanceof Closure) {
-            $callbackData = $this::invokeCallableWithArgs($callbackData);
+            $callbackData = Invoker::call($callbackData);
         }
 
         return new InlineKeyboardButton(

@@ -7,8 +7,7 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\AbstractCreateFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Generator\ClassGenerator;
 use Lowel\Telepath\Core\Router\Handler\AbstractTelegramHandler;
-use Phptg\BotApi\TelegramBotApi;
-use Phptg\BotApi\Type\Update\Update;
+use Lowel\Telepath\Facades\SpiritBox;
 
 readonly class CreateTelegramHandlerFileAction extends AbstractCreateFileAction
 {
@@ -17,10 +16,9 @@ readonly class CreateTelegramHandlerFileAction extends AbstractCreateFileAction
         $classGenerator = new ClassGenerator($this->className, $this->namespace);
 
         $classGenerator
-            ->setUse(TelegramBotApi::class)
-            ->setUse(Update::class)
+            ->setUse(SpiritBox::class)
             ->setExtends(AbstractTelegramHandler::class)
-            ->setFunction("function __invoke(TelegramBotApi \$telegramBotApi, Update \$update): void\n{\n{$classGenerator->spaces}//...\n}");
+            ->setFunction("function handler(): callable\n{\n{$classGenerator->spaces}return static function() {\n{$classGenerator->spaces}{$classGenerator->spaces}SpiritBox::sendMessage('example text');\n{$classGenerator->spaces}};\n}");
 
         $this->createDirectoryIfNotExists();
 

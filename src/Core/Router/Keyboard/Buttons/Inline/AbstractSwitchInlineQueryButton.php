@@ -6,15 +6,13 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
 use Closure;
 use Lowel\Telepath\Enums\SwitchInlineQueryAllowTypesEnum;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 use Phptg\BotApi\Type\SwitchInlineQueryChosenChat;
 
 abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
 {
-    use InvokeAbleTrait;
-
     abstract public function switchInlineQuery(array $args = []): int|string|callable;
 
     /**
@@ -31,10 +29,10 @@ abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
         $switchInlineQuery = $this->switchInlineQuery($args);
 
         if ($text instanceof Closure) {
-            $text = $this::invokeCallableWithArgs($text);
+            $text = Invoker::call($text);
         }
         if ($switchInlineQuery instanceof Closure) {
-            $switchInlineQuery = $this::invokeCallableWithArgs($switchInlineQuery);
+            $switchInlineQuery = Invoker::call($switchInlineQuery);
         }
 
         $allowed = $this->allow();

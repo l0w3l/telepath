@@ -7,13 +7,11 @@ namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply;
 use Closure;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractReplyButton implements ButtonInterface
 {
-    use InvokeAbleTrait;
-
     public function handle(): ?callable
     {
         return null;
@@ -31,7 +29,7 @@ abstract class AbstractReplyButton implements ButtonInterface
         $text = $this->text($args);
 
         if ($text instanceof Closure) {
-            $text = $this::invokeCallableWithArgs($text, $args);
+            $text = Invoker::call($text, $args);
         }
 
         return new KeyboardButton(
