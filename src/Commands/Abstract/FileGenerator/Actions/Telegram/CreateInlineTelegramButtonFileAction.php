@@ -7,8 +7,7 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\AbstractCreateFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Generator\ClassGenerator;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
-use Phptg\BotApi\TelegramBotApi;
-use Phptg\BotApi\Type\Chat;
+use Lowel\Telepath\Facades\SpiritBox;
 
 readonly class CreateInlineTelegramButtonFileAction extends AbstractCreateFileAction
 {
@@ -17,10 +16,9 @@ readonly class CreateInlineTelegramButtonFileAction extends AbstractCreateFileAc
         $classGenerator = new ClassGenerator('ExampleInlineButton', $this->namespace."\\$this->argumentName\\Buttons");
 
         $classGenerator
-            ->setUse(TelegramBotApi::class)
-            ->setUse(Chat::class)
+            ->setUse(SpiritBox::class)
             ->setExtends(AbstractCallbackButton::class)
-            ->setFunction("function handle(): callable\n{\n{$classGenerator->spaces}return function(TelegramBotApi \$api, Chat \$chat) {\n{$classGenerator->spaces}{$classGenerator->spaces}\$api->sendMessage(\$chat->id, 'example text');\n{$classGenerator->spaces}};\n}")
+            ->setFunction("function handle(): callable\n{\n{$classGenerator->spaces}return static function() {\n{$classGenerator->spaces}{$classGenerator->spaces}SpiritBox::sendMessage('example text');\n{$classGenerator->spaces}};\n}")
             ->setFunction("function text(array \$args = []): int|string|callable\n{\n{$classGenerator->spaces}return 'example';\n}");
 
         $this->createDirectoryIfNotExists();

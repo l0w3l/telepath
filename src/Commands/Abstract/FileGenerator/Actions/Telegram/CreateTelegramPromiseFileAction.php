@@ -7,8 +7,7 @@ namespace Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\Telegram;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Actions\AbstractCreateFileAction;
 use Lowel\Telepath\Commands\Abstract\FileGenerator\Generator\ClassGenerator;
 use Lowel\Telepath\Core\Router\Conversation\Promise\AbstractTelegramPromise;
-use Phptg\BotApi\TelegramBotApi;
-use Phptg\BotApi\Type\Chat;
+use Lowel\Telepath\Facades\SpiritBox;
 
 readonly class CreateTelegramPromiseFileAction extends AbstractCreateFileAction
 {
@@ -17,12 +16,11 @@ readonly class CreateTelegramPromiseFileAction extends AbstractCreateFileAction
         $classGenerator = new ClassGenerator('ExamplePromise', $this->namespace."\\$this->argumentName\\Promises");
 
         $classGenerator
-            ->setUse(TelegramBotApi::class)
-            ->setUse(Chat::class)
+            ->setUse(SpiritBox::class)
             ->setUse(\Throwable::class)
             ->setExtends(AbstractTelegramPromise::class)
-            ->setFunction("function resolve(): callable\n{\n{$classGenerator->spaces}return function(TelegramBotApi \$api, Chat \$chat) {\n{$classGenerator->spaces}{$classGenerator->spaces}\$api->sendMessage(\$chat->id, 'example text');\n{$classGenerator->spaces}};\n}")
-            ->setFunction("function reject(Throwable \$error): ?callable\n{\n{$classGenerator->spaces}return function () {};\n}");
+            ->setFunction("function resolve(): callable\n{\n{$classGenerator->spaces}return static function() {\n{$classGenerator->spaces}{$classGenerator->spaces}SpiritBox::sendMessage('example text');\n{$classGenerator->spaces}};\n}")
+            ->setFunction("function reject(Throwable \$error): ?callable\n{\n{$classGenerator->spaces}return static function () {};\n}");
 
         $this->createDirectoryIfNotExists();
 

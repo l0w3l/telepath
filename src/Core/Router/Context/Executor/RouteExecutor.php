@@ -7,14 +7,12 @@ namespace Lowel\Telepath\Core\Router\Context\Executor;
 use Lowel\Telepath\Core\Router\Context\RouteContextParams;
 use Lowel\Telepath\Core\Router\Conversation\Storage\ConversationStorageFactory;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Lowel\Telepath\Traits\InvokeAbleTrait;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\TelegramBotApi;
 use Phptg\BotApi\Type\Update\Update;
 
 final readonly class RouteExecutor implements RouteExecutorInterface
 {
-    use InvokeAbleTrait;
-
     public function __construct(
         public RouteContextParams $params,
     ) {}
@@ -59,14 +57,14 @@ final readonly class RouteExecutor implements RouteExecutorInterface
 
     protected function resolve(TelegramBotApi $api, Update $update)
     {
-        $callable = fn () => $this::invokeCallableWithArgs($this->params->getHandler()->handler(), [
+        $callable = fn () => Invoker::call($this->params->getHandler()->handler(), [
             'api' => $api,
             'telegramBotApi' => $api,
             'update' => $update,
         ]);
 
         foreach ($this->params->getMiddlewaresReverse() as $middleware) {
-            $callable = fn () => $this::invokeCallableWithArgs(
+            $callable = fn () => Invoker::call(
                 $middleware,
                 [
                     'telegramBotApi' => $api,
