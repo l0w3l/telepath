@@ -292,20 +292,7 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
      */
     public function middleware(callable|string|array $handler): TelegramRouterInterface
     {
-        if (is_string($handler)) {
-            $middlewareInstance = $this->telegramMiddlewareFactory->fromClassString($handler);
-        } elseif ($handler instanceof TelegramMiddlewareInterface) {
-            $middlewareInstance = $this->telegramMiddlewareFactory->fromCallable($handler);
-        } else {
-            $handers = $handler;
-            foreach ($handers as $handler) {
-                $this->middleware($handler);
-            }
-
-            return $this;
-        }
-
-        $this->state->pushMiddleware($middlewareInstance->handler());
+        $this->state->pushMiddleware($handler);
 
         return $this;
     }
