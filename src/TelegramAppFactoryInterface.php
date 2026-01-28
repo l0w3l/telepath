@@ -10,5 +10,5 @@ interface TelegramAppFactoryInterface
 {
     public function longPooling(): TelegramAppInterface;
 
-    public function webhook(): TelegramAppInterface;
+    public function webhook(string $json): TelegramAppInterface;
 }

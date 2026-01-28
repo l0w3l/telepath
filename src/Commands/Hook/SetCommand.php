@@ -36,6 +36,8 @@ class SetCommand extends Command
             dropPendingUpdates: (bool) $this->option('drop'),
         );
 
+        $this->warn("Recommend to use TELEPATH_HOOK_ASYNC=true and 'artisan queue:work' session to interact with long-time living processes, otherwise you might be spammed by telegram itself");
+
         $this->info('Telegram hook set successfully to: '.$this->argument('hook'));
     }
 }

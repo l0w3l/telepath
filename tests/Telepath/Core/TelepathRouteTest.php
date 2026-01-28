@@ -13,7 +13,7 @@ use Phptg\BotApi\Type\User;
 
 function telegramApp()
 {
-    return App::make(TelegramAppFactoryInterface::class)->webhook();
+    return App::make(TelegramAppFactoryInterface::class)->webhook('');
 }
 
 test('command', function (): void {

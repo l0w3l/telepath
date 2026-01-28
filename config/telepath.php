@@ -23,6 +23,10 @@ return [
 
     'profile' => 'default',
 
+    'hook' => [
+        'async' => env('TELEPATH_HOOK_ASYNC', false),
+    ],
+
     /**
      * see @link \Lowel\Telepath\Config\Profile
      */
