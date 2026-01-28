@@ -38,10 +38,8 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
         );
     }
 
-    public function webhook(): TelegramAppInterface
+    public function webhook(ServerRequestInterface $request): TelegramAppInterface
     {
-        $request = App::make(ServerRequestInterface::class);
-
         return new TelegramApp(
             telegramBotApi: $this->telegramBotApi,
             driver: new WebhookDriverTelegram($request),

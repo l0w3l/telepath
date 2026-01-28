@@ -2,6 +2,7 @@
 
 namespace Lowel\Telepath;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Lowel\Telepath\Commands\Conversation\MakeConversationCommand;
 use Lowel\Telepath\Commands\Handler\MakeHandlerCommand;
@@ -24,9 +25,11 @@ use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterResolverInterface;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Facades\Paranormal;
+use Lowel\Telepath\Jobs\HandleTelegramUpdateRequestJob;
 use Phptg\BotApi\TelegramBotApi;
 use Phptg\BotApi\Type\InputFile;
 use Phptg\BotApi\Type\Update\Update;
+use Psr\Http\Message\ServerRequestInterface;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -154,8 +157,13 @@ class TelepathServiceProvider extends PackageServiceProvider
     private function loadRoutes(): void
     {
         Route::middleware('api')->post('/api/webhook', function () {
-            app(TelegramAppFactoryInterface::class)
-                ->webhook()->start();
+            $request = App::make(ServerRequestInterface::class);
+
+            if (config('TELEPATH_HOOK_ASYNC')) {
+                HandleTelegramUpdateRequestJob::dispatch($request);
+            } else {
+                (new HandleTelegramUpdateRequestJob($request))->handle();
+            }
         });
 
         if (file_exists(config('telepath.routes'))) {

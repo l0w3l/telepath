@@ -1,5 +1,6 @@
 <?php
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
 use Lowel\Telepath\Core\Router\Keyboard\InlineKeyboardBuilder;
 use Lowel\Telepath\Core\Router\Keyboard\KeyboardBuilderInterface;
@@ -13,7 +14,7 @@ use Phptg\BotApi\Type\User;
 
 function telegramApp()
 {
-    return App::make(TelegramAppFactoryInterface::class)->webhook();
+    return App::make(TelegramAppFactoryInterface::class)->webhook(new ServerRequest('test', 'test'));
 }
 
 test('command', function (): void {
