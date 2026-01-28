@@ -159,7 +159,7 @@ class TelepathServiceProvider extends PackageServiceProvider
         Route::middleware('api')->post('/api/webhook', function () {
             $request = App::make(ServerRequestInterface::class);
 
-            if (config('TELEPATH_HOOK_ASYNC')) {
+            if (config('telepath.hook.async')) {
                 HandleTelegramUpdateRequestJob::dispatch($request);
             } else {
                 (new HandleTelegramUpdateRequestJob($request))->handle();
