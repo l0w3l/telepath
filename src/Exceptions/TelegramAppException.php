@@ -4,13 +4,12 @@ namespace Lowel\Telepath\Exceptions;
 
 use Exception;
 use Phptg\BotApi\FailResult;
-use Psr\Http\Message\ServerRequestInterface;
 
 class TelegramAppException extends Exception
 {
-    public FailResult|ServerRequestInterface $failResult;
+    public FailResult|string $failResult;
 
-    public function __construct(FailResult|ServerRequestInterface $failResult, ?\Throwable $previous = null)
+    public function __construct(FailResult|string $failResult, ?\Throwable $previous = null)
     {
         $this->failResult = $failResult;
 

@@ -32,7 +32,7 @@ class TelegramAppFactoryMock implements TelegramAppFactoryInterface
         );
     }
 
-    public function webhook(): TelegramAppInterface
+    public function webhook(string $json): TelegramAppInterface
     {
         return new TelegramApp(
             telegramBotApi: new TelegramBotApi(''),
