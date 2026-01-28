@@ -13,7 +13,6 @@ use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
 use Lowel\Telepath\Facades\Extrasense;
 use Phptg\BotApi\TelegramBotApi;
-use Psr\Http\Message\ServerRequestInterface;
 
 final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
 {
@@ -38,11 +37,11 @@ final readonly class TelegramAppFactory implements TelegramAppFactoryInterface
         );
     }
 
-    public function webhook(ServerRequestInterface $request): TelegramAppInterface
+    public function webhook(string $json): TelegramAppInterface
     {
         return new TelegramApp(
             telegramBotApi: $this->telegramBotApi,
-            driver: new WebhookDriverTelegram($request),
+            driver: new WebhookDriverTelegram($json),
             routerResolver: $this->handlersCollection,
             componentsBundle: App::make(ComponentsBundle::class)
         );

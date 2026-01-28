@@ -11,7 +11,6 @@ use Lowel\Telepath\Core\TelegramApp;
 use Lowel\Telepath\Core\TelegramAppInterface;
 use Lowel\Telepath\TelegramAppFactoryInterface;
 use Phptg\BotApi\TelegramBotApi;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Create mocking app
@@ -33,7 +32,7 @@ class TelegramAppFactoryMock implements TelegramAppFactoryInterface
         );
     }
 
-    public function webhook(ServerRequestInterface $request): TelegramAppInterface
+    public function webhook(string $json): TelegramAppInterface
     {
         return new TelegramApp(
             telegramBotApi: new TelegramBotApi(''),

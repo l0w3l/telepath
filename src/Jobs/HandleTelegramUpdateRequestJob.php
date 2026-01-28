@@ -12,23 +12,22 @@ use Lowel\Telepath\Exceptions\TelegramAppException;
 use Lowel\Telepath\Facades\Paranormal;
 use Lowel\Telepath\TelegramAppFactoryInterface;
 use Phptg\BotApi\Type\Update\Update;
-use Psr\Http\Message\ServerRequestInterface;
 
 class HandleTelegramUpdateRequestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
     public function __construct(
-        public ServerRequestInterface $request
+        public string $json
     ) {}
 
     public function handle(): void
     {
         try {
             app(TelegramAppFactoryInterface::class)
-                ->webhook($this->request)->start();
+                ->webhook($this->json)->start();
         } catch (TelegramAppException $e) {
-            Paranormal::catch(Update::fromServerRequest($this->request), $e);
+            Paranormal::catch(Update::fromJson($this->json), $e);
         }
     }
 }
