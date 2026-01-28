@@ -2,6 +2,15 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.5 - long-time living telegram processes - 2026-01-28
+
+### What's Changed
+
+* Bugfix/long live telegram requests by @l0w3l in https://github.com/l0w3l/telepath/pull/46
+* Release 0.5.5 - long-time living processes for telegram webhook requests by @l0w3l in https://github.com/l0w3l/telepath/pull/47
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.4...0.5.5
+
 ## 0.5.4 - fixes - 2026-01-24
 
 ### What's Changed
