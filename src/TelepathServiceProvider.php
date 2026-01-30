@@ -163,7 +163,7 @@ class TelepathServiceProvider extends PackageServiceProvider
             if (config('telepath.hook.async')) {
                 HandleTelegramUpdateRequestJob::dispatch($json);
             } else {
-                (new HandleTelegramUpdateRequestJob($json))->handle();
+                HandleTelegramUpdateRequestJob::dispatch($json)->afterResponse();
             }
         });
 
