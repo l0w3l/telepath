@@ -2,6 +2,17 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.6 - fixes - 2026-01-30
+
+### What's Changed
+
+* Develop by @l0w3l in https://github.com/l0w3l/telepath/pull/48
+
+- fix updates handling with TELEPATH_HOOK_ASYNC=false (not its not the nessesery field)
+- update Hook\SetCommand $this->info message
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.5...0.5.6
+
 ## 0.5.5 - long-time living telegram processes - 2026-01-28
 
 ### What's Changed
