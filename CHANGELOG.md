@@ -2,6 +2,11 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.7 - default parse_mode - 2026-02-02
+
+- add telepath.profiles.[].parse_mode config field
+- now SpiritBox use default parse_mode for each message interaction
+
 ## 0.5.6 - fixes - 2026-01-30
 
 ### What's Changed
