@@ -41,7 +41,7 @@ return [
             'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
             'allowed_updates' => env('TELEPATH_ALLOWED_UPDATES', '*'),
 
-            'parse_mode' => ParseModeEnum::MARKDOWN,
+            'parse_mode' => ParseModeEnum::MARKDOWN->value,
 
             // todo: currently works only in webhook
             // BE CAREFUL: enabling this option may lead to lost updates if your bot cannot process them in time
