@@ -2,6 +2,17 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.8 - fixes - 2026-02-04
+
+### What's Changed
+
+- parseMode value incorrect format by default
+- 
+
+* Release 0.5.8 - fixes by @l0w3l in https://github.com/l0w3l/telepath/pull/51
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.7...0.5.8
+
 ## 0.5.7 - default parse_mode - 2026-02-02
 
 - add telepath.profiles.[].parse_mode config field
