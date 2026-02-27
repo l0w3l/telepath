@@ -29,6 +29,8 @@ abstract class AbstractCopyButton extends AbstractInlineButton
         return new InlineKeyboardButton(
             text: (string) $text,
             copyText: new CopyTextButton((string) $copyText),
+            style: $this->style(),
+            iconCustomEmojiId: $this->iconCustomEmojiId()
         );
     }
 }

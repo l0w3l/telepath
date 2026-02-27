@@ -28,6 +28,8 @@ abstract class AbstractUrlButton extends AbstractInlineButton
         return new InlineKeyboardButton(
             text: (string) $text,
             url: (string) $url,
+            style: $this->style(),
+            iconCustomEmojiId: $this->iconCustomEmojiId()
         );
     }
 }

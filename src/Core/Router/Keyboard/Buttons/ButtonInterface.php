@@ -15,4 +15,11 @@ interface ButtonInterface
     public function text(array $args = []): int|string|callable;
 
     public function resolve(TelegramRouterInterface $telegramRouter): void;
+
+    public function iconCustomEmojiId(array $args = []): ?string;
+
+    /**
+     * @see Lowel\Telepath\Enums\ButtonStyleEnum::class
+     */
+    public function style(array $args = []): ?string;
 }

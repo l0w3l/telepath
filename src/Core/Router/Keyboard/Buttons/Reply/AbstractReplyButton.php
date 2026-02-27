@@ -24,6 +24,16 @@ abstract class AbstractReplyButton implements ButtonInterface
 
     abstract public function text(array $args = []): int|string|callable;
 
+    public function iconCustomEmojiId(array $args = []): ?string
+    {
+        return null;
+    }
+
+    public function style(array $args = []): ?string
+    {
+        return null;
+    }
+
     public function toButton(array $args = []): KeyboardButton
     {
         $text = $this->text($args);
@@ -33,7 +43,9 @@ abstract class AbstractReplyButton implements ButtonInterface
         }
 
         return new KeyboardButton(
-            text: (string) $text
+            text: (string) $text,
+            style: $this->style($args),
+            iconCustomEmojiId: $this->iconCustomEmojiId($args)
         );
     }
 

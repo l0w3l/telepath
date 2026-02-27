@@ -57,7 +57,9 @@ abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
                     allowBotChats: in_array(SwitchInlineQueryAllowTypesEnum::BOT, $allowed),
                     allowGroupChats: in_array(SwitchInlineQueryAllowTypesEnum::GROUP, $allowed),
                     allowChannelChats: in_array(SwitchInlineQueryAllowTypesEnum::CHANNEL, $allowed),
-                )
+                ),
+                style: $this->style(),
+                iconCustomEmojiId: $this->iconCustomEmojiId()
             );
         }
     }
