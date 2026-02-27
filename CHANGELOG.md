@@ -2,6 +2,16 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.0 - async, styled buttons and fixes - 2026-02-27
+
+### What's Changed
+
+* feat: SpiritBoxAsync facade by @l0w3l in https://github.com/l0w3l/telepath/pull/53
+* build(deps): update phptg/bot-api requirement from ^0.13 to ^0.14 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/52
+* Release 0.6.0 | Async and styled buttons (bot api 9.4) by @l0w3l in https://github.com/l0w3l/telepath/pull/54
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.8...0.6.0
+
 ## 0.5.8 - fixes - 2026-02-04
 
 ### What's Changed
