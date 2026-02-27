@@ -2,6 +2,63 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.5.8 - fixes - 2026-02-04
+
+### What's Changed
+
+- parseMode value incorrect format by default
+- 
+
+* Release 0.5.8 - fixes by @l0w3l in https://github.com/l0w3l/telepath/pull/51
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.7...0.5.8
+
+## 0.5.7 - default parse_mode - 2026-02-02
+
+- add telepath.profiles.[].parse_mode config field
+- now SpiritBox use default parse_mode for each message interaction
+
+## 0.5.6 - fixes - 2026-01-30
+
+### What's Changed
+
+* Develop by @l0w3l in https://github.com/l0w3l/telepath/pull/48
+
+- fix updates handling with TELEPATH_HOOK_ASYNC=false (not its not the nessesery field)
+- update Hook\SetCommand $this->info message
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.5...0.5.6
+
+## 0.5.5 - long-time living telegram processes - 2026-01-28
+
+### What's Changed
+
+* Bugfix/long live telegram requests by @l0w3l in https://github.com/l0w3l/telepath/pull/46
+* Release 0.5.5 - long-time living processes for telegram webhook requests by @l0w3l in https://github.com/l0w3l/telepath/pull/47
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.4...0.5.5
+
+## 0.5.4 - fixes - 2026-01-24
+
+### What's Changed
+
+* Release 0.5.4: fixes by @l0w3l in https://github.com/l0w3l/telepath/pull/45
+
+- fix middelware casting exception
+- clean dead code
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.3...0.5.4
+
+## 0.5.3 Release: performans improvments - 2026-01-24
+
+### What's Changed
+
+* refactor: replace self-maded static invoker trait on Invoker helper +… by @l0w3l in https://github.com/l0w3l/telepath/pull/43
+* build(deps): update phptg/bot-api requirement from ^0.12 to ^0.13 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/42
+* Release 0.5.3 by @l0w3l in https://github.com/l0w3l/telepath/pull/44
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.2...0.5.3
+
 ## 0.5.2 - 2026-01-15
 
 ### What's Changed
