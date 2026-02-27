@@ -37,6 +37,8 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
             text: (string) $text,
             callbackData: $this->callbackDataId().$callbackData,
             pay: $this->pay,
+            style: $this->style(),
+            iconCustomEmojiId: $this->iconCustomEmojiId()
         );
     }
 

@@ -29,6 +29,8 @@ abstract class AbstractWebAppButton extends AbstractInlineButton
         return new InlineKeyboardButton(
             text: (string) $text,
             webApp: new WebAppInfo((string) $webAppUrl),
+            style: $this->style($args),
+            iconCustomEmojiId: $this->iconCustomEmojiId($args)
         );
     }
 }

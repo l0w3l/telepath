@@ -17,6 +17,16 @@ abstract class AbstractInlineButton implements ButtonInterface
 
     abstract public function text(array $args = []): int|string|callable;
 
+    public function iconCustomEmojiId(array $args = []): ?string
+    {
+        return null;
+    }
+
+    public function style(array $args = []): ?string
+    {
+        return null;
+    }
+
     public function resolve(TelegramRouterInterface $telegramRouter): void
     {
         if ($this instanceof AbstractCallbackButton) {

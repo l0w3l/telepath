@@ -122,4 +122,12 @@ class Context extends AbstractComponent implements ContextInterface
     {
         return new Profile($profileKey ?? config('telepath.profile'));
     }
+
+    public function imaginate(Update $dream, callable $callback): void
+    {
+        $reality = $this->update;
+        $this->update = $dream;
+        $callback();
+        $this->update = $reality;
+    }
 }

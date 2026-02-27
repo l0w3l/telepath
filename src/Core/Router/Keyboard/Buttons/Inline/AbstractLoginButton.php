@@ -58,6 +58,8 @@ abstract class AbstractLoginButton extends AbstractInlineButton
                 $botUsername === null ?: (string) $botUsername,
                 $requestWriteAccess === null ?: (string) $requestWriteAccess,
             ),
+            style: $this->style(),
+            iconCustomEmojiId: $this->iconCustomEmojiId()
         );
     }
 }

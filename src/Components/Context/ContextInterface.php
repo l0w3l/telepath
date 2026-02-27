@@ -43,4 +43,6 @@ interface ContextInterface
     public function chat(): Chat;
 
     public function profile(?string $profileKey = null): Profile;
+
+    public function imaginate(Update $dream, callable $callback): void;
 }
