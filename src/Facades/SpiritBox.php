@@ -1438,14 +1438,14 @@ class SpiritBox extends Facade
      * @see https://core.telegram.org/bots/api#answercallbackquery
      * @link TelegramBotApi::answerCallbackQuery()
      */
-    public function answerCallbackQuery(
+    public static function answerCallbackQuery(
         ?string $callbackQueryId = null,
         ?string $text = null,
         ?bool $showAlert = null,
         ?string $url = null,
         ?int $cacheTime = null,
     ): FailResult|true {
-        return $this->call(
+        return self::call(
             new AnswerCallbackQuery($callbackQueryId ?? Extrasense::update()->callbackQuery->id, $text, $showAlert, $url, $cacheTime),
         );
     }

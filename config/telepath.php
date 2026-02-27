@@ -25,9 +25,12 @@ return [
 
     'profile' => 'default',
 
-    'hook' => [
-        'async' => env('TELEPATH_HOOK_ASYNC', false),
-    ],
+    /**
+     * Flag to enable SpiritBoxAsync
+     *
+     * Require active queue:work process
+     */
+    'async' => env('TELEPATH_ASYNC', false),
 
     /**
      * see @link \Lowel\Telepath\Config\Profile
