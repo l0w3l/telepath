@@ -1112,8 +1112,8 @@ class SpiritBox extends Facade
         return self::call(
             new EditMessageCaption(
                 $businessConnectionId,
-                $chatId ?? Extrasense::chat()->id,
-                $messageId ?? Extrasense::message()->messageId,
+                ($inlineMessageId === null) ? $chatId ?? Extrasense::chat()->id : null,
+                ($inlineMessageId === null) ? $messageId ?? Extrasense::message()->messageId : null,
                 $inlineMessageId,
                 $caption,
                 $parseMode ?? Extrasense::profile()->parseMode,
@@ -1146,8 +1146,8 @@ class SpiritBox extends Facade
                 $latitude,
                 $longitude,
                 $businessConnectionId,
-                $chatId ?? Extrasense::chat()->id,
-                $messageId ?? Extrasense::message()->messageId,
+                ($inlineMessageId === null) ? $chatId ?? Extrasense::chat()->id : null,
+                ($inlineMessageId === null) ? $messageId ?? Extrasense::message()->messageId : null,
                 $inlineMessageId,
                 $livePeriod,
                 $horizontalAccuracy,
@@ -1174,8 +1174,8 @@ class SpiritBox extends Facade
             new EditMessageMedia(
                 $media,
                 $businessConnectionId,
-                $chatId ?? Extrasense::chat()->id,
-                $messageId ?? Extrasense::message()->messageId,
+                ($inlineMessageId === null) ? $chatId ?? Extrasense::chat()->id : null,
+                ($inlineMessageId === null) ? $messageId ?? Extrasense::message()->messageId : null,
                 $inlineMessageId,
                 $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
             ),
@@ -1218,8 +1218,8 @@ class SpiritBox extends Facade
         return self::call(
             new EditMessageReplyMarkup(
                 $businessConnectionId,
-                $chatId ?? Extrasense::chat()->id,
-                $messageId ?? Extrasense::message()->messageId,
+                ($inlineMessageId === null) ? $chatId ?? Extrasense::chat()->id : null,
+                ($inlineMessageId === null) ? $messageId ?? Extrasense::message()->messageId : null,
                 $inlineMessageId,
                 $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
             ),
@@ -1248,8 +1248,8 @@ class SpiritBox extends Facade
             new EditMessageText(
                 $text,
                 $businessConnectionId,
-                $chatId ?? Extrasense::chat()->id,
-                $messageId ?? Extrasense::message()->messageId,
+                ($inlineMessageId === null) ? $chatId ?? Extrasense::chat()->id : null,
+                ($inlineMessageId === null) ? $messageId ?? Extrasense::message()->messageId : null,
                 $inlineMessageId,
                 $parseMode ?? Extrasense::profile()->parseMode,
                 $entities,
