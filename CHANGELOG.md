@@ -2,6 +2,15 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.1 - bugfixes - 2026-03-12
+
+### What's Changed
+
+* fix: resolving in UpdateTypeEnum + spirit box exception with inlineMessageId param by @l0w3l in https://github.com/l0w3l/telepath/pull/56
+* Release 0.6.1: Fix UpdateTypeEnum and spirit box exception handling by @l0w3l in https://github.com/l0w3l/telepath/pull/57
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.0...0.6.1
+
 ## 0.6.0 - async, styled buttons and fixes - 2026-02-27
 
 ### What's Changed
