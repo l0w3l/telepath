@@ -56,7 +56,7 @@ enum UpdateTypeEnum: string
             UpdateTypeEnum::CHANNEL_POST => $update->channelPost->text,
             UpdateTypeEnum::EDITED_CHANNEL_POST => $update->editedChannelPost->text,
             UpdateTypeEnum::INLINE_QUERY => $update->inlineQuery->query,
-            UpdateTypeEnum::CHOSEN_INLINE_RESULT => $update->chosenInlineResult->query,
+            UpdateTypeEnum::CHOSEN_INLINE_RESULT => $update->chosenInlineResult->resultId,
             UpdateTypeEnum::CALLBACK_QUERY => $update->callbackQuery->data,
             UpdateTypeEnum::BUSINESS_MESSAGE => $update->businessMessage->text,
             UpdateTypeEnum::EDIT_BUSINESS_MESSAGE => $update->editedBusinessMessage->text,
