@@ -2,6 +2,17 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.2 - 2026-04-29
+
+### What's Changed
+
+* Refactor Telepath facade types and update phptg to 0.20 by @l0w3l in https://github.com/l0w3l/telepath/pull/63
+* build(deps): bump dependabot/fetch-metadata from 2.5.0 to 3.1.0 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/61
+* build(deps): bump ramsey/composer-install from 3 to 4 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/58
+* Refactor Telepath facade types and update phptg to 0.20 by @l0w3l in https://github.com/l0w3l/telepath/pull/64
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.1...0.6.2
+
 ## 0.6.1 - bugfixes - 2026-03-12
 
 ### What's Changed
