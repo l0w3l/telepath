@@ -244,10 +244,11 @@ class TelegramUpdatesMock
             'total_voter_count' => rand(1, 9999),
             'is_anonymous' => false,
             'type' => 'quiz',
+            'allows_revoting' => false,
             'allows_multiple_answers' => false,
             'options' => [
-                ['text' => 'Yes', 'voter_count' => 1],
-                ['text' => 'No', 'voter_count' => 0],
+                ['persistent_id' => 'test1', 'text' => 'Yes', 'voter_count' => 1],
+                ['persistent_id' => 'test2', 'text' => 'No', 'voter_count' => 0],
             ],
             'is_closed' => false,
         ]);
@@ -258,6 +259,8 @@ class TelegramUpdatesMock
         return $this->add(UpdateTypeEnum::POLL_ANSWER, [
             'poll_id' => uniqid(),
             'voter_chat' => $this->chat(),
+            'persistent_ids' => ['test'],
+            'option_persistent_ids' => ['test'],
             'user' => $this->user(),
             'option_ids' => [0],
         ]);
