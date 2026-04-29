@@ -24,7 +24,7 @@ use Phptg\BotApi\Type\Update\Update;
  * @phpstan-type MiddlewareHandler array<class-string<TelegramMiddlewareInterface>|callable>|class-string<TelegramMiddlewareInterface>|callable
  *
  * DI supported callback or TelegramHandlerInterface instance
- * @phpstan-type FallbackHandler RouterHandler
+ * @phpstan-type FallbackHandler class-string<TelegramHandlerInterface>|callable
  */
 interface TelegramRouterInterface extends RouteContextInterface
 {
