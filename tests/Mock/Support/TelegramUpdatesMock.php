@@ -259,7 +259,7 @@ class TelegramUpdatesMock
         return $this->add(UpdateTypeEnum::POLL_ANSWER, [
             'poll_id' => uniqid(),
             'voter_chat' => $this->chat(),
-            'persistent_ids' => ["test"],
+            'persistent_ids' => ['test'],
             'option_persistent_ids' => ['test'],
             'user' => $this->user(),
             'option_ids' => [0],
@@ -353,6 +353,6 @@ class TelegramUpdatesMock
 
     public function mock(): void
     {
-        App::bind(TestAppDriver::class, fn() => new TestAppDriver($this->getUpdates()));
+        App::bind(TestAppDriver::class, fn () => new TestAppDriver($this->getUpdates()));
     }
 }
