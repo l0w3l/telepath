@@ -157,8 +157,7 @@ class TelepathServiceProvider extends PackageServiceProvider
     private function loadRoutes(): void
     {
         Route::middleware('api')->post('/api/webhook', function () {
-            $request = App::make(ServerRequestInterface::class);
-            $json = $request->getBody()->getContents();
+            $json = request()->getContent();
 
             if (config('telepath.hook.async')) {
                 HandleTelegramUpdateRequestJob::dispatch($json);
