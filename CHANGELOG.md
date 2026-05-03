@@ -2,6 +2,10 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.3 - 2026-05-03
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.2...0.6.3
+
 ## 0.6.2 - 2026-04-29
 
 ### What's Changed
