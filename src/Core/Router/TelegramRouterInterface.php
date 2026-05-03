@@ -31,14 +31,14 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for command patterns.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      */
     public function onCommand(string $pattern, string|callable $handler): RouteFutureContextInterface;
 
     /**
      * Registers a handler for the 'update' type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#message
      */
@@ -47,7 +47,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'edited_message' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#message
      */
@@ -56,7 +56,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'message' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#messagereactionupdated
      */
@@ -65,7 +65,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'message_reaction_count' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#messagereactioncountupdated
      */
@@ -74,7 +74,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'channel_post' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#message
      */
@@ -83,7 +83,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'edited_channel_post' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#message
      */
@@ -92,7 +92,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'business_connection' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#businessconnection
      */
@@ -101,7 +101,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'business_message' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#message
      */
@@ -110,7 +110,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'business_message_edit' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#message
      */
@@ -119,7 +119,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'business_message_delete' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#businessmessagesdeleted
      */
@@ -128,7 +128,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'callback_query' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#callbackquery
      */
@@ -137,7 +137,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'inline_query' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#inlinequery
      */
@@ -146,7 +146,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'inline_query_chosen_result' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#choseninlineresult
      */
@@ -155,7 +155,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'shipping_query' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#shippingquery
      */
@@ -164,7 +164,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'pre_checkout_query' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#precheckoutquery
      */
@@ -173,7 +173,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'purchased_paid_media' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#paidmediapurchased
      */
@@ -182,7 +182,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'chat_member' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#poll
      */
@@ -191,7 +191,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'poll_answer' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#pollanswer
      */
@@ -200,7 +200,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'chat_join_request' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#chatjoinrequest
      */
@@ -209,7 +209,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'chat_member' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#chatmemberupdated
      */
@@ -218,7 +218,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'chat_boost' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#chatboost
      */
@@ -227,7 +227,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'chat_boost_remove' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#chatboostremoved
      */
@@ -236,7 +236,7 @@ interface TelegramRouterInterface extends RouteContextInterface
     /**
      * Registers a handler for the 'my_chat_member' update type.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#chatmemberupdated
      */
@@ -247,7 +247,7 @@ interface TelegramRouterInterface extends RouteContextInterface
      * This method allows you to define how the bot should respond to different types of updates
      * and patterns.
      *
-     * @param  RouterHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      *
      * @link https://core.telegram.org/bots/api#update
      */
@@ -257,7 +257,7 @@ interface TelegramRouterInterface extends RouteContextInterface
      * Registers a fallback handler that will be called if no other handlers match.
      * This is useful for handling unexpected updates or providing default behavior.
      *
-     * @param  FallbackHandler  $handler
+     * @param  class-string<TelegramHandlerInterface>|callable  $handler
      */
     public function fallback(string|callable $handler): void;
 
