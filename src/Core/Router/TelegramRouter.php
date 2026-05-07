@@ -232,8 +232,6 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
         $this->mainGroupContext = $this->mainGroupContext->unwrap();
 
-        $this->mainGroupContext->appendRouteContext($childGroupContext);
-
         return $childGroupContext;
     }
 
@@ -325,12 +323,6 @@ class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverI
 
     public function getExecutors(): RouteExecutorsCollection
     {
-        static $routeExecutorsCollection = null;
-
-        if (config('app.debug', false) || env('TELEPATH_TESTING', false)) {
-            return new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
-        } else {
-            return $routeExecutorsCollection ??= new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
-        }
+        return new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
     }
 }

@@ -48,11 +48,11 @@ enum UpdateTypeEnum: string
 
         foreach ($map as $property => $type) {
             if ($update->{$property}) {
-                $types[] = $type;
+                $types[$type->value] = $type;
             }
         }
 
-        return $types;
+        return array_values($types);
     }
 
     public static function extractText(Update $update, UpdateTypeEnum $type): ?string
