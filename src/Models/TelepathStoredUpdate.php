@@ -24,15 +24,15 @@ use Symfony\Component\Serializer\Serializer;
  */
 class TelepathStoredUpdate extends Model
 {
+    protected static ?Serializer $serializer = null;
+
     protected $fillable = [
         'instance',
     ];
 
     public function instance(): Attribute
     {
-        $serializer = new Serializer([new ObjectNormalizer(
-            nameConverter: new CamelCaseToSnakeCaseNameConverter,
-        )], [new JsonEncoder]);
+        $serializer = static::getSerializer();
 
         return Attribute::make(
             get: fn (string $value) => $serializer->deserialize($value, Update::class, 'json'),
@@ -46,5 +46,16 @@ class TelepathStoredUpdate extends Model
                 return $serializer->serialize($value, 'json');
             },
         );
+    }
+
+    protected static function getSerializer(): Serializer
+    {
+        if (static::$serializer === null) {
+            static::$serializer = new Serializer([new ObjectNormalizer(
+                nameConverter: new CamelCaseToSnakeCaseNameConverter,
+            )], [new JsonEncoder]);
+        }
+
+        return static::$serializer;
     }
 }

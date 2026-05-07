@@ -22,18 +22,24 @@ use Lowel\Telepath\Enums\UpdateTypeEnum;
  * @property int $repeatAfterException
  * @property int $timeoutAfterException
  */
-final readonly class Profile
+final class Profile
 {
+    private array $cache = [];
+
     public function __construct(
-        public string $profileName
+        public readonly string $profileName
     ) {}
 
     public function __get(string $name)
     {
+        if (array_key_exists($name, $this->cache)) {
+            return $this->cache[$name];
+        }
+
         $snakeName = Str::snake($name);
         $mutator = $this->mutator($snakeName);
 
-        return $mutator(config("telepath.profiles.{$this->profileName}.{$snakeName}"));
+        return $this->cache[$name] = $mutator(config("telepath.profiles.{$this->profileName}.{$snakeName}"));
     }
 
     private function mutator(string $name): callable

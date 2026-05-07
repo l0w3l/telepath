@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
 use Closure;
+use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Helpers\Hasher;
 use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\InlineKeyboardButton;
@@ -15,6 +16,13 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
     protected bool $pay = false;
 
     abstract public function handle(): callable;
+
+    public function resolveCallbackData(): string
+    {
+        $callbackQuery = Extrasense::update()->callbackQuery;
+
+        return str_replace($this->callbackDataId(), '', $callbackQuery->id);
+    }
 
     public function callbackData(array $args = []): int|string|callable
     {
