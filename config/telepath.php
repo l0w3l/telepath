@@ -14,6 +14,7 @@ return [
     */
 
     'base_uri' => env('TELEPATH_BASE_URL', 'https://api.telegram.org'),
+    'store' => env('TELEPATH_CACHE_STORE', 'file'),
     'conversation' => [
         'ttl' => (int) env('TELEPATH_CONVERSATION_TIMEOUT', 60),
     ],

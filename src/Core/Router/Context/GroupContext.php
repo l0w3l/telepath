@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router\Context;
 
 use Lowel\Telepath\Core\Router\Context\Executor\RouteExecutor;
+use Lowel\Telepath\Core\Router\Context\Executor\RouteExecutorInterface;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 
 /**
@@ -31,7 +32,10 @@ final class GroupContext implements GroupContextInterface
 
     public function wrap(RouteContextParams $routeContextParams): GroupContextInterface
     {
-        return new self($this, $routeContextParams);
+        $group = new self($this, $routeContextParams);
+        $this->appendRouteContext($group);
+
+        return $group;
     }
 
     public function unwrap(): ?GroupContextInterface
@@ -75,21 +79,34 @@ final class GroupContext implements GroupContextInterface
     public function collect(): array
     {
         $executors = [];
+        $this->collectInto($executors);
+
+        return $executors;
+    }
+
+    /**
+     * @param  array<RouteExecutorInterface>  $executors
+     */
+    private function collectInto(array &$executors): void
+    {
+        $startCount = count($executors);
 
         foreach ($this->contexts as $context) {
-            if ($context instanceof GroupContextInterface) {
-                $executors = array_merge($executors, $context->collect());
+            if ($context instanceof self) {
+                $context->collectInto($executors);
+            } elseif ($context instanceof GroupContextInterface) {
+                foreach ($context->collect() as $executor) {
+                    $executors[] = $executor;
+                }
             } else {
-                $contextParams = $context->getParams();
-
-                $executors[] = new RouteExecutor($contextParams);
+                $executors[] = new RouteExecutor($context->getParams());
             }
         }
 
-        foreach ($executors as $executor) {
-            $executor->affect($this->params);
-        }
+        $endCount = count($executors);
 
-        return $executors;
+        for ($i = $startCount; $i < $endCount; $i++) {
+            $executors[$i]->affect($this->params);
+        }
     }
 }

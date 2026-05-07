@@ -37,10 +37,17 @@ enum UpdateTypeEnum: string
 
     public static function resolve(Update $update): array
     {
+        static $map = null;
+
+        $map ??= array_combine(
+            array_map(fn (self $type) => Str::camel($type->value), self::cases()),
+            self::cases()
+        );
+
         $types = [];
 
-        foreach (self::cases() as $type) {
-            if ($update->{Str::camel($type->value)}) {
+        foreach ($map as $property => $type) {
+            if ($update->{$property}) {
                 $types[] = $type;
             }
         }
@@ -78,7 +85,7 @@ enum UpdateTypeEnum: string
 
             return $routerResolver->getExecutors()->getAllUpdateTypes();
         } else {
-            return array_filter($array, fn (string $value) => in_array($value, $filter));
+            return array_values(array_filter($array, fn (string $value) => in_array($value, $filter)));
         }
     }
 }
