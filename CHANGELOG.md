@@ -2,6 +2,14 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.5 - 2026-05-07
+
+### What's Changed
+
+* Remove duplicated updates by @l0w3l in https://github.com/l0w3l/telepath/pull/69
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.4...0.6.5
+
 ## 0.6.4 - 2026-05-07
 
 ### What's Changed
