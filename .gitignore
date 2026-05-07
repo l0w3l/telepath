@@ -30,4 +30,8 @@ phpstan.neon
 testbench.yaml
 /docs
 /coverage
+/work
+bench
+.tmp/
+.opencode/
 /workbench

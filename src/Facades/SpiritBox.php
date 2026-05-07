@@ -779,7 +779,7 @@ class SpiritBox extends Facade
                 $isAnonymous,
                 $type,
                 $allowsMultipleAnswers,
-                $correctOptionId,
+                $correctOptionId !== null ? [$correctOptionId] : null,
                 $explanation,
                 $explanationParseMode,
                 $explanationEntities,

@@ -11,12 +11,12 @@ use Phptg\BotApi\Type\Update\Update;
  * Factory for creating ConversationStorage instances.
  *
  * This factory is responsible for creating a ConversationStorage instance
- * that uses the file cache store and is initialized with the provided Update.
+ * that uses the configured cache store and is initialized with the provided Update.
  */
 final class ConversationStorageFactory
 {
     public function create(Update $update): ConversationStorage
     {
-        return new ConversationStorage(Cache::store('file'), $update);
+        return new ConversationStorage(Cache::store(config('telepath.store')), $update);
     }
 }
