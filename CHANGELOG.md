@@ -2,6 +2,15 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.4 - 2026-05-07
+
+### What's Changed
+
+* Feature/gemini refactring by @l0w3l in https://github.com/l0w3l/telepath/pull/67
+* Refactor for performance optimizations and feature enhancements by @l0w3l in https://github.com/l0w3l/telepath/pull/68
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.3...0.6.4
+
 ## 0.6.3 - 2026-05-03
 
 **Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.2...0.6.3
