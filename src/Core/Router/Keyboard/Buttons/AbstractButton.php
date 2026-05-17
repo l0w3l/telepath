@@ -9,11 +9,11 @@ use Lowel\Telepath\Enums\ButtonStyleEnum;
 
 abstract class AbstractButton implements ButtonInterface
 {
-    private ?string $style = null;
+    protected ?string $style = null;
 
-    private ?string $iconCustomEmojiId = null;
+    protected ?string $iconCustomEmojiId = null;
 
-    private string $text = 'example';
+    protected string $text = 'example';
 
     public static function make(array $args = []): static
     {
