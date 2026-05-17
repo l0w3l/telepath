@@ -18,8 +18,8 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
      * @template TValue
      * @template TKey of array-key
      *
-     * @param array<TValue> $collection
-     * @param callable(TValue, TKey): ?ButtonInterface $callback
+     * @param  array<TValue>  $collection
+     * @param  callable(TValue, TKey): ?ButtonInterface  $callback
      * @return $this
      */
     public function eachRow(array $collection, callable $callback): static
@@ -41,8 +41,8 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
      * @template TValue
      * @template TKey of array-key
      *
-     * @param array<TValue> $collection
-     * @param callable(TValue, TKey): ?ButtonInterface $callback
+     * @param  array<TValue>  $collection
+     * @param  callable(TValue, TKey): ?ButtonInterface  $callback
      * @return $this
      */
     public function eachColumn(array $collection, callable $callback): static
