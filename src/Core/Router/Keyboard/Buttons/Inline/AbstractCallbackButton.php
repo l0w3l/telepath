@@ -81,7 +81,7 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
 
     public function resolve(TelegramRouterInterface $telegramRouter): Route
     {
-        $pattern = '^'.$this->getCallbackData().$this->getPattern().'$';
+        $pattern = '^'.$this->getCallbackDataId().$this->getPattern().'$';
 
         return $telegramRouter->onCallbackQuery([static::class, 'handle'], $pattern)
             ->middleware(AnswerCallbackQueryMiddleware::class);
