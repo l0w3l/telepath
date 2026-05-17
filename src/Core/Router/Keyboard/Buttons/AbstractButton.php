@@ -68,7 +68,7 @@ abstract class AbstractButton implements ButtonInterface
 
     public function getText(): string
     {
-        return $this->text;
+        return __($this->text);
     }
 
     public function setText(string $text): static
