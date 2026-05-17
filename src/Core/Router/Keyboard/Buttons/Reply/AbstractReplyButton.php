@@ -42,6 +42,6 @@ abstract class AbstractReplyButton extends AbstractButton implements ButtonInter
 
     public static function trigger(): void
     {
-        Invoker::call(static::make(), 'handle');
+        Invoker::call([static::make(), 'handle']);
     }
 }

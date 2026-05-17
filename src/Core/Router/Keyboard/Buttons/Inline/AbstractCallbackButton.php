@@ -90,6 +90,6 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
 
     public static function trigger(): void
     {
-        Invoker::call(static::make(), 'handle');
+        Invoker::call([static::make(), 'handle']);
     }
 }
