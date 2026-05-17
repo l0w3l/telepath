@@ -228,7 +228,7 @@ interface TelegramRouterInterface
      * Groups a set of handlers together, allowing for shared middleware and context.
      * This method is useful for organizing related handlers and applying common logic.
      */
-    public function group(callable $callback): Router;
+    public function group(array $attributes, callable $callback): Router;
 
     public function button(string|callable|Closure|array $handler, string $pattern): Route;
 

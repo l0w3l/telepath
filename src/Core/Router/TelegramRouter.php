@@ -145,9 +145,9 @@ class TelegramRouter implements TelegramRouterInterface
         return $this->createRule(UpdateTypeEnum::INLINE_QUERY, $handler, $pattern);
     }
 
-    public function group(callable $callback): Router
+    public function group(array $attributes, callable $callback): Router
     {
-        return Route::group([], $callback);
+        return Route::group($attributes, $callback);
     }
 
     public function button(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
@@ -161,7 +161,7 @@ class TelegramRouter implements TelegramRouterInterface
 
     public function buttons(array $buttons): Router
     {
-        return $this->group(function () use ($buttons) {
+        return $this->group([], function () use ($buttons) {
             foreach ($buttons as $button) {
                 if (is_array($button) && $controllerPattern = $this->resolvePatternFromControllerSignature($button)) {
                     $this->button($button, $controllerPattern);
