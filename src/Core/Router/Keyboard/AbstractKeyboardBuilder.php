@@ -44,8 +44,12 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
         return $this;
     }
 
-    public function row(ButtonInterface ...$button): static
+    public function row(null|ButtonInterface ...$button): static
     {
+        if (null === $button) {
+            return $this;
+        }
+
         $lastButtonMatrixElementIndex = array_key_last($this->keyboardMarkup) - 1;
 
         if (array_key_exists($lastButtonMatrixElementIndex, $this->keyboardMarkup) && ! empty($this->keyboardMarkup[$lastButtonMatrixElementIndex])) {
@@ -57,8 +61,12 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
         return $this;
     }
 
-    public function column(ButtonInterface ...$button): static
+    public function column(null|ButtonInterface ...$button): static
     {
+        if (null === $button) {
+            return $this;
+        }
+
         $this->keyboardMarkup = array_merge($this->keyboardMarkup, array_map(fn ($x) => [$x], $button));
 
         return $this;
@@ -69,11 +77,16 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
         foreach ($markup as $column) {
             if (is_array($column)) {
                 foreach ($column as $row) {
+                    if (null === $row) {
+                        continue;
+                    }
                     if (! ($row instanceof ButtonInterface)) {
                         throw new RuntimeException('Markup elements should be passed as '.ButtonInterface::class.' instance');
                     }
                 }
-            } elseif (! ($column instanceof ButtonInterface)) {
+            } elseif (null === $column) {
+                continue;
+            } if (! ($column instanceof ButtonInterface)) {
                 throw new RuntimeException('Markup elements should be passed as '.ButtonInterface::class.' instance');
             }
         }
