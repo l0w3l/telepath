@@ -8,6 +8,7 @@ use Illuminate\Routing\Route;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\AbstractButton;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
+use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractReplyButton extends AbstractButton implements ButtonInterface
@@ -37,5 +38,10 @@ abstract class AbstractReplyButton extends AbstractButton implements ButtonInter
         } catch (\ReflectionException $e) {
             return $this->getText();
         }
+    }
+
+    public static function trigger(): void
+    {
+        Invoker::call(static::make(), 'handle');
     }
 }

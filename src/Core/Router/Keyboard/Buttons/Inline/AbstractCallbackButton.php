@@ -8,6 +8,7 @@ use Illuminate\Routing\Route;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Helpers\Hasher;
+use Lowel\Telepath\Helpers\Invoker;
 use Lowel\Telepath\Http\Middlewares\Buttons\AnswerCallbackQueryMiddleware;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
@@ -85,5 +86,10 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
 
         return $telegramRouter->onCallbackQuery([static::class, 'handle'], $pattern)
             ->middleware(AnswerCallbackQueryMiddleware::class);
+    }
+
+    public static function trigger(): void
+    {
+        Invoker::call(static::make(), 'handle');
     }
 }
