@@ -14,10 +14,18 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
      */
     protected array $keyboardMarkup = [[]];
 
+    /**
+     * @template TValue
+     * @template TKey of array-key
+     *
+     * @param array<TValue> $collection
+     * @param callable(TValue, TKey): ?ButtonInterface $callback
+     * @return $this
+     */
     public function eachRow(array $collection, callable $callback): static
     {
-        foreach ($collection as $item) {
-            $button = $callback($item);
+        foreach ($collection as $index => $item) {
+            $button = $callback($item, $index);
 
             if ($button instanceof ButtonInterface) {
                 $this->row(
@@ -29,10 +37,18 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
         return $this;
     }
 
+    /**
+     * @template TValue
+     * @template TKey of array-key
+     *
+     * @param array<TValue> $collection
+     * @param callable(TValue, TKey): ?ButtonInterface $callback
+     * @return $this
+     */
     public function eachColumn(array $collection, callable $callback): static
     {
-        foreach ($collection as $item) {
-            $button = $callback($item);
+        foreach ($collection as $index => $item) {
+            $button = $callback($item, $index);
 
             if ($button instanceof ButtonInterface) {
                 $this->column(
