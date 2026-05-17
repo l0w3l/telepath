@@ -4,63 +4,74 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
-use Closure;
 use Lowel\Telepath\Enums\SwitchInlineQueryAllowTypesEnum;
-use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 use Phptg\BotApi\Type\SwitchInlineQueryChosenChat;
 
 abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
 {
-    abstract public function switchInlineQuery(array $args = []): int|string|callable;
+    /** @var string[] */
+    protected array $allowed = [];
 
-    /**
-     * @return SwitchInlineQueryAllowTypesEnum[]
-     */
-    public function allow(): array
+    protected string $switchInlineQueryData = '';
+
+    public function toButton(): InlineKeyboardButton|KeyboardButton
     {
-        return [];
-    }
-
-    public function toButton(array $args = []): InlineKeyboardButton|KeyboardButton
-    {
-        $text = $this->text($args);
-        $switchInlineQuery = $this->switchInlineQuery($args);
-
-        if ($text instanceof Closure) {
-            $text = Invoker::call($text);
-        }
-        if ($switchInlineQuery instanceof Closure) {
-            $switchInlineQuery = Invoker::call($switchInlineQuery);
-        }
-
-        $allowed = $this->allow();
+        $allowed = $this->getAllowed();
 
         if (empty($allowed)) {
             return new InlineKeyboardButton(
-                text: (string) $text,
-                switchInlineQuery: (string) $switchInlineQuery,
+                text: $this->getText(),
+                switchInlineQuery: $this->getSwitchInlineQueryData(),
+                iconCustomEmojiId: $this->getIconCustomEmojiId(),
+                style: $this->getStyle()
             );
         }
         if (in_array(SwitchInlineQueryAllowTypesEnum::CURRENT, $allowed)) {
             return new InlineKeyboardButton(
-                text: (string) $text,
-                switchInlineQueryCurrentChat: (string) $switchInlineQuery,
+                text: $this->getText(),
+                switchInlineQueryCurrentChat: $this->getSwitchInlineQueryData(),
+                iconCustomEmojiId: $this->getIconCustomEmojiId(),
+                style: $this->getStyle()
             );
         } else {
             return new InlineKeyboardButton(
-                text: (string) $text,
+                text: $this->getText(),
                 switchInlineQueryChosenChat: new SwitchInlineQueryChosenChat(
-                    query: (string) $switchInlineQuery,
+                    query: $this->getSwitchInlineQueryData(),
                     allowUserChats: in_array(SwitchInlineQueryAllowTypesEnum::USERS, $allowed),
                     allowBotChats: in_array(SwitchInlineQueryAllowTypesEnum::BOT, $allowed),
                     allowGroupChats: in_array(SwitchInlineQueryAllowTypesEnum::GROUP, $allowed),
                     allowChannelChats: in_array(SwitchInlineQueryAllowTypesEnum::CHANNEL, $allowed),
                 ),
-                style: $this->style(),
-                iconCustomEmojiId: $this->iconCustomEmojiId()
+                iconCustomEmojiId: $this->getIconCustomEmojiId(),
+                style: $this->getStyle()
             );
         }
+    }
+
+    public function getAllowed(): array
+    {
+        return $this->allowed;
+    }
+
+    public function setAllowed(array $allowed): static
+    {
+        $this->allowed = $allowed;
+
+        return $this;
+    }
+
+    public function getSwitchInlineQueryData(): string
+    {
+        return $this->switchInlineQueryData;
+    }
+
+    public function setSwitchInlineQueryData(string $switchInlineQueryData): static
+    {
+        $this->switchInlineQueryData = $switchInlineQueryData;
+
+        return $this;
     }
 }

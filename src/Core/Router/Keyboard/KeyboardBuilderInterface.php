@@ -12,7 +12,7 @@ use Phptg\BotApi\Type\ReplyKeyboardRemove;
 
 interface KeyboardBuilderInterface
 {
-    public function build(array $args = []): InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply;
+    public function build(): InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply;
 
     /**
      * @param  callable(ButtonInterface): bool  $comparator

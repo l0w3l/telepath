@@ -9,9 +9,14 @@ use Phptg\BotApi\Type\InlineKeyboardMarkup;
 
 final class InlineKeyboardBuilder extends AbstractKeyboardBuilder
 {
-    public function build(array $args = []): InlineKeyboardMarkup
+    public static function create(): self
     {
-        $buttons = array_map(fn (array $column) => array_map(fn (ButtonInterface $button) => $button->toButton($args), $column), $this->keyboardMarkup);
+        return new self;
+    }
+
+    public function build(): InlineKeyboardMarkup
+    {
+        $buttons = array_map(fn (array $column) => array_map(fn (ButtonInterface $button) => $button->toButton(), $column), $this->keyboardMarkup);
 
         return new InlineKeyboardMarkup($buttons);
     }

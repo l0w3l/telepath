@@ -45,4 +45,6 @@ interface ContextInterface
     public function profile(?string $profileKey = null): Profile;
 
     public function imaginate(Update $dream, callable $callback): void;
+
+    public function replicate(Update $update): self;
 }

@@ -14,6 +14,36 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
      */
     protected array $keyboardMarkup = [[]];
 
+    public function eachRow(array $collection, callable $callback): static
+    {
+        foreach ($collection as $item) {
+            $button = $callback($item);
+
+            if ($button instanceof ButtonInterface) {
+                $this->row(
+                    $button,
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    public function eachColumn(array $collection, callable $callback): static
+    {
+        foreach ($collection as $item) {
+            $button = $callback($item);
+
+            if ($button instanceof ButtonInterface) {
+                $this->column(
+                    $button,
+                );
+            }
+        }
+
+        return $this;
+    }
+
     public function row(ButtonInterface ...$button): static
     {
         $lastButtonMatrixElementIndex = array_key_last($this->keyboardMarkup) - 1;

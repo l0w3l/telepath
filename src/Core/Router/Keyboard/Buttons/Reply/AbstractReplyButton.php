@@ -4,60 +4,38 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply;
 
-use Closure;
+use Illuminate\Routing\Route;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\AbstractButton;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
-use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\KeyboardButton;
 
-abstract class AbstractReplyButton implements ButtonInterface
+abstract class AbstractReplyButton extends AbstractButton implements ButtonInterface
 {
-    public function handle(): ?callable
+    public function toButton(): KeyboardButton
     {
-        return null;
-    }
-
-    public function pattern(): string
-    {
-        return $this->text();
-    }
-
-    abstract public function text(array $args = []): int|string|callable;
-
-    public function iconCustomEmojiId(array $args = []): ?string
-    {
-        return null;
-    }
-
-    public function style(array $args = []): ?string
-    {
-        return null;
-    }
-
-    public function toButton(array $args = []): KeyboardButton
-    {
-        $text = $this->text($args);
-
-        if ($text instanceof Closure) {
-            $text = Invoker::call($text, $args);
-        }
-
         return new KeyboardButton(
-            text: (string) $text,
-            style: $this->style($args),
-            iconCustomEmojiId: $this->iconCustomEmojiId($args)
+            text: $this->getText(),
+            iconCustomEmojiId: $this->getIconCustomEmojiId(),
+            style: $this->getStyle()
         );
     }
 
-    public function resolve(TelegramRouterInterface $telegramRouter): void
+    public function resolve(TelegramRouterInterface $telegramRouter): Route
     {
-        if ($this->handle() === null) {
-            return;
+        $pattern = $this->resolvePattern();
+
+        return $telegramRouter->onMessage([static::class, 'handle'], $pattern);
+    }
+
+    private function resolvePattern(): ?string
+    {
+        try {
+            $ref = new \ReflectionMethod(static::class, 'pattern');
+
+            return $ref->invoke(null);
+        } catch (\ReflectionException $e) {
+            return $this->getText();
         }
-
-        $pattern = "{$this->pattern()}";
-
-        // reply keyboards works only with static content
-        $telegramRouter->onMessage($this->handle()(...), $pattern);
     }
 }

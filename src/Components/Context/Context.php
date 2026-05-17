@@ -6,7 +6,6 @@ namespace Lowel\Telepath\Components\Context;
 
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Config\Profile;
-use Lowel\Telepath\Core\Components\AbstractComponent;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
@@ -16,7 +15,7 @@ use Phptg\BotApi\Type\Message;
 use Phptg\BotApi\Type\Update\Update;
 use Phptg\BotApi\Type\User;
 
-class Context extends AbstractComponent implements ContextInterface
+class Context implements ContextInterface
 {
     private ?Update $update = null;
 
@@ -129,5 +128,14 @@ class Context extends AbstractComponent implements ContextInterface
         $this->update = $dream;
         $callback();
         $this->update = $reality;
+    }
+
+    public function replicate(Update $update): self
+    {
+        $replicate = new self;
+
+        $replicate->update = $update;
+
+        return $replicate;
     }
 }

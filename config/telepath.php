@@ -13,6 +13,9 @@ return [
     |
     */
 
+    'hook' => [
+        'secret' => env('TELEPATH_SECRET'),
+    ],
     'base_uri' => env('TELEPATH_BASE_URL', 'https://api.telegram.org'),
     'store' => env('TELEPATH_CACHE_STORE', 'file'),
     'conversation' => [
@@ -42,7 +45,7 @@ return [
             'username' => env('TELEPATH_USERNAME', ''),
             'offset' => (int) env('TELEPATH_OFFSET', 0),
             'limit' => (int) env('TELEPATH_LIMIT', 100),
-            'timeout' => (int) env('TELEPATH_TIMEOUT', 30),
+            'timeout' => (int) env('TELEPATH_TIMEOUT', 5),
             'allowed_updates' => env('TELEPATH_ALLOWED_UPDATES', '*'),
 
             'parse_mode' => ParseModeEnum::MARKDOWN->value,
