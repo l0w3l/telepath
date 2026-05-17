@@ -11,7 +11,10 @@ use Illuminate\Support\Str;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply\AbstractReplyButton;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Facades\Extrasense;
+use Phptg\BotApi\Type\Update\Update;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Response;
 
 class TelegramRouter implements TelegramRouterInterface
 {
@@ -172,6 +175,13 @@ class TelegramRouter implements TelegramRouterInterface
                 }
             }
         });
+    }
+
+    public function redirect(string $data = '', ?Update $update = null, ?UpdateTypeEnum $updateTypeEnum = null): Response
+    {
+        $request = RequestFactory::fromRaw($update ?? Extrasense::update(), $updateTypeEnum ?? Extrasense::type(), $data);
+
+        return Route::dispatch($request);
     }
 
     protected function createRule(UpdateTypeEnum $updateTypeEnum, string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Components\Context;
 
 use Lowel\Telepath\Config\Profile;
+use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
@@ -41,6 +42,11 @@ interface ContextInterface
      * @throws UpdateNotFoundInCurrentContextException
      */
     public function chat(): Chat;
+
+    /**
+     * @throws UpdateNotFoundInCurrentContextException
+     */
+    public function type(): UpdateTypeEnum;
 
     public function profile(?string $profileKey = null): Profile;
 

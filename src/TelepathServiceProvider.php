@@ -22,7 +22,6 @@ use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Http\Guards\TelegramGuard;
 use Lowel\Telepath\Http\Middlewares\Authorization\TelegramOriginMiddleware;
 use Lowel\Telepath\Http\Middlewares\ErrorHandlers\ErrorReportMiddleware;
-use Lowel\Telepath\Http\Middlewares\UpdateContextMiddleware;
 use Phptg\BotApi\TelegramBotApi;
 use Phptg\BotApi\Type\Update\Update;
 use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
@@ -33,7 +32,6 @@ class TelepathServiceProvider extends PackageServiceProvider
 {
     const array DEFAULT_MIDDLEWARES = [
         TelegramOriginMiddleware::class,
-        UpdateContextMiddleware::class,
         ErrorReportMiddleware::class,
     ];
 
@@ -111,20 +109,26 @@ class TelepathServiceProvider extends PackageServiceProvider
             Route::post('/webhook', function () {
                 $request = request();
 
+                $context = app()->make(Context::class);
                 $update = Update::fromJson($request->getContent());
                 $updateTypes = UpdateTypeEnum::resolve($update);
 
+                $context->onBefore($update);
+
                 foreach ($updateTypes as $updateType) {
+                    $context->setType($updateType);
+
                     $internalRequest = RequestFactory::fromUpdate($updateType, $update);
 
                     Route::dispatch($internalRequest);
                 }
 
+                $context->onAfter($update);
+
                 return response();
             })->middleware(TelegramOriginMiddleware::class);
 
             Route::middleware([
-                UpdateContextMiddleware::class,
                 ErrorReportMiddleware::class,
             ])->group(function () {
                 require config('telepath.routes');

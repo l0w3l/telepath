@@ -7,6 +7,9 @@ namespace Lowel\Telepath\Core\Router;
 use Closure;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
+use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Phptg\BotApi\Type\Update\Update;
+use Symfony\Component\HttpFoundation\Response;
 
 interface TelegramRouterInterface
 {
@@ -236,4 +239,6 @@ interface TelegramRouterInterface
      * Register buttons to the router
      */
     public function buttons(array $buttons): Router;
+
+    public function redirect(string $data = '', ?Update $update = null, ?UpdateTypeEnum $updateTypeEnum = null): Response;
 }

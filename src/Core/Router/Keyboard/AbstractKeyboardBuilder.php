@@ -60,30 +60,40 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
         return $this;
     }
 
-    public function row(?ButtonInterface ...$button): static
+    public function row(?ButtonInterface ...$buttons): static
     {
-        if ($button === null) {
-            return $this;
+        $clearButtons = [];
+        foreach ($buttons as $button) {
+            if ($button === null) {
+                continue;
+            }
+
+            $clearButtons[] = $button;
         }
 
         $lastButtonMatrixElementIndex = array_key_last($this->keyboardMarkup) - 1;
 
         if (array_key_exists($lastButtonMatrixElementIndex, $this->keyboardMarkup) && ! empty($this->keyboardMarkup[$lastButtonMatrixElementIndex])) {
-            $this->keyboardMarkup[$lastButtonMatrixElementIndex] = array_merge($this->keyboardMarkup[$lastButtonMatrixElementIndex], $button);
+            $this->keyboardMarkup[$lastButtonMatrixElementIndex] = array_merge($this->keyboardMarkup[$lastButtonMatrixElementIndex], $clearButtons);
         } else {
-            $this->keyboardMarkup[] = $button;
+            $this->keyboardMarkup[] = $clearButtons;
         }
 
         return $this;
     }
 
-    public function column(?ButtonInterface ...$button): static
+    public function column(?ButtonInterface ...$buttons): static
     {
-        if ($button === null) {
-            return $this;
+        $clearButtons = [];
+        foreach ($buttons as $button) {
+            if ($button === null) {
+                continue;
+            }
+
+            $clearButtons[] = $button;
         }
 
-        $this->keyboardMarkup = array_merge($this->keyboardMarkup, array_map(fn ($x) => [$x], $button));
+        $this->keyboardMarkup = array_merge($this->keyboardMarkup, array_map(fn ($x) => [$x], $clearButtons));
 
         return $this;
     }

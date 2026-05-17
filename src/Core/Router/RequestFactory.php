@@ -32,4 +32,21 @@ class RequestFactory
 
         return $request;
     }
+
+    public static function fromRaw(Update $update, UpdateTypeEnum $updateType, string $data = ''): Request
+    {
+        $request = Request::create(
+            uri: sprintf(
+                'telepath/%s/%s',
+                $updateType->value,
+                urlencode($data)
+            ),
+            method: 'POST',
+            content: $update->getRaw(),
+        );
+
+        $request->attributes->set('telepath.update', $update);
+
+        return $request;
+    }
 }
