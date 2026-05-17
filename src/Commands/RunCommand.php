@@ -64,9 +64,14 @@ class RunCommand extends Command
                 foreach (UpdateTypeEnum::resolve($update) as $updateType) {
                     $context->setType($updateType);
 
-                    $request = RequestFactory::fromUpdate($updateType, $update);
+                    $ogRequest = app('request');
+                    $internalRequest = RequestFactory::fromUpdate($updateType, $update);
 
-                    Route::dispatch($request);
+                    app()->instance('request', $internalRequest);
+
+                    Route::dispatch($internalRequest);
+
+                    app()->instance('request', $ogRequest);
                 }
 
                 $context->onAfter($update);

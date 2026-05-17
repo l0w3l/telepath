@@ -118,9 +118,14 @@ class TelepathServiceProvider extends PackageServiceProvider
                 foreach ($updateTypes as $updateType) {
                     $context->setType($updateType);
 
+                    $ogRequest = app('request');
                     $internalRequest = RequestFactory::fromUpdate($updateType, $update);
 
+                    app()->instance('request', $internalRequest);
+
                     Route::dispatch($internalRequest);
+
+                    app()->instance('request', $ogRequest);
                 }
 
                 $context->onAfter($update);
