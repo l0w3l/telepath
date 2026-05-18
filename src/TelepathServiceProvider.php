@@ -134,7 +134,7 @@ class TelepathServiceProvider extends PackageServiceProvider
             });
 
             Route::middleware([
-                ErrorReportMiddleware::class
+                ErrorReportMiddleware::class,
             ])->group(function () {
                 require config('telepath.routes');
             });
