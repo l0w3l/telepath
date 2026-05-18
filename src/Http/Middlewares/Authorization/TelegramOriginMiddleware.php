@@ -25,7 +25,7 @@ class TelegramOriginMiddleware
             return $next($request);
         }
 
-        $telegramBotApiSecretToken = $request->header('Telegram-Bot-Api-Secret-Token') ?? '';
+        $telegramBotApiSecretToken = $request->header('X-Telegram-Bot-Api-Secret-Token') ?? '';
 
         if (hash_equals($telegramBotApiSecretToken, $secret)) {
             return $next($request);
