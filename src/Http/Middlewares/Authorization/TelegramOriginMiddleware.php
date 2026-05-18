@@ -21,8 +21,8 @@ class TelegramOriginMiddleware
 
         $secret = config('telepath.hook.secret');
 
-        if (empty($secret)) {
-            return $next($request);
+        if ($secret === null) {
+            return response(status: 403);
         }
 
         $telegramBotApiSecretToken = $request->header('X-Telegram-Bot-Api-Secret-Token') ?? '';
@@ -32,5 +32,6 @@ class TelegramOriginMiddleware
         }
 
         return response(status: Response::HTTP_FORBIDDEN);
+
     }
 }
