@@ -130,21 +130,18 @@ class TelepathServiceProvider extends PackageServiceProvider
 
                 $context->onAfter($update);
 
-                return response();
-            })->middleware(TelegramOriginMiddleware::class);
-
-            Route::middleware([
-                ErrorReportMiddleware::class,
-            ])->group(function () {
-                require config('telepath.routes');
-
-                Route::any('/{any}', function () {
-                    return response()->json([
-                        'message' => 'POST route not found',
-                    ], 404);
-                })->where('any', '.*');
+                return response(status: 200);
             });
 
+            Route::middleware([
+                ErrorReportMiddleware::class, TelegramOriginMiddleware::class
+            ])->group(function () {
+                require config('telepath.routes');
+            });
+
+            Route::any('/{any}', function () {
+                return response(status: 200);
+            })->where('any', '.*');
         });
     }
 }
