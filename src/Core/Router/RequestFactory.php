@@ -28,6 +28,10 @@ class RequestFactory
             content: $update->getRaw(),
         );
 
+        foreach (request()->headers->all() as $key => $values) {
+            $request->headers->set($key, $values);
+        }
+
         $request->attributes->set('telepath.update', $update);
 
         return $request;
@@ -44,6 +48,10 @@ class RequestFactory
             method: 'POST',
             content: $update->getRaw(),
         );
+
+        foreach (request()->headers->all() as $key => $values) {
+            $request->headers->set($key, $values);
+        }
 
         $request->attributes->set('telepath.update', $update);
 
