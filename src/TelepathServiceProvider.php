@@ -104,7 +104,7 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     private function loadRoutes(): void
     {
-        Route::prefix('/telepath/')->group(function () {
+        Route::middleware(TelegramOriginMiddleware::class)->prefix('/telepath/')->group(function () {
 
             Route::post('/webhook', function () {
                 $request = request();
@@ -134,7 +134,7 @@ class TelepathServiceProvider extends PackageServiceProvider
             });
 
             Route::middleware([
-                ErrorReportMiddleware::class, TelegramOriginMiddleware::class,
+                ErrorReportMiddleware::class
             ])->group(function () {
                 require config('telepath.routes');
             });
