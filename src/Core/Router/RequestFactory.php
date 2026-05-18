@@ -14,7 +14,7 @@ class RequestFactory
     {
         $text = UpdateTypeEnum::extractText($update, $updateType);
 
-        if (null !== $text && str_starts_with($text, '/')) {
+        if ($text !== null && str_starts_with($text, '/')) {
             $text = substr($text, 1);
         }
 
