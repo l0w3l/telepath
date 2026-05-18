@@ -112,7 +112,7 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
                 }
             } elseif ($column === null) {
                 continue;
-            } if (! ($column instanceof ButtonInterface)) {
+            } elseif (! ($column instanceof ButtonInterface)) {
                 throw new RuntimeException('Markup elements should be passed as '.ButtonInterface::class.' instance');
             }
         }
