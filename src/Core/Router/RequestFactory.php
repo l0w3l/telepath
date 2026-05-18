@@ -14,7 +14,7 @@ class RequestFactory
     {
         $text = UpdateTypeEnum::extractText($update, $updateType);
 
-        if (str_starts_with($text, '/')) {
+        if (null !== $text && str_starts_with($text, '/')) {
             $text = substr($text, 1);
         }
 
@@ -22,7 +22,7 @@ class RequestFactory
             uri: sprintf(
                 'telepath/%s/%s',
                 $updateType->value,
-                urlencode($text)
+                urlencode($text ?? '')
             ),
             method: 'POST',
             content: $update->getRaw(),
@@ -33,13 +33,13 @@ class RequestFactory
         return $request;
     }
 
-    public static function fromRaw(Update $update, UpdateTypeEnum $updateType, string $data = ''): Request
+    public static function fromRaw(Update $update, UpdateTypeEnum $updateType, ?string $data = ''): Request
     {
         $request = Request::create(
             uri: sprintf(
                 'telepath/%s/%s',
                 $updateType->value,
-                urlencode($data)
+                urlencode($data ?? '')
             ),
             method: 'POST',
             content: $update->getRaw(),
