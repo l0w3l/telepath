@@ -134,7 +134,7 @@ class TelepathServiceProvider extends PackageServiceProvider
             });
 
             Route::middleware([
-                ErrorReportMiddleware::class, TelegramOriginMiddleware::class
+                ErrorReportMiddleware::class, TelegramOriginMiddleware::class,
             ])->group(function () {
                 require config('telepath.routes');
             });
