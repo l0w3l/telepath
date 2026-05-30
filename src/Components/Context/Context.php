@@ -6,7 +6,7 @@ namespace Lowel\Telepath\Components\Context;
 
 use Illuminate\Contracts\Foundation\Application;
 use Lowel\Telepath\Config\Profile;
-use Lowel\Telepath\Core\Components\AbstractComponent;
+use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Exceptions\ChatNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\MessageNotFoundInCurrentContextException;
 use Lowel\Telepath\Exceptions\UpdateNotFoundInCurrentContextException;
@@ -16,9 +16,11 @@ use Phptg\BotApi\Type\Message;
 use Phptg\BotApi\Type\Update\Update;
 use Phptg\BotApi\Type\User;
 
-class Context extends AbstractComponent implements ContextInterface
+class Context implements ContextInterface
 {
     private ?Update $update = null;
+
+    private ?UpdateTypeEnum $type = null;
 
     public static function register(Application $app): void
     {
@@ -36,14 +38,25 @@ class Context extends AbstractComponent implements ContextInterface
         $this->update = $update;
     }
 
+    public function setType(UpdateTypeEnum $type): void
+    {
+        $this->type = $type;
+    }
+
     public function onAfter(Update $update): void
     {
         $this->update = null;
+        $this->type = null;
     }
 
     public function update(): Update
     {
         return $this->update ?? throw new UpdateNotFoundInCurrentContextException('Update not found in current context');
+    }
+
+    public function type(): UpdateTypeEnum
+    {
+        return $this->type ?? throw new UpdateNotFoundInCurrentContextException('Update not found in current context');
     }
 
     public function user(): User
@@ -129,5 +142,14 @@ class Context extends AbstractComponent implements ContextInterface
         $this->update = $dream;
         $callback();
         $this->update = $reality;
+    }
+
+    public function replicate(Update $update): self
+    {
+        $replicate = new self;
+
+        $replicate->update = $update;
+
+        return $replicate;
     }
 }

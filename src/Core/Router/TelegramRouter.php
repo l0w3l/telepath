@@ -4,325 +4,209 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router;
 
-use Illuminate\Support\Facades\App;
-use Lowel\Telepath\Core\Router\Context\Executor\RouteExecutorsCollection;
-use Lowel\Telepath\Core\Router\Context\GroupContext;
-use Lowel\Telepath\Core\Router\Context\GroupContextInterface;
-use Lowel\Telepath\Core\Router\Context\RouteContext;
-use Lowel\Telepath\Core\Router\Context\RouteContextInterface;
-use Lowel\Telepath\Core\Router\Context\RouteContextParams;
-use Lowel\Telepath\Core\Router\Context\RouteFutureContext;
-use Lowel\Telepath\Core\Router\Context\RouteFutureContextInterface;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerFactory;
-use Lowel\Telepath\Core\Router\Handler\TelegramHandlerInterface;
-use Lowel\Telepath\Core\Router\Keyboard\Buttons\ButtonInterface;
-use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
-use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareFactory;
-use Lowel\Telepath\Core\Router\Middleware\TelegramMiddlewareInterface;
+use Closure;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
+use Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply\AbstractReplyButton;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Facades\Extrasense;
-use Lowel\Telepath\Facades\Telepath;
+use Phptg\BotApi\Type\Update\Update;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Response;
 
-class TelegramRouter implements TelegramRouterInterface, TelegramRouterResolverInterface
+class TelegramRouter implements TelegramRouterInterface
 {
-    protected GroupContextInterface $mainGroupContext;
-
-    protected GroupContextInterface $fallbackGroupContext;
-
-    protected RouteContextParams $state;
-
-    protected TelegramHandlerFactory $telegramHandlerFactory;
-
-    protected TelegramMiddlewareFactory $telegramMiddlewareFactory;
-
-    /** @var string[] */
-    protected array $buttonsBuffer = [];
-
-    public function __construct()
+    public function onCommand(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        $this->mainGroupContext = new GroupContext;
-        $this->fallbackGroupContext = new GroupContext;
-        $this->state = new RouteContextParams;
+        if ($pattern === null) {
+            if (is_array($handler) === false || null === $pattern = $this->resolvePatternFromControllerSignature($handler)) {
+                throw new RuntimeException('Command pattern not found');
+            }
+        }
 
-        $this->telegramHandlerFactory = new TelegramHandlerFactory;
-        $this->telegramMiddlewareFactory = new TelegramMiddlewareFactory;
-    }
-
-    public function onCommand(string $pattern, string|callable $handler): RouteFutureContextInterface
-    {
-        if (ucfirst($pattern) === '/') {
+        if (str_starts_with($pattern, '/')) {
             $pattern = substr($pattern, 1);
         }
 
-        return RouteFutureContext::from(
-            $this->on($handler, UpdateTypeEnum::MESSAGE, "\/{$pattern}(@".Extrasense::profile()->username.')?')
-        );
+        return $this->createRule(UpdateTypeEnum::MESSAGE, $handler, $pattern);
     }
 
-    public function onMessage(string|callable $handler, ?string $pattern = null): RouteFutureContextInterface
+    public function onMessage(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return RouteFutureContext::from(
-            $this->on($handler, UpdateTypeEnum::MESSAGE, $pattern)
-        );
+        return $this->createRule(UpdateTypeEnum::MESSAGE, $handler, $pattern);
     }
 
-    public function onMessageEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onMessageEdit(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::EDITED_MESSAGE, $pattern);
+        return $this->createRule(UpdateTypeEnum::EDITED_MESSAGE, $handler, $pattern);
     }
 
-    public function onChannelPost(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onChannelPost(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::CHANNEL_POST, $pattern);
+        return $this->createRule(UpdateTypeEnum::CHANNEL_POST, $handler, $pattern);
     }
 
-    public function onMessageReaction(string|callable $handler): RouteContextInterface
+    public function onMessageReaction(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION);
+        return $this->createRule(UpdateTypeEnum::MESSAGE_REACTION, $handler);
     }
 
-    public function onMessageReactionCount(string|callable $handler): RouteContextInterface
+    public function onMessageReactionCount(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::MESSAGE_REACTION_COUNT);
+        return $this->createRule(UpdateTypeEnum::MESSAGE_REACTION_COUNT, $handler);
     }
 
-    public function onChannelPostEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onChannelPostEdit(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::EDITED_CHANNEL_POST, $pattern);
+        return $this->createRule(UpdateTypeEnum::EDITED_CHANNEL_POST, $handler, $pattern);
     }
 
-    public function onBusinessConnection(string|callable $handler): RouteContextInterface
+    public function onBusinessConnection(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::BUSINESS_CONNECTION);
+        return $this->createRule(UpdateTypeEnum::BUSINESS_CONNECTION, $handler);
     }
 
-    public function onBusinessMessage(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onBusinessMessage(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::BUSINESS_MESSAGE, $pattern);
+        return $this->createRule(UpdateTypeEnum::BUSINESS_MESSAGE, $handler, $pattern);
     }
 
-    public function onBusinessMessageEdit(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onBusinessMessageEdit(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::EDIT_BUSINESS_MESSAGE, $pattern);
+        return $this->createRule(UpdateTypeEnum::EDIT_BUSINESS_MESSAGE, $handler, $pattern);
     }
 
-    public function onBusinessMessagesDelete(string|callable $handler): RouteContextInterface
+    public function onBusinessMessagesDelete(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::DELETE_BUSINESS_MESSAGES);
+        return $this->createRule(UpdateTypeEnum::DELETE_BUSINESS_MESSAGES, $handler);
     }
 
-    public function onInlineQueryChosenResult(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onInlineQueryChosenResult(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::CHOSEN_INLINE_RESULT, $pattern);
+        return $this->createRule(UpdateTypeEnum::CHOSEN_INLINE_RESULT, $handler, $pattern);
     }
 
-    public function onShippingQuery(string|callable $handler): RouteContextInterface
+    public function onShippingQuery(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::SHIPPING_QUERY);
+        return $this->createRule(UpdateTypeEnum::SHIPPING_QUERY, $handler);
     }
 
-    public function onPreCheckoutQuery(string|callable $handler): RouteContextInterface
+    public function onPreCheckoutQuery(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::PRE_CHECKOUT_QUERY);
+        return $this->createRule(UpdateTypeEnum::PRE_CHECKOUT_QUERY, $handler);
     }
 
-    public function onPurchasedPaidMedia(string|callable $handler): RouteContextInterface
+    public function onPurchasedPaidMedia(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::PURCHASED_PAID_MEDIA);
+        return $this->createRule(UpdateTypeEnum::PURCHASED_PAID_MEDIA, $handler);
     }
 
-    public function onPoll(string|callable $handler): RouteContextInterface
+    public function onPoll(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::POLL);
+        return $this->createRule(UpdateTypeEnum::POLL, $handler);
     }
 
-    public function onPollAnswer(string|callable $handler): RouteContextInterface
+    public function onPollAnswer(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::POLL_ANSWER);
+        return $this->createRule(UpdateTypeEnum::POLL_ANSWER, $handler);
     }
 
-    public function onChatJoinRequest(string|callable $handler): RouteContextInterface
+    public function onChatJoinRequest(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::CHAT_JOIN_REQUEST);
+        return $this->createRule(UpdateTypeEnum::CHAT_JOIN_REQUEST, $handler);
     }
 
-    public function onChatMemberUpdate(string|callable $handler): RouteContextInterface
+    public function onChatMemberUpdate(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::CHAT_MEMBER);
+        return $this->createRule(UpdateTypeEnum::CHAT_MEMBER, $handler);
     }
 
-    public function onChatBoost(string|callable $handler): RouteContextInterface
+    public function onChatBoost(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::CHAT_BOOST);
+        return $this->createRule(UpdateTypeEnum::CHAT_BOOST, $handler);
     }
 
-    public function onChatBoostRemove(string|callable $handler): RouteContextInterface
+    public function onChatBoostRemove(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::REMOVED_CHAT_BOOST);
+        return $this->createRule(UpdateTypeEnum::REMOVED_CHAT_BOOST, $handler);
     }
 
-    public function onMyChatMemberUpdate(string|callable $handler): RouteContextInterface
+    public function onMyChatMemberUpdate(string|callable|Closure|array $handler): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::MY_CHAT_MEMBER);
+        return $this->createRule(UpdateTypeEnum::MY_CHAT_MEMBER, $handler);
     }
 
-    public function onCallbackQuery(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onCallbackQuery(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::CALLBACK_QUERY, $pattern);
+        return $this->createRule(UpdateTypeEnum::CALLBACK_QUERY, $handler, $pattern);
     }
 
-    public function onInlineQuery(string|callable $handler, ?string $pattern = null): RouteContextInterface
+    public function onInlineQuery(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        return $this->on($handler, UpdateTypeEnum::INLINE_QUERY, $pattern);
+        return $this->createRule(UpdateTypeEnum::INLINE_QUERY, $handler, $pattern);
     }
 
-    public function on(string|callable $handler, UpdateTypeEnum $type = UpdateTypeEnum::MESSAGE, ?string $pattern = null): RouteContextInterface
+    public function group(array|callable $attributes, ?callable $callback = null): Router
     {
-        if (is_string($handler)) {
-            $handlerInstance = $this->telegramHandlerFactory->fromClassString($handler);
-        } else {
-            $handlerInstance = $this->telegramHandlerFactory->fromCallable($handler);
+        if ($attributes instanceof Closure) {
+            $callback = $attributes;
+            $attributes = [];
         }
 
-        $context = new RouteContext(
-            $this->state->clone()
-                ->setHandler($handlerInstance)
-                ->pushMiddleware($handlerInstance->middlewares())
-                ->setUpdateTypeEnum($handlerInstance->type() ?? $type)
-                ->setPattern($handlerInstance->pattern() ?? $pattern)
-        );
-
-        $this->mainGroupContext->appendRouteContext($context);
-
-        $this->resetState();
-
-        return $context;
+        return Route::group($attributes, $callback);
     }
 
-    public function fallback(string|callable $handler): void
+    public function button(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
-        if (is_string($handler)) {
-            $handler = App::make($handler);
-
-            if (! is_object($handler) || ! ($handler instanceof TelegramHandlerInterface)) {
-                throw new RuntimeException("Handler {$handler} should implement TelegramHandlerInterface");
-            }
+        if (is_string($handler) && (is_subclass_of($handler, AbstractCallbackButton::class) || is_subclass_of($handler, AbstractReplyButton::class))) {
+            return $handler::make()->resolve($this);
         }
 
-        $this->fallbackGroupContext->appendRouteContext(
-            new RouteContext(
-                $this->state->clone()
-                    ->setHandler($handler)
-                    ->setUpdateTypeEnum(null)
-                    ->setPattern(null)
-            )
-        );
+        return $this->onCallbackQuery($handler, $pattern);
     }
 
-    public function group(callable $callback): RouteContextInterface
+    public function buttons(array $buttons): Router
     {
-        $childGroupContext = $this->mainGroupContext->wrap($this->state->clone());
-
-        $this->state->reset();
-
-        $this->mainGroupContext = $childGroupContext;
-
-        $callback();
-
-        $this->mainGroupContext = $this->mainGroupContext->unwrap();
-
-        return $childGroupContext;
-    }
-
-    /**
-     * @param  class-string<KeyboardFactoryInterface>  ...$keyboards
-     */
-    public function keyboard(string ...$keyboards): RouteContextInterface
-    {
-        return Telepath::group(function () use ($keyboards) {
-            foreach ($keyboards as $keyboard) {
-                $keyboardFactoryInstance = App::make($keyboard);
-
-                if (! ($keyboardFactoryInstance instanceof KeyboardFactoryInterface)) {
-                    throw new RuntimeException('KeyboardWatcher accept only KeyboardFactoryInterface instances as a keyboard');
-                }
-
-                $keyboardFactoryInstance->make()->each(function (ButtonInterface $button) {
-                    $this->button($button);
-                });
-            }
-        });
-    }
-
-    public function buttons(ButtonInterface ...$buttons): RouteContextInterface
-    {
-        return Telepath::group(function () use ($buttons) {
+        return $this->group([], function () use ($buttons) {
             foreach ($buttons as $button) {
-                $this->button($button);
+                if (is_array($button) && $controllerPattern = $this->resolvePatternFromControllerSignature($button)) {
+                    $this->button($button, $controllerPattern);
+                } elseif (is_string($button)) {
+                    $this->button($button);
+                } else {
+                    $this->button($button[0], $button[1]);
+                }
             }
         });
     }
 
-    public function button(ButtonInterface $button): RouteContextInterface
+    public function redirect(string $data = '', ?Update $update = null, ?UpdateTypeEnum $updateTypeEnum = null): Response
     {
-        if (in_array($button::class, $this->buttonsBuffer)) {
-            throw new RuntimeException('Button '.$button::class.' has been already registered in this context');
+        $request = RequestFactory::fromRaw($update ?? Extrasense::update(), $updateTypeEnum ?? Extrasense::type(), $data);
+
+        return Route::dispatch($request);
+    }
+
+    protected function createRule(UpdateTypeEnum $updateTypeEnum, string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
+    {
+        if ($pattern === null) {
+            return Route::post(sprintf('%s/{any?}', $updateTypeEnum->value), $handler);
+        } else {
+            $randArg = chr(random_int(97, 122)).strtolower(Str::random(7));
+
+            return Route::post(sprintf('%s/{%s}', $updateTypeEnum->value, $randArg), $handler)
+                ->where($randArg, $pattern);
+        }
+    }
+
+    protected function resolvePatternFromControllerSignature(array $controllerSignature): ?string
+    {
+        if (is_string($controllerSignature[0]) && class_exists($controllerSignature[0])) {
+            return $controllerSignature[1];
         }
 
-        $this->buttonsBuffer[] = $button::class;
-
-        return $this->group(function () use ($button) {
-            $button->resolve($this);
-        });
-    }
-
-    public function type(UpdateTypeEnum $updateTypeEnum): TelegramRouterInterface
-    {
-        $this->state->setUpdateTypeEnum($updateTypeEnum);
-
-        return $this;
-    }
-
-    /**
-     * @param  callable|class-string<TelegramMiddlewareInterface>|array<class-string<TelegramMiddlewareInterface>|callable>  $handler
-     * @return $this
-     */
-    public function middleware(callable|string|array $handler): TelegramRouterInterface
-    {
-        $this->state->pushMiddleware($handler);
-
-        return $this;
-    }
-
-    public function name(string $name): TelegramRouterInterface
-    {
-        $this->state->setName($name);
-
-        return $this;
-    }
-
-    public function pattern(string $pattern): TelegramRouterInterface
-    {
-        $this->state->setPattern($pattern);
-
-        return $this;
-    }
-
-    public function getParams(): RouteContextParams
-    {
-        return $this->state;
-    }
-
-    public function resetState(): self
-    {
-        $this->state->reset();
-
-        return $this;
-    }
-
-    public function getExecutors(): RouteExecutorsCollection
-    {
-        return new RouteExecutorsCollection($this->mainGroupContext->collect(), $this->fallbackGroupContext->collect());
+        return null;
     }
 }

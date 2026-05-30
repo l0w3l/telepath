@@ -14,22 +14,86 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
      */
     protected array $keyboardMarkup = [[]];
 
-    public function row(ButtonInterface ...$button): static
+    /**
+     * @template TValue
+     * @template TKey of array-key
+     *
+     * @param  array<TValue>  $collection
+     * @param  callable(TValue, TKey): ?ButtonInterface  $callback
+     * @return $this
+     */
+    public function eachRow(array $collection, callable $callback): static
     {
-        $lastButtonMatrixElementIndex = array_key_last($this->keyboardMarkup) - 1;
+        foreach ($collection as $index => $item) {
+            $button = $callback($item, $index);
 
-        if (array_key_exists($lastButtonMatrixElementIndex, $this->keyboardMarkup) && ! empty($this->keyboardMarkup[$lastButtonMatrixElementIndex])) {
-            $this->keyboardMarkup[$lastButtonMatrixElementIndex] = array_merge($this->keyboardMarkup[$lastButtonMatrixElementIndex], $button);
-        } else {
-            $this->keyboardMarkup[] = $button;
+            if ($button instanceof ButtonInterface) {
+                $this->row(
+                    $button,
+                );
+            }
         }
 
         return $this;
     }
 
-    public function column(ButtonInterface ...$button): static
+    /**
+     * @template TValue
+     * @template TKey of array-key
+     *
+     * @param  array<TValue>  $collection
+     * @param  callable(TValue, TKey): ?ButtonInterface  $callback
+     * @return $this
+     */
+    public function eachColumn(array $collection, callable $callback): static
     {
-        $this->keyboardMarkup = array_merge($this->keyboardMarkup, array_map(fn ($x) => [$x], $button));
+        foreach ($collection as $index => $item) {
+            $button = $callback($item, $index);
+
+            if ($button instanceof ButtonInterface) {
+                $this->column(
+                    $button,
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    public function row(?ButtonInterface ...$buttons): static
+    {
+        $clearButtons = [];
+        foreach ($buttons as $button) {
+            if ($button === null) {
+                continue;
+            }
+
+            $clearButtons[] = $button;
+        }
+
+        $lastButtonMatrixElementIndex = array_key_last($this->keyboardMarkup) - 1;
+
+        if (array_key_exists($lastButtonMatrixElementIndex, $this->keyboardMarkup) && ! empty($this->keyboardMarkup[$lastButtonMatrixElementIndex])) {
+            $this->keyboardMarkup[$lastButtonMatrixElementIndex] = array_merge($this->keyboardMarkup[$lastButtonMatrixElementIndex], $clearButtons);
+        } else {
+            $this->keyboardMarkup[] = $clearButtons;
+        }
+
+        return $this;
+    }
+
+    public function column(?ButtonInterface ...$buttons): static
+    {
+        $clearButtons = [];
+        foreach ($buttons as $button) {
+            if ($button === null) {
+                continue;
+            }
+
+            $clearButtons[] = $button;
+        }
+
+        $this->keyboardMarkup = array_merge($this->keyboardMarkup, array_map(fn ($x) => [$x], $clearButtons));
 
         return $this;
     }
@@ -39,10 +103,15 @@ abstract class AbstractKeyboardBuilder implements KeyboardBuilderInterface
         foreach ($markup as $column) {
             if (is_array($column)) {
                 foreach ($column as $row) {
+                    if ($row === null) {
+                        continue;
+                    }
                     if (! ($row instanceof ButtonInterface)) {
                         throw new RuntimeException('Markup elements should be passed as '.ButtonInterface::class.' instance');
                     }
                 }
+            } elseif ($column === null) {
+                continue;
             } elseif (! ($column instanceof ButtonInterface)) {
                 throw new RuntimeException('Markup elements should be passed as '.ButtonInterface::class.' instance');
             }

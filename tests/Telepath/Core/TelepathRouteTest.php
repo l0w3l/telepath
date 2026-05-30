@@ -354,12 +354,12 @@ test('keyboards', function (): void {
                     };
                 }
 
-                public function text(array $args = []): string
+                public function getText(array $args = []): string
                 {
                     return 'test';
                 }
 
-                public function callbackDataId(array $args = []): string
+                public function getCallbackDataId(array $args = []): string
                 {
                     return 'test';
                 }

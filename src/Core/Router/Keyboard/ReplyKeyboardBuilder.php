@@ -18,9 +18,25 @@ class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
         public ?bool $selective = null,
     ) {}
 
-    public function build(array $args = []): ReplyKeyboardMarkup
+    public static function create(
+        ?bool $isPersistent = null,
+        ?bool $resizeKeyboard = null,
+        ?bool $oneTimeKeyboard = null,
+        ?string $inputFieldPlaceholder = null,
+        ?bool $selective = null,
+    ): self {
+        return new self(
+            isPersistent: $isPersistent,
+            resizeKeyboard: $resizeKeyboard,
+            oneTimeKeyboard: $oneTimeKeyboard,
+            inputFieldPlaceholder: $inputFieldPlaceholder,
+            selective: $selective
+        );
+    }
+
+    public function build(): ReplyKeyboardMarkup
     {
-        $buttons = array_map(fn (array $column) => array_map(fn (ButtonInterface $button) => $button->toButton($args), $column), $this->keyboardMarkup);
+        $buttons = array_map(fn (array $column) => array_map(fn (ButtonInterface $button) => $button->toButton(), $column), $this->keyboardMarkup);
 
         return new ReplyKeyboardMarkup($buttons);
     }

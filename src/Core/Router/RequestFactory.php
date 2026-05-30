@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Lowel\Telepath\Core\Router;
+
+use Illuminate\Http\Request;
+use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Phptg\BotApi\Type\Update\Update;
+
+class RequestFactory
+{
+    public static function fromUpdate(UpdateTypeEnum $updateType, Update $update): Request
+    {
+        $text = UpdateTypeEnum::extractText($update, $updateType);
+
+        if ($text !== null && str_starts_with($text, '/')) {
+            $text = substr($text, 1);
+        }
+
+        $request = Request::create(
+            uri: sprintf(
+                'telepath/%s/%s',
+                $updateType->value,
+                urlencode($text ?? '')
+            ),
+            method: 'POST',
+            content: $update->getRaw(),
+        );
+
+        foreach (request()->headers->all() as $key => $values) {
+            $request->headers->set($key, $values);
+        }
+
+        $request->attributes->set('telepath.update', $update);
+
+        return $request;
+    }
+
+    public static function fromRaw(Update $update, UpdateTypeEnum $updateType, ?string $data = ''): Request
+    {
+        $request = Request::create(
+            uri: sprintf(
+                'telepath/%s/%s',
+                $updateType->value,
+                urlencode($data ?? '')
+            ),
+            method: 'POST',
+            content: $update->getRaw(),
+        );
+
+        foreach (request()->headers->all() as $key => $values) {
+            $request->headers->set($key, $values);
+        }
+
+        $request->attributes->set('telepath.update', $update);
+
+        return $request;
+    }
+}

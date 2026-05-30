@@ -4,54 +4,92 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
-use Closure;
+use Illuminate\Routing\Route;
+use Lowel\Telepath\Core\Router\TelegramRouterInterface;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Helpers\Hasher;
 use Lowel\Telepath\Helpers\Invoker;
+use Lowel\Telepath\Http\Middlewares\Buttons\AnswerCallbackQueryMiddleware;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 
 abstract class AbstractCallbackButton extends AbstractInlineButton
 {
-    protected bool $pay = false;
+    protected string $callbackData = '';
 
-    abstract public function handle(): callable;
+    protected string $pattern = '.*';
+
+    protected bool $pay = false;
 
     public function resolveCallbackData(): string
     {
         $callbackQuery = Extrasense::update()->callbackQuery;
 
-        return str_replace($this->callbackDataId(), '', $callbackQuery->id);
+        return str_replace($this->getCallbackDataId(), '', $callbackQuery->data);
     }
 
-    public function callbackData(array $args = []): int|string|callable
+    public static function getCallbackDataId(): string
     {
-        return '';
+        return Hasher::shortHash(static::class).':';
     }
 
-    public function toButton(array $args = []): InlineKeyboardButton|KeyboardButton
+    public function getCallbackData(): string
     {
-        $text = $this->text($args);
-        $callbackData = $this->callbackData($args);
+        return $this->callbackData;
+    }
 
-        if ($text instanceof Closure) {
-            $text = Invoker::call($text);
-        }
-        if ($callbackData instanceof Closure) {
-            $callbackData = Invoker::call($callbackData);
-        }
+    public function setCallbackData(string $callbackData): static
+    {
+        $this->callbackData = $callbackData;
 
+        return $this;
+    }
+
+    public function getPattern(): string
+    {
+        return $this->pattern;
+    }
+
+    public function setPattern(string $pattern): static
+    {
+        $this->pattern = $pattern;
+
+        return $this;
+    }
+
+    public function getPay(): bool
+    {
+        return $this->pay;
+    }
+
+    public function setPay(): static
+    {
+        $this->pay = true;
+
+        return $this;
+    }
+
+    public function toButton(): InlineKeyboardButton|KeyboardButton
+    {
         return new InlineKeyboardButton(
-            text: (string) $text,
-            callbackData: $this->callbackDataId().$callbackData,
-            pay: $this->pay,
-            style: $this->style(),
-            iconCustomEmojiId: $this->iconCustomEmojiId()
+            text: $this->getText(),
+            callbackData: $this->getCallbackDataId().$this->getCallbackData(),
+            pay: $this->getPay(),
+            iconCustomEmojiId: $this->getIconCustomEmojiId(),
+            style: $this->getStyle()
         );
     }
 
-    public function callbackDataId(): string
+    public function resolve(TelegramRouterInterface $telegramRouter): Route
     {
-        return Hasher::shortHash(static::class).':';
+        $pattern = '^'.$this->getCallbackDataId().$this->getPattern().'$';
+
+        return $telegramRouter->onCallbackQuery([static::class, 'handle'], $pattern)
+            ->middleware(AnswerCallbackQueryMiddleware::class);
+    }
+
+    public static function trigger(): void
+    {
+        Invoker::call([static::make(), 'handle']);
     }
 }

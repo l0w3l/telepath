@@ -4,62 +4,80 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline;
 
-use Closure;
-use Lowel\Telepath\Helpers\Invoker;
 use Phptg\BotApi\Type\InlineKeyboardButton;
 use Phptg\BotApi\Type\KeyboardButton;
 use Phptg\BotApi\Type\LoginUrl;
 
 abstract class AbstractLoginButton extends AbstractInlineButton
 {
-    abstract public function url(array $args = []): int|string|callable;
+    protected string $loginUrl = '';
 
-    public function forwardText(array $args = []): null|int|string|callable
+    protected ?string $forwardText = null;
+
+    protected ?string $botUsername = null;
+
+    protected ?bool $requestWriteAccess = null;
+
+    public function toButton(): InlineKeyboardButton|KeyboardButton
     {
-        return null;
-    }
-
-    public function botUsername(array $args = []): null|int|string|callable
-    {
-        return null;
-    }
-
-    public function requestWriteAccess(array $args = []): null|int|string|callable
-    {
-        return null;
-    }
-
-    public function toButton(array $args = []): InlineKeyboardButton|KeyboardButton
-    {
-        $text = $this->text($args);
-        $url = $this->url($args);
-        $forwardText = $this->text($args);
-        $botUsername = $this->botUsername($args);
-        $requestWriteAccess = $this->requestWriteAccess($args);
-
-        if ($text instanceof Closure) {
-            $text = Invoker::call($text);
-        }
-        if ($forwardText instanceof Closure) {
-            $forwardText = Invoker::call($forwardText);
-        }
-        if ($botUsername instanceof Closure) {
-            $botUsername = Invoker::call($botUsername);
-        }
-        if ($requestWriteAccess instanceof Closure) {
-            $requestWriteAccess = Invoker::call($requestWriteAccess);
-        }
-
         return new InlineKeyboardButton(
-            text: (string) $text,
+            text: $this->getText(),
             loginUrl: new LoginUrl(
-                (string) $url,
-                $forwardText === null ?: (string) $forwardText,
-                $botUsername === null ?: (string) $botUsername,
-                $requestWriteAccess === null ?: (string) $requestWriteAccess,
+                $this->getLoginUrl(),
+                $this->getForwardText(),
+                $this->getBotUsername(),
+                $this->getRequestWriteAccess(),
             ),
-            style: $this->style(),
-            iconCustomEmojiId: $this->iconCustomEmojiId()
+            iconCustomEmojiId: $this->getIconCustomEmojiId(),
+            style: $this->getStyle()
         );
+    }
+
+    public function getLoginUrl(): string
+    {
+        return $this->loginUrl;
+    }
+
+    public function setLoginUrl(string $loginUrl): static
+    {
+        $this->loginUrl = $loginUrl;
+
+        return $this;
+    }
+
+    public function getForwardText(): ?string
+    {
+        return $this->forwardText;
+    }
+
+    public function setForwardText(string $forwardText): static
+    {
+        $this->forwardText = $forwardText;
+
+        return $this;
+    }
+
+    public function getBotUsername(): ?string
+    {
+        return $this->botUsername;
+    }
+
+    public function setBotUsername(?string $botUsername): static
+    {
+        $this->botUsername = $botUsername;
+
+        return $this;
+    }
+
+    public function getRequestWriteAccess(): ?bool
+    {
+        return $this->requestWriteAccess;
+    }
+
+    public function setRequestWriteAccess(?bool $requestWriteAccess): static
+    {
+        $this->requestWriteAccess = $requestWriteAccess;
+
+        return $this;
     }
 }
