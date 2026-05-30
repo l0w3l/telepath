@@ -15,9 +15,9 @@ class AnswerCallbackQueryMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
-
         SpiritBox::answerCallbackQuery();
+
+        $response = $next($request);
 
         return $response ?? response(status: 200);
     }

@@ -148,8 +148,13 @@ class TelegramRouter implements TelegramRouterInterface
         return $this->createRule(UpdateTypeEnum::INLINE_QUERY, $handler, $pattern);
     }
 
-    public function group(array $attributes, callable $callback): Router
+    public function group(array|callable $attributes, ?callable $callback = null): Router
     {
+        if ($attributes instanceof Closure) {
+            $callback = $attributes;
+            $attributes = [];
+        }
+
         return Route::group($attributes, $callback);
     }
 
