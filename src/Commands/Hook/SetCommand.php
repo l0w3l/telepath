@@ -3,7 +3,9 @@
 namespace Lowel\Telepath\Commands\Hook;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
+use Lowel\Telepath\Exceptions\TelegramHookSecretKeyNotFoundException;
 use Phptg\BotApi\TelegramBotApi;
 
 class SetCommand extends Command
@@ -29,17 +31,26 @@ class SetCommand extends Command
     {
         $telegramBotApi = app(TelegramBotApi::class);
 
+        $secretKey = config('telepath.hook.secret');
+
+        if (! $secretKey) {
+            $this->warn('TELEPATH_SECRET was not found.');
+
+            if ($this->confirm('Do you want to generate it?', true)) {
+                Artisan::call(KeyGenerateCommand::class);
+            }
+        }
+
+        $url = $this->argument('hook') === 'default' ? url('/telepath/webhook') : $this->argument('hook');
+
         $telegramBotApi->setWebhook(
-            url: $this->argument('hook') === 'default' ? config('app.url').'/api/webhook' : $this->argument('hook'),
+            url: $url,
             maxConnections: (int) $this->option('max-connections'),
             allowUpdates: empty($this->option('allow')) ? UpdateTypeEnum::toArray() : UpdateTypeEnum::toArray($this->option('allow')),
             dropPendingUpdates: (bool) $this->option('drop'),
+            secretToken: config('telepath.hook.secret') ?? throw new TelegramHookSecretKeyNotFoundException
         );
 
-        if (config('telepath.hook.async')) {
-            $this->warn("Enable 'artisan queue:work' session to interact with async update processes, otherwise you updates will be lost.");
-        }
-
-        $this->info('Telegram hook set successfully to: '.$this->argument('hook'));
+        $this->info('Telegram hook set successfully to: '.$url);
     }
 }

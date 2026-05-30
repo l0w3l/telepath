@@ -18,7 +18,7 @@ readonly class CreateInlineTelegramButtonFileAction extends AbstractCreateFileAc
         $classGenerator
             ->setUse(SpiritBox::class)
             ->setExtends(AbstractCallbackButton::class)
-            ->setFunction("function handle(): callable\n{\n{$classGenerator->spaces}return static function() {\n{$classGenerator->spaces}{$classGenerator->spaces}SpiritBox::sendMessage('example text');\n{$classGenerator->spaces}};\n}")
+            ->setFunction("static function handle()\n{\n{$classGenerator->spaces}SpiritBox::sendMessage('example text');\n}")
             ->setFunction("function text(array \$args = []): int|string|callable\n{\n{$classGenerator->spaces}return 'example';\n}");
 
         $this->createDirectoryIfNotExists();
