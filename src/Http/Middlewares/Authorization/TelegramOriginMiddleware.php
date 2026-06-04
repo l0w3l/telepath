@@ -32,6 +32,5 @@ class TelegramOriginMiddleware
         }
 
         return response(status: Response::HTTP_FORBIDDEN);
-
     }
 }
