@@ -29,7 +29,6 @@ final class TelegramRouteRegistry implements Countable, IteratorAggregate
     }
 
     /**
-     * @param  string|callable|Closure|array  $handler
      * @param  array<int|string, mixed>  $middleware
      */
     public function register(

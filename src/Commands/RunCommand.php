@@ -8,7 +8,6 @@ use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Lowel\Telepath\Core\Router\TelegramDispatcher;
-use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Exceptions\TelegramException;
 use Lowel\Telepath\Facades\Extrasense;
 use Phptg\BotApi\FailResult;

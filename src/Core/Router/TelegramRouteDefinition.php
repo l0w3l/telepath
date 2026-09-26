@@ -18,9 +18,6 @@ final class TelegramRouteDefinition
      */
     private readonly mixed $handler;
 
-    /**
-     * @param  string|callable|Closure|array  $handler
-     */
     public function __construct(
         private readonly UpdateTypeEnum $updateType,
         string|callable|Closure|array $handler,
@@ -36,9 +33,6 @@ final class TelegramRouteDefinition
         return $this->updateType;
     }
 
-    /**
-     * @return string|callable|Closure|array
-     */
     public function handler(): string|callable|Closure|array
     {
         return $this->handler;
