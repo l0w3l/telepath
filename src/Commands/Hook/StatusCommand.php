@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lowel\Telepath\Commands\Hook;
 
 use Illuminate\Console\Command;

@@ -1,6 +1,6 @@
 <?php
 
 arch()
-    ->expect('App')
+    ->expect('Lowel\\Telepath')
     ->toUseStrictTypes()
     ->not->toUse(['die', 'dd', 'dump']);

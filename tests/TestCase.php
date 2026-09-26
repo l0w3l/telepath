@@ -3,12 +3,15 @@
 namespace Lowel\Telepath\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\File;
-use Lowel\Telepath\TelegramAppFactoryInterface;
+use Illuminate\Support\Facades\Route;
+use Lowel\Telepath\Core\Router\TelegramDispatcher;
+use Lowel\Telepath\Core\Router\TelegramRouteRegistry;
 use Lowel\Telepath\TelepathServiceProvider;
 use Lowel\Telepath\Tests\Mock\Support\TelegramUpdatesMock;
-use Lowel\Telepath\Tests\Mock\TelegramAppFactoryMock;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Phptg\BotApi\Type\Update\Update;
 
 class TestCase extends Orchestra
 {
@@ -18,13 +21,33 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->app->bind(TelegramAppFactoryInterface::class, fn ($app) => $this->app->make(TelegramAppFactoryMock::class));
-
         $this->updatesMockBuilder = new TelegramUpdatesMock;
 
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Lowel\\Telepath\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+    }
+
+    protected function withinTelegramRoutes(callable $routes): void
+    {
+        Route::setRoutes(new RouteCollection);
+        app(TelegramRouteRegistry::class)->clear();
+
+        $routes();
+    }
+
+    protected function dispatchTelegramUpdates(): void
+    {
+        config()->set('telepath.get_updates', true);
+
+        foreach ($this->updatesMockBuilder->getUpdates() as $update) {
+            $this->dispatchTelegramUpdate($update);
+        }
+    }
+
+    protected function dispatchTelegramUpdate(Update $update): void
+    {
+        app(TelegramDispatcher::class)->dispatch($update);
     }
 
     protected function getPackageProviders($app): array

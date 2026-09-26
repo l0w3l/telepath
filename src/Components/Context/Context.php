@@ -139,9 +139,13 @@ class Context implements ContextInterface
     public function imaginate(Update $dream, callable $callback): void
     {
         $reality = $this->update;
-        $this->update = $dream;
-        $callback();
-        $this->update = $reality;
+
+        try {
+            $this->update = $dream;
+            $callback();
+        } finally {
+            $this->update = $reality;
+        }
     }
 
     public function replicate(Update $update): self

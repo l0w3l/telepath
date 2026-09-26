@@ -1,377 +1,354 @@
 <?php
 
-use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
-use Lowel\Telepath\Core\Router\Keyboard\InlineKeyboardBuilder;
-use Lowel\Telepath\Core\Router\Keyboard\KeyboardBuilderInterface;
-use Lowel\Telepath\Core\Router\Keyboard\KeyboardFactoryInterface;
 use Lowel\Telepath\Facades\Telepath;
-use Lowel\Telepath\TelegramAppFactoryInterface;
 use Phptg\BotApi\Type\Chat;
 use Phptg\BotApi\Type\Message;
 use Phptg\BotApi\Type\Update\Update;
 use Phptg\BotApi\Type\User;
 
-function telegramApp()
-{
-    return App::make(TelegramAppFactoryInterface::class)->webhook('');
-}
+test('command routes matching command text through Laravel router', function (): void {
+    $this->updatesMockBuilder->addMessage('/'.$this->name());
 
-test('command', function (): void {
-    $this->updatesMockBuilder
-        ->addMessage('/'.$this->name())
-        ->mock();
-
-    Telepath::onCommand($this->name(), function (Message $message, Chat $chat, User $user) {
-        expect($message->text)->toEqual('/'.$this->name())
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onCommand(function (Message $message, Chat $chat, User $user): void {
+            expect($message->text)->toEqual('/'.$this->name())
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        }, $this->name());
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('command with username', function (): void {
+test('command can match bot username suffix', function (): void {
     config()->set('telepath.profiles.default.username', 'TestBot');
-    $this->updatesMockBuilder
-        ->addMessage('/'.$this->name().'@TestBot')
-        ->mock();
+    $this->updatesMockBuilder->addMessage('/'.$this->name().'@TestBot');
 
-    Telepath::onCommand($this->name(), function (Message $message, Chat $chat, User $user) {
-        expect($message->text)->toEqual('/'.$this->name().'@TestBot')
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onCommand(function (Message $message, Chat $chat, User $user): void {
+            expect($message->text)->toEqual('/'.$this->name().'@TestBot')
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        }, $this->name().'@TestBot');
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('message', function (): void {
-    $this->updatesMockBuilder
-        ->addMessage($this->name())
-        ->mock();
+test('message routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addMessage($this->name());
 
-    Telepath::onMessage(function (Message $message, Chat $chat, User $user) {
-        expect($message->text)->toEqual($this->name())
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onMessage(function (Message $message, Chat $chat, User $user): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('message edited', function (): void {
-    $this->updatesMockBuilder
-        ->addEditedMessage($this->name())
-        ->mock();
+test('edited message routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addEditedMessage($this->name());
 
-    Telepath::onMessageEdit(function (Message $message, Chat $chat, User $user) {
-        expect($message->text)->toEqual($this->name())
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onMessageEdit(function (Message $message, Chat $chat, User $user): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('channel post', function (): void {
-    $this->updatesMockBuilder
-        ->addChannelPost($this->name())
-        ->mock();
+test('channel post routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addChannelPost($this->name());
 
-    Telepath::onChannelPost(function (Message $message, Chat $chat) {
-        expect($message->text)->toEqual($this->name());
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onChannelPost(function (Message $message, Chat $chat): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('channel post edited', function (): void {
-    $this->updatesMockBuilder
-        ->addEditedChannelPost($this->name())
-        ->mock();
+test('edited channel post routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addEditedChannelPost($this->name());
 
-    Telepath::onChannelPostEdit(function (Message $message, Chat $chat) {
-        expect($message->text)->toEqual($this->name())
-            ->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onChannelPostEdit(function (Message $message, Chat $chat): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('business connection', function (): void {
-    $this->updatesMockBuilder
-        ->addBusinessConnection()
-        ->mock();
+test('business connection routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addBusinessConnection();
 
-    Telepath::onBusinessConnection(function (User $user) {
-        expect(true)->toEqual(true)
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onBusinessConnection(function (User $user): void {
+            expect($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('business message', function (): void {
-    $this->updatesMockBuilder
-        ->addBusinessMessage($this->name())
-        ->mock();
+test('business message routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addBusinessMessage($this->name());
 
-    Telepath::onBusinessMessage(function (Message $message, User $user, Chat $chat) {
-        expect($message->text)->toEqual($this->name())
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onBusinessMessage(function (Message $message, User $user, Chat $chat): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('edit business message', function (): void {
-    $this->updatesMockBuilder
-        ->addEditedBusinessMessage($this->name())
-        ->mock();
+test('edited business message routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addEditedBusinessMessage($this->name());
 
-    Telepath::onBusinessMessageEdit(function (Message $message, User $user, Chat $chat) {
-        expect($message->text)->toEqual($this->name())
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onBusinessMessageEdit(function (Message $message, User $user, Chat $chat): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('deleted business message', function (): void {
-    $this->updatesMockBuilder
-        ->addDeletedBusinessMessages()
-        ->mock();
+test('deleted business messages route through Laravel router', function (): void {
+    $this->updatesMockBuilder->addDeletedBusinessMessages();
 
-    Telepath::onBusinessMessagesDelete(function (Chat $chat) {
-        expect(true)->toEqual(true)
-            ->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onBusinessMessagesDelete(function (Chat $chat): void {
+            expect($chat)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('message reaction', function (): void {
-    $this->updatesMockBuilder
-        ->addMessageReaction()
-        ->mock();
+test('message reaction routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addMessageReaction();
 
-    Telepath::onMessageReaction(function (Update $update, Chat $chat, User $user) {
-        expect($update->messageReaction->newReaction[0]->emoji)->toEqual('👍')
-            ->and($chat)->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onMessageReaction(function (Update $update, Chat $chat, User $user): void {
+            expect($update->messageReaction->newReaction[0]->emoji)->toEqual('👍')
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('message reaction count', function (): void {
-    $this->updatesMockBuilder
-        ->addMessageReactionCount()
-        ->mock();
+test('message reaction count routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addMessageReactionCount();
 
-    Telepath::onMessageReactionCount(function (Update $update, Chat $chat) {
-        expect($update->messageReactionCount->reactions[0]->type->emoji)->toEqual('👍')
-            ->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onMessageReactionCount(function (Update $update, Chat $chat): void {
+            expect($update->messageReactionCount->reactions[0]->type->emoji)->toEqual('👍')
+                ->and($chat)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('inline query', function (): void {
-    $this->updatesMockBuilder
-        ->addInlineQuery($this->name())
-        ->mock();
+test('inline query routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addInlineQuery($this->name());
 
-    Telepath::onInlineQuery(function (Update $update, User $user) {
-        expect($update->inlineQuery->query)->toEqual($this->name())
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onInlineQuery(function (Update $update, User $user): void {
+            expect($update->inlineQuery->query)->toEqual($this->name())
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('inline query result', function (): void {
-    $this->updatesMockBuilder
-        ->addChosenInlineResult($this->name())
-        ->mock();
+test('chosen inline result routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addChosenInlineResult($this->name());
 
-    Telepath::onInlineQueryChosenResult(function (Update $update, User $user) {
-        expect($update->chosenInlineResult->query)->toEqual($this->name())
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onInlineQueryChosenResult(function (Update $update, User $user): void {
+            expect($update->chosenInlineResult->query)->toEqual($this->name())
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('callback query', function (): void {
-    $this->updatesMockBuilder
-        ->addCallbackQuery($this->name())
-        ->mock();
+test('callback query routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addCallbackQuery($this->name());
 
-    Telepath::onCallbackQuery(function (Update $update, User $user) {
-        expect($update->callbackQuery->data)->toEqual($this->name())
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onCallbackQuery(function (Update $update, User $user): void {
+            expect($update->callbackQuery->data)->toEqual($this->name())
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('shipping query', function (): void {
-    $this->updatesMockBuilder
-        ->addShippingQuery()
-        ->mock();
+test('shipping query routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addShippingQuery();
 
-    Telepath::onShippingQuery(function (Update $update, User $user) {
-        expect($update->shippingQuery)->not()->toBeNull()
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onShippingQuery(function (Update $update, User $user): void {
+            expect($update->shippingQuery)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('pre checkout query', function (): void {
-    $this->updatesMockBuilder
-        ->addPreCheckoutQuery()
-        ->mock();
+test('pre checkout query routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addPreCheckoutQuery();
 
-    Telepath::onPreCheckoutQuery(function (Update $update, User $user) {
-        expect($update->preCheckoutQuery)->not()->toBeNull()
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onPreCheckoutQuery(function (Update $update, User $user): void {
+            expect($update->preCheckoutQuery)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('purchased paid media', function (): void {
-    $this->updatesMockBuilder
-        ->addPurchasedPaidMedia()
-        ->mock();
+test('purchased paid media routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addPurchasedPaidMedia();
 
-    Telepath::onPurchasedPaidMedia(function (Update $update, User $user) {
-        expect($update->purchasedPaidMedia)->not()->toBeNull()
-            ->and($user)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onPurchasedPaidMedia(function (Update $update, User $user): void {
+            expect($update->purchasedPaidMedia)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('poll', function (): void {
-    $this->updatesMockBuilder
-        ->addPoll()
-        ->mock();
+test('poll routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addPoll();
 
-    Telepath::onPoll(function (Update $update) {
-        expect($update->poll)->not()->toBeNull();
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onPoll(function (Update $update): void {
+            expect($update->poll)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('poll answer', function (): void {
-    $this->updatesMockBuilder
-        ->addPollAnswer()
-        ->mock();
+test('poll answer routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addPollAnswer();
 
-    Telepath::onPollAnswer(function (Update $update, Chat $chat, User $user) {
-        expect($update->pollAnswer)->not()->toBeNull()
-            ->and($user)->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onPollAnswer(function (Update $update, Chat $chat, User $user): void {
+            expect($update->pollAnswer)->not()->toBeNull()
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('my chat member', function (): void {
-    $this->updatesMockBuilder
-        ->addMyChatMember()
-        ->mock();
+test('my chat member routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addMyChatMember();
 
-    Telepath::onMyChatMemberUpdate(function (Update $update, Chat $chat, User $user) {
-        expect($update->myChatMember)->not()->toBeNull()
-            ->and($user)->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onMyChatMemberUpdate(function (Update $update, Chat $chat, User $user): void {
+            expect($update->myChatMember)->not()->toBeNull()
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('chat member', function (): void {
-    $this->updatesMockBuilder
-        ->addChatMember()
-        ->mock();
+test('chat member routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addChatMember();
 
-    Telepath::onChatMemberUpdate(function (Update $update, Chat $chat, User $user) {
-        expect($update->chatMember)->not()->toBeNull()
-            ->and($user)->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onChatMemberUpdate(function (Update $update, Chat $chat, User $user): void {
+            expect($update->chatMember)->not()->toBeNull()
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('chat join request', function (): void {
-    $this->updatesMockBuilder
-        ->addChatJoinRequest()
-        ->mock();
+test('chat join request routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addChatJoinRequest();
 
-    Telepath::onChatJoinRequest(function (Update $update, Chat $chat, User $user) {
-        expect($update->chatJoinRequest)->not()->toBeNull()
-            ->and($user)->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onChatJoinRequest(function (Update $update, Chat $chat, User $user): void {
+            expect($update->chatJoinRequest)->not()->toBeNull()
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('chat boost', function (): void {
-    $this->updatesMockBuilder
-        ->addChatBoost()
-        ->mock();
+test('chat boost routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addChatBoost();
 
-    Telepath::onChatBoost(function (Update $update, Chat $chat, User $user) {
-        expect($update->chatBoost)->not()->toBeNull()
-            ->and($user)->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onChatBoost(function (Update $update, Chat $chat, User $user): void {
+            expect($update->chatBoost)->not()->toBeNull()
+                ->and($chat)->not()->toBeNull()
+                ->and($user)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('chat boost remove', function (): void {
-    $this->updatesMockBuilder
-        ->addRemovedChatBoost()
-        ->mock();
+test('removed chat boost routes through Laravel router', function (): void {
+    $this->updatesMockBuilder->addRemovedChatBoost();
 
-    Telepath::onChatBoostRemove(function (Update $update, Chat $chat) {
-        expect($update->removedChatBoost)->not()->toBeNull()
-            ->and($chat)->not()->toEqual(null);
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onChatBoostRemove(function (Update $update, Chat $chat): void {
+            expect($update->removedChatBoost)->not()->toBeNull()
+                ->and($chat)->not()->toBeNull();
+        });
     });
 
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });
 
-test('keyboards', function (): void {
-    $testFactory = new class implements KeyboardFactoryInterface
-    {
-        public function make(): KeyboardBuilderInterface
-        {
-            return (new InlineKeyboardBuilder)->row(new class extends AbstractCallbackButton
-            {
-                public function handle(): callable
-                {
-                    return function (Update $update) {
-                        expect($update)->not()->toBeNull();
-                    };
-                }
+test('button registers callback query route through Laravel router', function (): void {
+    $this->updatesMockBuilder->addCallbackQuery('test-button');
 
-                public function getText(array $args = []): string
-                {
-                    return 'test';
-                }
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::button(function (Update $update): void {
+            expect($update->callbackQuery->data)->toEqual('test-button');
+        }, 'test-button');
+    });
 
-                public function getCallbackDataId(array $args = []): string
-                {
-                    return 'test';
-                }
-            });
-        }
-    };
-
-    $this->updatesMockBuilder
-        ->addCallbackQuery('test')
-        ->mock();
-
-    Telepath::keyboard($testFactory::class);
-
-    telegramApp()->start();
+    $this->dispatchTelegramUpdates();
 });

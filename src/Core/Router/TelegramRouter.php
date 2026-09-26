@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Lowel\Telepath\Core\Router;
 
 use Closure;
+use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\Inline\AbstractCallbackButton;
 use Lowel\Telepath\Core\Router\Keyboard\Buttons\Reply\AbstractReplyButton;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
@@ -18,6 +18,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TelegramRouter implements TelegramRouterInterface
 {
+    /**
+     * @var list<array<int|string, mixed>>
+     */
+    private array $groupMiddlewareStack = [];
+
+    public function __construct(
+        private readonly TelegramRouteRegistry $registry,
+        private readonly TelegramRouteFactory $routeFactory,
+        private readonly TelegramDispatcher $dispatcher,
+    ) {}
+
     public function onCommand(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
     {
         if ($pattern === null) {
@@ -155,7 +166,17 @@ class TelegramRouter implements TelegramRouterInterface
             $attributes = [];
         }
 
-        return Route::group($attributes, $callback);
+        $this->groupMiddlewareStack[] = $this->normalizeMiddleware($attributes['middleware'] ?? []);
+
+        try {
+            if ($callback !== null) {
+                $callback();
+            }
+        } finally {
+            array_pop($this->groupMiddlewareStack);
+        }
+
+        return app('router');
     }
 
     public function button(string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
@@ -184,21 +205,26 @@ class TelegramRouter implements TelegramRouterInterface
 
     public function redirect(string $data = '', ?Update $update = null, ?UpdateTypeEnum $updateTypeEnum = null): Response
     {
-        $request = RequestFactory::fromRaw($update ?? Extrasense::update(), $updateTypeEnum ?? Extrasense::type(), $data);
-
-        return Route::dispatch($request);
+        return $this->dispatcher->dispatch(
+            $update ?? Extrasense::update(),
+            $updateTypeEnum ?? Extrasense::type(),
+            $data,
+            false
+        );
     }
 
-    protected function createRule(UpdateTypeEnum $updateTypeEnum, string|callable|Closure|array $handler, ?string $pattern = null): \Illuminate\Routing\Route
+    protected function createRule(UpdateTypeEnum $updateTypeEnum, string|callable|Closure|array $handler, ?string $pattern = null): LaravelRoute
     {
-        if ($pattern === null) {
-            return Route::post(sprintf('%s/{any?}', $updateTypeEnum->value), $handler);
-        } else {
-            $randArg = chr(random_int(97, 122)).strtolower(Str::random(7));
+        $route = $this->routeFactory->make($updateTypeEnum, $handler, $pattern);
 
-            return Route::post(sprintf('%s/{%s}', $updateTypeEnum->value, $randArg), $handler)
-                ->where($randArg, $pattern);
-        }
+        $this->registry->register(
+            $updateTypeEnum,
+            $handler,
+            $pattern,
+            $this->currentGroupMiddleware()
+        )->setRoute($route);
+
+        return $route;
     }
 
     protected function resolvePatternFromControllerSignature(array $controllerSignature): ?string
@@ -208,5 +234,26 @@ class TelegramRouter implements TelegramRouterInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param  mixed  $middleware
+     * @return array<int|string, mixed>
+     */
+    private function normalizeMiddleware(mixed $middleware): array
+    {
+        if ($middleware === null || $middleware === []) {
+            return [];
+        }
+
+        return is_array($middleware) ? $middleware : [$middleware];
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private function currentGroupMiddleware(): array
+    {
+        return array_merge(...[[], ...$this->groupMiddlewareStack]);
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lowel\Telepath\Commands;
 
 use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
-use Lowel\Telepath\Components\Context\Context;
-use Lowel\Telepath\Core\Router\RequestFactory;
+use Lowel\Telepath\Core\Router\TelegramDispatcher;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Exceptions\TelegramException;
 use Lowel\Telepath\Facades\Extrasense;
@@ -38,7 +38,7 @@ class RunCommand extends Command
     public function handle()
     {
         $telegramBotApi = app()->make(TelegramBotApi::class);
-        $context = app()->make(Context::class);
+        $dispatcher = app()->make(TelegramDispatcher::class);
 
         $this->info('Start up telegram long-pool process...');
 
@@ -59,22 +59,7 @@ class RunCommand extends Command
             $updates = $this->getUpdates($telegramBotApi);
 
             foreach ($updates as $update) {
-                $context->onBefore($update);
-
-                foreach (UpdateTypeEnum::resolve($update) as $updateType) {
-                    $context->setType($updateType);
-
-                    $ogRequest = app('request');
-                    $internalRequest = RequestFactory::fromUpdate($updateType, $update);
-
-                    app()->instance('request', $internalRequest);
-
-                    Route::dispatch($internalRequest);
-
-                    app()->instance('request', $ogRequest);
-                }
-
-                $context->onAfter($update);
+                $dispatcher->dispatch($update);
             }
         }
     }

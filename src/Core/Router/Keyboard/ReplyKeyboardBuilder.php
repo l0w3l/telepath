@@ -48,6 +48,6 @@ class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
 
     public function copy(array $keyboardMarkup = []): self
     {
-        return (new self($this->isPersistent, $this->resizeKeyboard, $this->oneTimeKeyboard, $this->inputFieldPlaceholder, $this->selective))->markup($this->keyboardMarkup);
+        return (new self($this->isPersistent, $this->resizeKeyboard, $this->oneTimeKeyboard, $this->inputFieldPlaceholder, $this->selective))->markup($keyboardMarkup);
     }
 }

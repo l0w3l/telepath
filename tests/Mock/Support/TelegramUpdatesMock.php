@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Tests\Mock\Support;
 
-use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Lowel\Telepath\Tests\Mock\TestAppDriver;
 use Phptg\BotApi\Type\Update\Update;
 
 class TelegramUpdatesMock
@@ -349,10 +347,5 @@ class TelegramUpdatesMock
         }
 
         return $updates;
-    }
-
-    public function mock(): void
-    {
-        App::bind(TestAppDriver::class, fn () => new TestAppDriver($this->getUpdates()));
     }
 }
