@@ -29,7 +29,8 @@ abstract class AbstractLoginButton extends AbstractInlineButton
                 $this->getRequestWriteAccess(),
             ),
             iconCustomEmojiId: $this->getIconCustomEmojiId(),
-            style: $this->getStyle()
+            style: $this->getStyle(),
+            disabled: $this->disabledButton(),
         );
     }
 

@@ -18,7 +18,8 @@ abstract class AbstractWebAppButton extends AbstractInlineButton
             text: $this->getText(),
             webApp: new WebAppInfo($this->getWebAppUrl()),
             style: $this->getStyle(),
-            iconCustomEmojiId: $this->getIconCustomEmojiId()
+            iconCustomEmojiId: $this->getIconCustomEmojiId(),
+            disabled: $this->disabledButton(),
         );
     }
 

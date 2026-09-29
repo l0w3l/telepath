@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Lowel\Telepath\Tests\Mock\Support;
 
-use Illuminate\Support\Facades\App;
 use Lowel\Telepath\Enums\UpdateTypeEnum;
-use Lowel\Telepath\Tests\Mock\TestAppDriver;
 use Phptg\BotApi\Type\Update\Update;
 
 class TelegramUpdatesMock
@@ -56,6 +54,42 @@ class TelegramUpdatesMock
             'chat' => $this->chat(),
             'date' => time(),
             'text' => $text,
+        ]);
+    }
+
+    public function addGuestMessage(string $text): self
+    {
+        return $this->add(UpdateTypeEnum::GUEST_MESSAGE, [
+            'message_id' => rand(1, 9999),
+            'from' => $this->user(),
+            'chat' => $this->chat(),
+            'date' => time(),
+            'text' => $text,
+        ]);
+    }
+
+    public function addManagedBot(): self
+    {
+        return $this->add(UpdateTypeEnum::MANAGED_BOT, [
+            'user' => $this->user(),
+            'bot' => $this->user(['is_bot' => true]),
+        ]);
+    }
+
+    public function addSubscription(): self
+    {
+        return $this->add(UpdateTypeEnum::SUBSCRIPTION, [
+            'user' => $this->user(),
+            'invoice_payload' => 'test',
+            'state' => 'active',
+        ]);
+    }
+
+    public function addStoppedMessageGeneration(): self
+    {
+        return $this->add(UpdateTypeEnum::STOPPED_MESSAGE_GENERATION, [
+            'chat' => $this->chat(),
+            'draft_id' => 123,
         ]);
     }
 
@@ -245,6 +279,7 @@ class TelegramUpdatesMock
             'is_anonymous' => false,
             'type' => 'quiz',
             'allows_revoting' => false,
+            'members_only' => false,
             'allows_multiple_answers' => false,
             'options' => [
                 ['persistent_id' => 'test1', 'text' => 'Yes', 'voter_count' => 1],
@@ -349,10 +384,5 @@ class TelegramUpdatesMock
         }
 
         return $updates;
-    }
-
-    public function mock(): void
-    {
-        App::bind(TestAppDriver::class, fn () => new TestAppDriver($this->getUpdates()));
     }
 }

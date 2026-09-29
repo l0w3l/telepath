@@ -46,8 +46,14 @@ final class Profile
     {
         return match ($name) {
             'allowed_updates' => fn ($value) => UpdateTypeEnum::toArray(explode(',', $value)),
-            'whitelist' => fn ($value) => array_map(fn ($x) => (int) $x, explode(',', $value)),
-            'blacklist' => fn ($value) => array_map(fn ($x) => (int) $x, explode(',', $value)),
+            'whitelist' => fn ($value) => array_map(
+                fn (string $x) => (int) $x,
+                array_filter(array_map('trim', explode(',', (string) $value)), fn (string $x) => $x !== '')
+            ),
+            'blacklist' => fn ($value) => array_map(
+                fn (string $x) => (int) $x,
+                array_filter(array_map('trim', explode(',', (string) $value)), fn (string $x) => $x !== '')
+            ),
             'parse_mode' => fn ($value) => ParseModeEnum::from($value)->value,
             default => fn ($value) => $value,
         };

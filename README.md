@@ -35,26 +35,51 @@ That's it! now you can handle Update request in your telegram.php file.
 
 ```php
 use Lowel\Telepath\Facades\Telepath;
-use Phptg\BotApi\TelegramBotApi;
-use Phptg\BotApi\Type\Update\Update;
+use Lowel\Telepath\Facades\SpiritBox;
+use Phptg\BotApi\Type\Message;
 
-Telepath::middleware(function (TelegramBotApi $telegramBotApi, Update $update, callable $callback) {
-    logger()->info('Middleware in');
-    $callback();
-    logger()->info('Middleware out');    
-})->group(function () {
-    Telepath::on(function (TelegramBotApi $telegramBotApi, Update $update) {
-        $telegramBotApi->sendMessage($update->getMessage()->getChat()->getId(), 'Hello, world!');
-    }, pattern: '/start');
+Telepath::onCommand(function (): void {
+    SpiritBox::sendMessage('Hello, world!');
+}, 'start');
 
-    Telepath::on(function (TelegramBotApi $telegramBotApi, Update $update) {
-        $message = $update->getMessage();
-        if ($message) {
-            $telegramBotApi->sendMessage($message->getChat()->getId(), $message->getText());
-        }
-    }, pattern: '/echo');
+Telepath::onMessage(function (Message $message): void {
+    SpiritBox::sendMessage($message->text ?? '');
 });
 ```
+
+### phptg/bot-api 0.22 features
+
+Telepath routes the new `guest_message`, `managed_bot`, `subscription`, and
+`stopped_message_generation` updates. Register handlers in `routes/telegram.php`:
+
+```php
+use Lowel\Telepath\Facades\Telepath;
+use Phptg\BotApi\Type\Message;
+use Phptg\BotApi\Type\Update\Update;
+
+Telepath::onGuestMessage(function (Message $message): void {
+    // Respond to a guest message.
+});
+Telepath::onStoppedMessageGeneration(function (Update $update): void {
+    $draftId = $update->stoppedMessageGeneration->draftId;
+});
+```
+
+The `SpiritBox` facade supports rich messages, live photos, drafts, and
+ephemeral recipients with chat context defaults:
+
+```php
+use Lowel\Telepath\Facades\SpiritBox;
+use Phptg\BotApi\Type\EphemeralMessageParameters;
+use Phptg\BotApi\Type\InputRichMessage;
+
+SpiritBox::sendRichMessage(new InputRichMessage(html: '<b>Hello</b>'));
+SpiritBox::sendMessage('Private reply', ephemeralMessageParameters: new EphemeralMessageParameters($userId));
+SpiritBox::sendMessageDraft(42, 'Working...', canStop: true);
+```
+
+Other new upstream methods and types are available through `TelegramBotApi`
+injected into a handler or through `SpiritBox::call(new Method(...))`.
 
 Start up:
 

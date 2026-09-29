@@ -17,6 +17,7 @@ enum UpdateTypeEnum: string
     case BUSINESS_MESSAGE = 'business_message';
     case EDIT_BUSINESS_MESSAGE = 'edited_business_message';
     case DELETE_BUSINESS_MESSAGES = 'deleted_business_messages';
+    case GUEST_MESSAGE = 'guest_message';
     case MESSAGE_REACTION = 'message_reaction';
     case MESSAGE_REACTION_COUNT = 'message_reaction_count';
     case INLINE_QUERY = 'inline_query';
@@ -32,6 +33,9 @@ enum UpdateTypeEnum: string
     case CHAT_JOIN_REQUEST = 'chat_join_request';
     case CHAT_BOOST = 'chat_boost';
     case REMOVED_CHAT_BOOST = 'removed_chat_boost';
+    case MANAGED_BOT = 'managed_bot';
+    case SUBSCRIPTION = 'subscription';
+    case STOPPED_MESSAGE_GENERATION = 'stopped_message_generation';
 
     public static function resolve(Update $update): array
     {
@@ -57,6 +61,7 @@ enum UpdateTypeEnum: string
     {
         return match ($type) {
             UpdateTypeEnum::MESSAGE => $update->message->text,
+            UpdateTypeEnum::GUEST_MESSAGE => $update->guestMessage->text,
             UpdateTypeEnum::EDITED_MESSAGE => $update->editedMessage->text,
             UpdateTypeEnum::CHANNEL_POST => $update->channelPost->text,
             UpdateTypeEnum::EDITED_CHANNEL_POST => $update->editedChannelPost->text,

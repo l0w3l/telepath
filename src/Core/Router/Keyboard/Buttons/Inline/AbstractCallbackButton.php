@@ -76,7 +76,8 @@ abstract class AbstractCallbackButton extends AbstractInlineButton
             callbackData: $this->getCallbackDataId().$this->getCallbackData(),
             pay: $this->getPay(),
             iconCustomEmojiId: $this->getIconCustomEmojiId(),
-            style: $this->getStyle()
+            style: $this->getStyle(),
+            disabled: $this->disabledButton(),
         );
     }
 

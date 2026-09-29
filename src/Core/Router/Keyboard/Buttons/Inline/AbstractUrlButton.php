@@ -17,7 +17,8 @@ abstract class AbstractUrlButton extends AbstractInlineButton
             text: $this->getText(),
             url: $this->getUrl(),
             iconCustomEmojiId: $this->getIconCustomEmojiId(),
-            style: $this->getStyle()
+            style: $this->getStyle(),
+            disabled: $this->disabledButton(),
         );
     }
 
