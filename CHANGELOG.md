@@ -2,6 +2,16 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.7.0 - 2026-05-30
+
+### What's Changed
+
+* build(deps): update phptg/bot-api requirement from ^0.20 to ^0.21 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/70
+* Fix middleware bugs, security leaks, and improve TelegramRouter by @l0w3l in https://github.com/l0w3l/telepath/pull/71
+* Fix middleware bugs, security leaks, and optimize TelegramRouter by @l0w3l in https://github.com/l0w3l/telepath/pull/72
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.5...0.7.0
+
 ## 0.6.5 - 2026-05-07
 
 ### What's Changed
