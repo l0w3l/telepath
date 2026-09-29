@@ -2,6 +2,57 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 0.6.5 - 2026-05-07
+
+### What's Changed
+
+* Remove duplicated updates by @l0w3l in https://github.com/l0w3l/telepath/pull/69
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.4...0.6.5
+
+## 0.6.4 - 2026-05-07
+
+### What's Changed
+
+* Feature/gemini refactring by @l0w3l in https://github.com/l0w3l/telepath/pull/67
+* Refactor for performance optimizations and feature enhancements by @l0w3l in https://github.com/l0w3l/telepath/pull/68
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.3...0.6.4
+
+## 0.6.3 - 2026-05-03
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.2...0.6.3
+
+## 0.6.2 - 2026-04-29
+
+### What's Changed
+
+* Refactor Telepath facade types and update phptg to 0.20 by @l0w3l in https://github.com/l0w3l/telepath/pull/63
+* build(deps): bump dependabot/fetch-metadata from 2.5.0 to 3.1.0 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/61
+* build(deps): bump ramsey/composer-install from 3 to 4 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/58
+* Refactor Telepath facade types and update phptg to 0.20 by @l0w3l in https://github.com/l0w3l/telepath/pull/64
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.1...0.6.2
+
+## 0.6.1 - bugfixes - 2026-03-12
+
+### What's Changed
+
+* fix: resolving in UpdateTypeEnum + spirit box exception with inlineMessageId param by @l0w3l in https://github.com/l0w3l/telepath/pull/56
+* Release 0.6.1: Fix UpdateTypeEnum and spirit box exception handling by @l0w3l in https://github.com/l0w3l/telepath/pull/57
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.6.0...0.6.1
+
+## 0.6.0 - async, styled buttons and fixes - 2026-02-27
+
+### What's Changed
+
+* feat: SpiritBoxAsync facade by @l0w3l in https://github.com/l0w3l/telepath/pull/53
+* build(deps): update phptg/bot-api requirement from ^0.13 to ^0.14 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/52
+* Release 0.6.0 | Async and styled buttons (bot api 9.4) by @l0w3l in https://github.com/l0w3l/telepath/pull/54
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.5.8...0.6.0
+
 ## 0.5.8 - fixes - 2026-02-04
 
 ### What's Changed
