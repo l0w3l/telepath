@@ -2,6 +2,42 @@
 
 All notable changes to `telepath` will be documented in this file.
 
+## 1.0.0 - 2026-09-29
+
+### Telepath — Release Features
+
+Telepath is a Laravel SDK for Telegram bots. It provides routing for Telegram updates, message sending through phptg/bot-api ^0.22, and tools for running a bot. Applications define their bot behavior in routes/telegram.php.
+
+##### Updates and routing
+
+Receive updates through webhooks or long polling.
+
+Route commands, messages, channel posts, business messages, button callbacks, inline queries, reactions, polls, payment events, membership changes, and chat boosts.
+
+Handle the newly supported guest_message, managed_bot, subscription, and stopped_message_generation updates.
+
+Organize handlers with route groups, middleware, text patterns, and access to the current update through Extrasense.
+
+##### Telegram API
+
+SpiritBox provides convenient methods for sending text, photos, videos, audio, documents, stickers, locations, contacts, polls, media groups, paid media, gifts, and invoices. It also supports replies, message edits and deletion, and selected chat management operations.
+
+This release adds rich messages, live photos, message drafts, ephemeral message parameters, and expanded poll options. Other phptg/bot-api methods and types remain available through the injected TelegramBotApi.
+
+##### Keyboards and tooling
+
+Build inline and reply keyboards with callback handlers, button styles, and custom emoji. This release adds forceReply and disabled inline buttons. Artisan commands generate handlers, middleware, and keyboards, and manage webhooks. SpiritBoxAsync can dispatch API calls through Laravel queues.
+
+Validation: 56 tests pass; PHPStan and Pint pass.
+
+#### What's Changed
+
+* build(deps): update phptg/bot-api requirement from ^0.21 to ^0.22 by @dependabot[bot] in https://github.com/l0w3l/telepath/pull/74
+* Feature/performance optimization by @l0w3l in https://github.com/l0w3l/telepath/pull/75
+* release: new core by @l0w3l in https://github.com/l0w3l/telepath/pull/76
+
+**Full Changelog**: https://github.com/l0w3l/telepath/compare/0.7.0...1.0.0
+
 ## 0.7.0 - 2026-05-30
 
 ### What's Changed
