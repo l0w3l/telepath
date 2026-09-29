@@ -29,12 +29,16 @@ use Phptg\BotApi\Method\SendChecklist;
 use Phptg\BotApi\Method\SendContact;
 use Phptg\BotApi\Method\SendDice;
 use Phptg\BotApi\Method\SendDocument;
+use Phptg\BotApi\Method\SendLivePhoto;
 use Phptg\BotApi\Method\SendLocation;
 use Phptg\BotApi\Method\SendMediaGroup;
 use Phptg\BotApi\Method\SendMessage;
+use Phptg\BotApi\Method\SendMessageDraft;
 use Phptg\BotApi\Method\SendPaidMedia;
 use Phptg\BotApi\Method\SendPhoto;
 use Phptg\BotApi\Method\SendPoll;
+use Phptg\BotApi\Method\SendRichMessage;
+use Phptg\BotApi\Method\SendRichMessageDraft;
 use Phptg\BotApi\Method\SendVenue;
 use Phptg\BotApi\Method\SendVideo;
 use Phptg\BotApi\Method\SendVideoNote;
@@ -54,6 +58,7 @@ use Phptg\BotApi\Method\UpdatingMessage\EditMessageText;
 use Phptg\BotApi\TelegramBotApi;
 use Phptg\BotApi\Type\BotCommandScope;
 use Phptg\BotApi\Type\ChatInviteLink;
+use Phptg\BotApi\Type\EphemeralMessageParameters;
 use Phptg\BotApi\Type\ForceReply;
 use Phptg\BotApi\Type\InlineKeyboardMarkup;
 use Phptg\BotApi\Type\InputChecklist;
@@ -64,7 +69,9 @@ use Phptg\BotApi\Type\InputMediaDocument;
 use Phptg\BotApi\Type\InputMediaPhoto;
 use Phptg\BotApi\Type\InputMediaVideo;
 use Phptg\BotApi\Type\InputPaidMedia;
+use Phptg\BotApi\Type\InputPollMedia;
 use Phptg\BotApi\Type\InputPollOption;
+use Phptg\BotApi\Type\InputRichMessage;
 use Phptg\BotApi\Type\InputStoryContent;
 use Phptg\BotApi\Type\LinkPreviewOptions;
 use Phptg\BotApi\Type\Message;
@@ -116,6 +123,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendAnimation(
@@ -140,6 +148,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -170,6 +179,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendAudio(
@@ -192,6 +202,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -236,6 +247,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendContact(
@@ -254,6 +266,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -346,6 +359,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendDocument(
@@ -366,6 +380,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -532,6 +547,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendLocation(
@@ -552,6 +568,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -614,6 +631,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendMessage(
@@ -632,6 +650,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -710,6 +729,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendPhoto(
@@ -730,8 +750,125 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
+    }
+
+    public static function sendRichMessage(
+        InputRichMessage $richMessage,
+        int|string|null $chatId = null,
+        ?string $businessConnectionId = null,
+        ?int $messageThreadId = null,
+        ?int $directMessagesTopicId = null,
+        ?bool $disableNotification = null,
+        ?bool $protectContent = null,
+        ?bool $allowPaidBroadcast = null,
+        ?string $messageEffectId = null,
+        ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?ReplyParameters $replyParameters = null,
+        KeyboardBuilderInterface|InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
+    ): FailResult|Message {
+        return self::call(new SendRichMessage(
+            chatId: $chatId ?? Extrasense::chat()->id,
+            richMessage: $richMessage,
+            businessConnectionId: $businessConnectionId,
+            messageThreadId: $messageThreadId,
+            directMessagesTopicId: $directMessagesTopicId,
+            disableNotification: $disableNotification,
+            protectContent: $protectContent,
+            allowPaidBroadcast: $allowPaidBroadcast,
+            messageEffectId: $messageEffectId,
+            suggestedPostParameters: $suggestedPostParameters,
+            replyParameters: $replyParameters,
+            replyMarkup: $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
+            ephemeralMessageParameters: $ephemeralMessageParameters,
+        ));
+    }
+
+    public static function sendLivePhoto(
+        string|InputFile $livePhoto,
+        string|InputFile $photo,
+        int|string|null $chatId = null,
+        ?string $caption = null,
+        ?string $parseMode = null,
+        KeyboardBuilderInterface|InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
+        ?string $businessConnectionId = null,
+        ?int $messageThreadId = null,
+        ?int $directMessagesTopicId = null,
+        ?array $captionEntities = null,
+        ?bool $showCaptionAboveMedia = null,
+        ?bool $hasSpoiler = null,
+        ?bool $disableNotification = null,
+        ?bool $protectContent = null,
+        ?bool $allowPaidBroadcast = null,
+        ?string $messageEffectId = null,
+        ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?ReplyParameters $replyParameters = null,
+    ): FailResult|Message {
+        return self::call(new SendLivePhoto(
+            chatId: $chatId ?? Extrasense::chat()->id,
+            livePhoto: $livePhoto,
+            photo: $photo,
+            businessConnectionId: $businessConnectionId,
+            messageThreadId: $messageThreadId,
+            directMessagesTopicId: $directMessagesTopicId,
+            caption: $caption,
+            parseMode: $parseMode ?? Extrasense::profile()->parseMode,
+            captionEntities: $captionEntities,
+            showCaptionAboveMedia: $showCaptionAboveMedia,
+            hasSpoiler: $hasSpoiler,
+            disableNotification: $disableNotification,
+            protectContent: $protectContent,
+            allowPaidBroadcast: $allowPaidBroadcast,
+            messageEffectId: $messageEffectId,
+            suggestedPostParameters: $suggestedPostParameters,
+            replyParameters: $replyParameters,
+            replyMarkup: $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
+            ephemeralMessageParameters: $ephemeralMessageParameters,
+        ));
+    }
+
+    public static function sendMessageDraft(
+        int $draftId,
+        ?string $text = null,
+        ?int $chatId = null,
+        ?int $messageThreadId = null,
+        ?string $parseMode = null,
+        ?array $entities = null,
+        ?bool $canStop = null,
+        ?bool $keepOnStop = null,
+    ): FailResult|true {
+        return self::call(new SendMessageDraft(
+            chatId: $chatId ?? Extrasense::chat()->id,
+            draftId: $draftId,
+            text: $text,
+            messageThreadId: $messageThreadId,
+            parseMode: $parseMode ?? Extrasense::profile()->parseMode,
+            entities: $entities,
+            canStop: $canStop,
+            keepOnStop: $keepOnStop,
+        ));
+    }
+
+    public static function sendRichMessageDraft(
+        int $draftId,
+        InputRichMessage $richMessage,
+        ?int $chatId = null,
+        ?int $messageThreadId = null,
+        ?bool $canStop = null,
+        ?bool $keepOnStop = null,
+    ): FailResult|true {
+        return self::call(new SendRichMessageDraft(
+            chatId: $chatId ?? Extrasense::chat()->id,
+            draftId: $draftId,
+            richMessage: $richMessage,
+            messageThreadId: $messageThreadId,
+            canStop: $canStop,
+            keepOnStop: $keepOnStop,
+        ));
     }
 
     /**
@@ -766,32 +903,55 @@ class SpiritBox extends Facade
         ?ReplyParameters $replyParameters = null,
         KeyboardBuilderInterface|InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup = null,
         ?bool $allowPaidBroadcast = null,
+        ?array $correctOptionIds = null,
+        ?InputPollMedia $explanationMedia = null,
+        ?InputPollMedia $media = null,
+        ?bool $allowsRevoting = null,
+        ?bool $shuffleOptions = null,
+        ?bool $allowAddingOptions = null,
+        ?bool $hideResultsUntilCloses = null,
+        ?bool $membersOnly = null,
+        ?array $countryCodes = null,
+        ?string $description = null,
+        ?string $descriptionParseMode = null,
+        ?array $descriptionEntities = null,
     ): FailResult|Message {
         return self::call(
             new SendPoll(
-                $chatId ?? Extrasense::chat()->id,
-                $question,
-                $options,
-                $businessConnectionId,
-                $messageThreadId,
-                $questionParseMode,
-                $questionEntities,
-                $isAnonymous,
-                $type,
-                $allowsMultipleAnswers,
-                $correctOptionId !== null ? [$correctOptionId] : null,
-                $explanation,
-                $explanationParseMode,
-                $explanationEntities,
-                $openPeriod,
-                $closeDate,
-                $isClosed,
-                $disableNotification,
-                $protectContent,
-                $messageEffectId,
-                $replyParameters,
-                $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
-                $allowPaidBroadcast,
+                chatId: $chatId ?? Extrasense::chat()->id,
+                question: $question,
+                options: $options,
+                businessConnectionId: $businessConnectionId,
+                messageThreadId: $messageThreadId,
+                questionParseMode: $questionParseMode,
+                questionEntities: $questionEntities,
+                isAnonymous: $isAnonymous,
+                type: $type,
+                allowsMultipleAnswers: $allowsMultipleAnswers,
+                correctOptionIds: $correctOptionIds ?? ($correctOptionId !== null ? [$correctOptionId] : null),
+                explanation: $explanation,
+                explanationParseMode: $explanationParseMode,
+                explanationEntities: $explanationEntities,
+                explanationMedia: $explanationMedia,
+                openPeriod: $openPeriod,
+                closeDate: $closeDate,
+                isClosed: $isClosed,
+                media: $media,
+                disableNotification: $disableNotification,
+                protectContent: $protectContent,
+                messageEffectId: $messageEffectId,
+                replyParameters: $replyParameters,
+                replyMarkup: $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
+                allowPaidBroadcast: $allowPaidBroadcast,
+                allowsRevoting: $allowsRevoting,
+                shuffleOptions: $shuffleOptions,
+                allowAddingOptions: $allowAddingOptions,
+                hideResultsUntilCloses: $hideResultsUntilCloses,
+                membersOnly: $membersOnly,
+                countryCodes: $countryCodes,
+                description: $description,
+                descriptionParseMode: $descriptionParseMode,
+                descriptionEntities: $descriptionEntities,
             ),
         );
     }
@@ -814,6 +974,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendSticker(
@@ -830,6 +991,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -858,6 +1020,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendVenue(
@@ -880,6 +1043,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -915,6 +1079,7 @@ class SpiritBox extends Facade
         ?int $startTimestamp = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendVideo(
@@ -942,6 +1107,7 @@ class SpiritBox extends Facade
                 $startTimestamp,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -966,6 +1132,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendVideoNote(
@@ -984,6 +1151,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -1011,6 +1179,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendVoice(
@@ -1030,6 +1199,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }
@@ -1234,7 +1404,7 @@ class SpiritBox extends Facade
      * @link TelegramBotApi::editMessageText()
      */
     public static function editMessageText(
-        string $text,
+        ?string $text = null,
         ?string $businessConnectionId = null,
         int|string|null $chatId = null,
         ?int $messageId = null,
@@ -1243,6 +1413,7 @@ class SpiritBox extends Facade
         ?array $entities = null,
         ?LinkPreviewOptions $linkPreviewOptions = null,
         null|KeyboardBuilderInterface|InlineKeyboardMarkup $replyMarkup = null,
+        ?InputRichMessage $richMessage = null,
     ): FailResult|Message|true {
         return self::call(
             new EditMessageText(
@@ -1255,6 +1426,7 @@ class SpiritBox extends Facade
                 $entities,
                 $linkPreviewOptions,
                 $replyMarkup instanceof KeyboardBuilderInterface ? $replyMarkup->build() : $replyMarkup,
+                $richMessage,
             ),
         );
     }
@@ -1412,6 +1584,7 @@ class SpiritBox extends Facade
         ?bool $allowPaidBroadcast = null,
         ?int $directMessagesTopicId = null,
         ?SuggestedPostParameters $suggestedPostParameters = null,
+        ?EphemeralMessageParameters $ephemeralMessageParameters = null,
     ): FailResult|Message {
         return self::call(
             new SendMessage(
@@ -1430,6 +1603,7 @@ class SpiritBox extends Facade
                 $allowPaidBroadcast,
                 $directMessagesTopicId,
                 $suggestedPostParameters,
+                $ephemeralMessageParameters,
             ),
         );
     }

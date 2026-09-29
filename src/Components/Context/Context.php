@@ -66,6 +66,8 @@ class Context implements ContextInterface
 
             return
                 $update->businessConnection->user
+                ?? $update->managedBot->user
+                ?? $update->subscription->user
                 ?? $update->messageReaction->user
                 ?? $update->inlineQuery->from
                 ?? $update->chosenInlineResult->from
@@ -99,6 +101,7 @@ class Context implements ContextInterface
         $update = $this->update();
 
         return $update->message
+            ?? $update->guestMessage
             ?? $update->editedMessage
             ?? $update->businessMessage
             ?? $update->editedBusinessMessage
@@ -118,6 +121,7 @@ class Context implements ContextInterface
             $update = $this->update();
 
             return $update->deletedBusinessMessages->chat
+                ?? $update->stoppedMessageGeneration->chat
                 ?? $update->messageReaction->chat
                 ?? $update->messageReactionCount->chat
                 ?? $update->pollAnswer->voterChat

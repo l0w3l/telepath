@@ -30,7 +30,8 @@ abstract class AbstractCopyButton extends AbstractInlineButton
             text: $this->getCopyText(),
             copyText: new CopyTextButton($this->getCopyText()),
             iconCustomEmojiId: $this->getIconCustomEmojiId(),
-            style: $this->getStyle()
+            style: $this->getStyle(),
+            disabled: $this->disabledButton(),
         );
     }
 }

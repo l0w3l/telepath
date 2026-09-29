@@ -57,6 +57,42 @@ class TelegramUpdatesMock
         ]);
     }
 
+    public function addGuestMessage(string $text): self
+    {
+        return $this->add(UpdateTypeEnum::GUEST_MESSAGE, [
+            'message_id' => rand(1, 9999),
+            'from' => $this->user(),
+            'chat' => $this->chat(),
+            'date' => time(),
+            'text' => $text,
+        ]);
+    }
+
+    public function addManagedBot(): self
+    {
+        return $this->add(UpdateTypeEnum::MANAGED_BOT, [
+            'user' => $this->user(),
+            'bot' => $this->user(['is_bot' => true]),
+        ]);
+    }
+
+    public function addSubscription(): self
+    {
+        return $this->add(UpdateTypeEnum::SUBSCRIPTION, [
+            'user' => $this->user(),
+            'invoice_payload' => 'test',
+            'state' => 'active',
+        ]);
+    }
+
+    public function addStoppedMessageGeneration(): self
+    {
+        return $this->add(UpdateTypeEnum::STOPPED_MESSAGE_GENERATION, [
+            'chat' => $this->chat(),
+            'draft_id' => 123,
+        ]);
+    }
+
     public function addEditedMessage(string $newText): self
     {
         return $this->add(UpdateTypeEnum::EDITED_MESSAGE, [
@@ -243,6 +279,7 @@ class TelegramUpdatesMock
             'is_anonymous' => false,
             'type' => 'quiz',
             'allows_revoting' => false,
+            'members_only' => false,
             'allows_multiple_answers' => false,
             'options' => [
                 ['persistent_id' => 'test1', 'text' => 'Yes', 'voter_count' => 1],

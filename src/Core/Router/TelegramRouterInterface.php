@@ -29,6 +29,14 @@ interface TelegramRouterInterface
      */
     public function onMessage(string|callable|Closure|array $handler, ?string $pattern = null): Route;
 
+    public function onGuestMessage(string|callable|Closure|array $handler, ?string $pattern = null): Route;
+
+    public function onManagedBot(string|callable|Closure|array $handler): Route;
+
+    public function onSubscription(string|callable|Closure|array $handler): Route;
+
+    public function onStoppedMessageGeneration(string|callable|Closure|array $handler): Route;
+
     /**
      * Registers a handler for the 'edited_message' update type.
      *

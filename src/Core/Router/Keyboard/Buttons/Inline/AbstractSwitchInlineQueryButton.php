@@ -25,7 +25,8 @@ abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
                 text: $this->getText(),
                 switchInlineQuery: $this->getSwitchInlineQueryData(),
                 iconCustomEmojiId: $this->getIconCustomEmojiId(),
-                style: $this->getStyle()
+                style: $this->getStyle(),
+                disabled: $this->disabledButton(),
             );
         }
         if (in_array(SwitchInlineQueryAllowTypesEnum::CURRENT, $allowed)) {
@@ -33,7 +34,8 @@ abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
                 text: $this->getText(),
                 switchInlineQueryCurrentChat: $this->getSwitchInlineQueryData(),
                 iconCustomEmojiId: $this->getIconCustomEmojiId(),
-                style: $this->getStyle()
+                style: $this->getStyle(),
+                disabled: $this->disabledButton(),
             );
         } else {
             return new InlineKeyboardButton(
@@ -46,7 +48,8 @@ abstract class AbstractSwitchInlineQueryButton extends AbstractInlineButton
                     allowChannelChats: in_array(SwitchInlineQueryAllowTypesEnum::CHANNEL, $allowed),
                 ),
                 iconCustomEmojiId: $this->getIconCustomEmojiId(),
-                style: $this->getStyle()
+                style: $this->getStyle(),
+                disabled: $this->disabledButton(),
             );
         }
     }

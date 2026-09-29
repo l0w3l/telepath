@@ -49,6 +49,50 @@ test('message routes through Laravel router', function (): void {
     $this->dispatchTelegramUpdates();
 });
 
+test('guest message routes with message context', function (): void {
+    $this->updatesMockBuilder->addGuestMessage($this->name());
+
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onGuestMessage(function (Message $message, Chat $chat, User $user): void {
+            expect($message->text)->toEqual($this->name())
+                ->and($chat->id)->toBeInt()
+                ->and($user->id)->toBeInt();
+        }, $this->name());
+    });
+
+    $this->dispatchTelegramUpdates();
+});
+
+test('managed bot routes with user context', function (): void {
+    $this->updatesMockBuilder->addManagedBot();
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onManagedBot(function (User $user): void {
+            expect($user->isBot)->toBeFalse();
+        });
+    });
+    $this->dispatchTelegramUpdates();
+});
+
+test('subscription routes with user context', function (): void {
+    $this->updatesMockBuilder->addSubscription();
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onSubscription(function (User $user): void {
+            expect($user->id)->toBeInt();
+        });
+    });
+    $this->dispatchTelegramUpdates();
+});
+
+test('stopped message generation routes with chat context', function (): void {
+    $this->updatesMockBuilder->addStoppedMessageGeneration();
+    $this->withinTelegramRoutes(function (): void {
+        Telepath::onStoppedMessageGeneration(function (Chat $chat): void {
+            expect($chat->id)->toBeInt();
+        });
+    });
+    $this->dispatchTelegramUpdates();
+});
+
 test('edited message routes through Laravel router', function (): void {
     $this->updatesMockBuilder->addEditedMessage($this->name());
 

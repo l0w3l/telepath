@@ -16,6 +16,7 @@ class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
         public ?bool $oneTimeKeyboard = null,
         public ?string $inputFieldPlaceholder = null,
         public ?bool $selective = null,
+        public ?bool $forceReply = null,
     ) {}
 
     public static function create(
@@ -24,13 +25,15 @@ class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
         ?bool $oneTimeKeyboard = null,
         ?string $inputFieldPlaceholder = null,
         ?bool $selective = null,
+        ?bool $forceReply = null,
     ): self {
         return new self(
             isPersistent: $isPersistent,
             resizeKeyboard: $resizeKeyboard,
             oneTimeKeyboard: $oneTimeKeyboard,
             inputFieldPlaceholder: $inputFieldPlaceholder,
-            selective: $selective
+            selective: $selective,
+            forceReply: $forceReply
         );
     }
 
@@ -38,7 +41,7 @@ class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
     {
         $buttons = array_map(fn (array $column) => array_map(fn (ButtonInterface $button) => $button->toButton(), $column), $this->keyboardMarkup);
 
-        return new ReplyKeyboardMarkup($buttons);
+        return new ReplyKeyboardMarkup($buttons, $this->isPersistent, $this->resizeKeyboard, $this->oneTimeKeyboard, $this->inputFieldPlaceholder, $this->selective, $this->forceReply);
     }
 
     public function remove(): ReplyKeyboardRemove
@@ -48,6 +51,6 @@ class ReplyKeyboardBuilder extends AbstractKeyboardBuilder
 
     public function copy(array $keyboardMarkup = []): self
     {
-        return (new self($this->isPersistent, $this->resizeKeyboard, $this->oneTimeKeyboard, $this->inputFieldPlaceholder, $this->selective))->markup($keyboardMarkup);
+        return (new self($this->isPersistent, $this->resizeKeyboard, $this->oneTimeKeyboard, $this->inputFieldPlaceholder, $this->selective, $this->forceReply))->markup($keyboardMarkup);
     }
 }

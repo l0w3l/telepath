@@ -48,6 +48,26 @@ class TelegramRouter implements TelegramRouterInterface
         return $this->createRule(UpdateTypeEnum::MESSAGE, $handler, $pattern);
     }
 
+    public function onGuestMessage(string|callable|Closure|array $handler, ?string $pattern = null): LaravelRoute
+    {
+        return $this->createRule(UpdateTypeEnum::GUEST_MESSAGE, $handler, $pattern);
+    }
+
+    public function onManagedBot(string|callable|Closure|array $handler): LaravelRoute
+    {
+        return $this->createRule(UpdateTypeEnum::MANAGED_BOT, $handler);
+    }
+
+    public function onSubscription(string|callable|Closure|array $handler): LaravelRoute
+    {
+        return $this->createRule(UpdateTypeEnum::SUBSCRIPTION, $handler);
+    }
+
+    public function onStoppedMessageGeneration(string|callable|Closure|array $handler): LaravelRoute
+    {
+        return $this->createRule(UpdateTypeEnum::STOPPED_MESSAGE_GENERATION, $handler);
+    }
+
     public function onMessageEdit(string|callable|Closure|array $handler, ?string $pattern = null): LaravelRoute
     {
         return $this->createRule(UpdateTypeEnum::EDITED_MESSAGE, $handler, $pattern);
