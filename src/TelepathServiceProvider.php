@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lowel\Telepath;
 
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +16,12 @@ use Lowel\Telepath\Commands\Keyboard\MakeKeyboardReplyCommand;
 use Lowel\Telepath\Commands\MIddleware\MakeMiddlewareCommand;
 use Lowel\Telepath\Commands\RunCommand;
 use Lowel\Telepath\Components\Context\Context;
-use Lowel\Telepath\Core\Router\RequestFactory;
+use Lowel\Telepath\Core\Router\TelegramDispatcher;
+use Lowel\Telepath\Core\Router\TelegramRouteFactory;
+use Lowel\Telepath\Core\Router\TelegramRouteMatcher;
 use Lowel\Telepath\Core\Router\TelegramRouter;
+use Lowel\Telepath\Core\Router\TelegramRouteRegistry;
 use Lowel\Telepath\Core\Router\TelegramRouterInterface;
-use Lowel\Telepath\Enums\UpdateTypeEnum;
 use Lowel\Telepath\Facades\Extrasense;
 use Lowel\Telepath\Http\Guards\TelegramGuard;
 use Lowel\Telepath\Http\Middlewares\Authorization\TelegramOriginMiddleware;
@@ -86,6 +90,11 @@ class TelepathServiceProvider extends PackageServiceProvider
 
     private function bindApp(): void
     {
+        $this->app->singleton(TelegramRouteRegistry::class);
+        $this->app->singleton(TelegramRouteFactory::class);
+        $this->app->singleton(TelegramRouteMatcher::class);
+        $this->app->singleton(TelegramDispatcher::class);
+
         $this->app->singleton(TelegramRouterInterface::class, function ($app) {
             return $app->make(TelegramRouter::class);
         });
@@ -109,33 +118,14 @@ class TelepathServiceProvider extends PackageServiceProvider
             Route::post('/webhook', function () {
                 $request = request();
 
-                $context = app()->make(Context::class);
                 $update = Update::fromJson($request->getContent());
-                $updateTypes = UpdateTypeEnum::resolve($update);
 
-                $context->onBefore($update);
-
-                foreach ($updateTypes as $updateType) {
-                    $context->setType($updateType);
-
-                    $ogRequest = app('request');
-                    $internalRequest = RequestFactory::fromUpdate($updateType, $update);
-
-                    app()->instance('request', $internalRequest);
-
-                    Route::dispatch($internalRequest);
-
-                    app()->instance('request', $ogRequest);
-                }
-
-                $context->onAfter($update);
-
-                return response(status: 200);
+                return app(TelegramDispatcher::class)->dispatch($update);
             });
 
-            Route::middleware([
+            app(TelegramRouterInterface::class)->group(['middleware' => [
                 ErrorReportMiddleware::class,
-            ])->group(function () {
+            ]], function () {
                 require config('telepath.routes');
             });
 

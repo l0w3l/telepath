@@ -59,7 +59,9 @@ return [
             'blacklist' => env('TELEPATH_BANNED', ''),
 
             // will send report about unhandled exceptions to the given chat_id instance (chat or dm)
-            'chat_id_fallback' => (int) env('TELEPATH_CHAT_ID_FALLBACK', null),
+            'chat_id_fallback' => env('TELEPATH_CHAT_ID_FALLBACK') !== null
+                ? (int) env('TELEPATH_CHAT_ID_FALLBACK')
+                : null,
         ],
     ],
 ];
